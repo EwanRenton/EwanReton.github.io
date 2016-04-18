@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Html | My Octopress Blog]]></title>
-  <link href="http://yoursite.com/blog/categories/html/atom.xml" rel="self"/>
-  <link href="http://yoursite.com/"/>
-  <updated>2016-04-18T18:27:44+08:00</updated>
-  <id>http://yoursite.com/</id>
+  <title><![CDATA[Category: html | Blog Like A Hacker]]></title>
+  <link href="http://ewanreton.github.io/blog/categories/html/atom.xml" rel="self"/>
+  <link href="http://ewanreton.github.io/"/>
+  <updated>2016-04-18T22:56:43+08:00</updated>
+  <id>http://ewanreton.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Ewan Reton]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hllo]]></title>
-    <link href="http://yoursite.com/blog/2016/04/18/jikexueyuan/"/>
+    <link href="http://ewanreton.github.io/blog/2016/04/18/jikexueyuan/"/>
     <updated>2016-04-18T15:18:17+08:00</updated>
-    <id>http://yoursite.com/blog/2016/04/18/jikexueyuan</id>
+    <id>http://ewanreton.github.io/blog/2016/04/18/jikexueyuan</id>
     <content type="html"><![CDATA[<h1>Hello World！</h1>
 
 <h2>So Nice To Meet You！</h2>
