@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Blog Like A Hacker]]></title>
-  <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: octopress | Blog Like A Hacker]]></title>
+  <link href="http://ewanreton.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
   <updated>2016-04-19T09:36:31+08:00</updated>
   <id>http://ewanreton.github.io/</id>
@@ -54,11 +54,10 @@ ssh-keygen -t rsa -C "YOUR_EMAIL"
 <p>然后在将你系统盘（大多为C盘）->用户->当前用户（就是你装系统的时候给电脑取的名字）->.ssh文件夹下有id_rsa和id_rsa.pub两个文件打开后者全选复制。
 添加到你的GITHUB的SSH KEYs （GITHUB登录后的setting里面）</p>
 
-<p>回到你的bash</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -T git@github.com</span></code></pre></td></tr></table></div></figure>
-
+<p>回到你的bash
+<code>
+ssh -T git@github.com
+</code></p>
 
 <p>来测试SSH keYS,提示HI XXX! 则成功</p>
 
@@ -72,11 +71,9 @@ ssh-keygen -t rsa -C "YOUR_EMAIL"
 
 <p>进到DevKit安装目录，打开Bash</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ruby dk.rb init
-</span><span class='line'>ruby dk.rb install</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>ruby dk.rb init
+ruby dk.rb install
+</code></pre>
 
 <hr />
 
@@ -94,13 +91,10 @@ $ bundle config mirror.<a href="https://rubygems.org">https://rubygems.org</a> <
 
 <hr />
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem install bundler
-</span><span class='line'>bundler install
-</span><span class='line'>rake install</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>gem install bundler
+bundler install
+rake install
+</code></pre>
 
 <p>以上步奏完成并无ERROR则环境搭建成功</p>
 
@@ -162,30 +156,6 @@ username.github.io 来访问你的个人博客了</p>
 <hr />
 
 <p>PS： 第一次用自己搭的博客写博客，markdown语法用起来也不太熟悉。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Hllo]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/18/jikexueyuan/"/>
-    <updated>2016-04-18T15:18:17+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/18/jikexueyuan</id>
-    <content type="html"><![CDATA[<h1>Hello World！</h1>
-
-<h2>So Nice To Meet You！</h2>
-
-<p><strong>The New Blog of Ewan Reton</strong></p>
-
-<ul>
-<li>PHP
-
-<ul>
-<li>sql</li>
-</ul>
-</li>
-<li>HTML</li>
-</ul>
-
 ]]></content>
   </entry>
   
