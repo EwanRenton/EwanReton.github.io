@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://ewanreton.github.io/blog/2016/04/25/nginx/</loc>
+<lastmod>2016-04-25T21:11:48+08:00</lastmod>
+</url>
+<url>
 <loc>http://ewanreton.github.io/blog/2016/04/25/wei-xin-gong-zhong-hao-kai-fa/</loc>
 <lastmod>2016-04-25T14:19:37+08:00</lastmod>
 </url>
@@ -38,5 +42,8 @@
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/categories/weixin/</loc>
+</url>
+<url>
+<loc>http://ewanreton.github.io/blog/categories/nginx/</loc>
 </url>
 </urlset>
