@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nginx | Blog Like A Hacker]]></title>
   <link href="http://ewanreton.github.io/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-25T21:43:41+08:00</updated>
+  <updated>2016-04-25T21:44:53+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -80,13 +80,17 @@
 
 <ul>
 <li>进入root权限</li>
-<li>yum -y install zlib zlib-devel
-
-<h1>四、启动服务</h1></li>
+<li>yum -y install zlib zlib-devel</li>
 </ul>
 </li>
 </ol>
 </li>
+</ol>
+
+
+<h1>四、启动服务</h1>
+
+<ul>
 <li><p>Linux：</p>
 
 <ul>
@@ -101,7 +105,7 @@
 
 
 <p>  打开浏览器访问Localhost，能访问则启动成功。</p></li>
-</ol>
+</ul>
 
 ]]></content>
   </entry>
