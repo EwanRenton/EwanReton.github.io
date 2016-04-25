@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>http://ewanreton.github.io/blog/2016/04/25/weixingongzhonghaokaifa/</loc>
+<loc>http://ewanreton.github.io/blog/2016/04/25/wei-xin-gong-zhong-hao-kai-fa/</loc>
 <lastmod>2016-04-25T14:19:37+08:00</lastmod>
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/</loc>
 <lastmod>2016-04-18T23:13:10+08:00</lastmod>
-</url>
-<url>
-<loc>http://ewanreton.github.io/blog/2016/04/18/jikexueyuan%25202/</loc>
-<lastmod>2016-04-18T15:18:17+08:00</lastmod>
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/2016/04/18/jikexueyuan/</loc>
@@ -41,6 +37,6 @@
 <loc>http://ewanreton.github.io/blog/categories/octopress/</loc>
 </url>
 <url>
-<loc>http://ewanreton.github.io/blog/categories/php-weixin/</loc>
+<loc>http://ewanreton.github.io/blog/categories/weixin/</loc>
 </url>
 </urlset>
