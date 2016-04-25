@@ -1,0 +1,640 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Blog Like A Hacker</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="微信公众号开发 上星期突然突发奇想，想弄个微信公众号来玩。然后再网上找了一些教程过就开始了。 一、前期准备 1.1一个微信公众号 1.2SAE 用来放你的代码 二、开始开发 2.1公众号的分类 公众号分为服务号，订阅号，和企业号三种
+简单的来说：
+订阅号： &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Blog Like A Hacker" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Blog Like A Hacker</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+	<li><a href="/aboutme">About Me</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+	<li><a href="/aboutme">About Me</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.baidu.com" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:ewanreton.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="https://www.baidu.com" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:ewanreton.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2016/04/25/wei-xin-gong-zhong-hao-kai-fa/">
+		
+			微信公众号开发</a>
+	</h2>
+	<div class="entry-content">
+		<h1>微信公众号开发</h1>
+
+<blockquote><p>上星期突然突发奇想，想弄个微信公众号来玩。然后再网上找了一些教程过就开始了。</p></blockquote>
+
+<hr />
+
+<h2>一、前期准备</h2>
+
+<h3>1.1一个<a href="https://mp.weixin.qq.com/">微信公众号</a></h3>
+
+<h3>1.2<a href="http://sae.sina.com.cn">SAE</a> 用来放你的代码</h3>
+
+<hr />
+
+<h2>二、开始开发</h2>
+
+<h3>2.1公众号的分类</h3>
+
+<pre><code>公众号分为服务号，订阅号，和企业号三种
+简单的来说：
+订阅号：你关注了过后会放进订阅号那个分类里的一些列号，每天能推送消息但是不能主动给你发消息（除非你在某个时间段内给它发了消息）
+服务号：关注了过后和你的微信好友是在同级的，它可以给你发消息。
+企业号：微信的新儿子，主要客户是面向企业。
+我们这里主要说订阅号，订阅号又会分为几种，每种订阅号的API接口调用权限也是不同的。
+</code></pre>
+
+<h3>2.2SAE</h3>
+
+<pre><code>在申请好SAE后，进入到控制台，创建新应用输入二级域名等一些列信息过后，运行环境选择你对应的开发语言，我选择的是PHP5.3然后选择空应用，创建。
+回到控制台，你会看到你刚刚新建的应用，点进去过后选择代码管理，你可以看到你的GIT仓库地址，之后你把你的代码push到这个仓库就可以了。
+</code></pre>
+
+<h3>2.3下载官方接口程序文件</h3>
+
+<pre><code>在微信公众平台左侧找到开发-&gt;开发者工具-&gt;进入开发者文档-&gt;开始开发-&gt;接入指南-&gt;第二步最后有一个PHP实例代码下载。将它下载下来。
+</code></pre>
+
+<h3>2.4公众号的配置</h3>
+
+<pre><code>在申请完公众号后，登陆过后在管理页面的左边功能里有群发功能，自动回复等，这些操作是不需要涉及到代码的，我们不再多讲，我们主要讲的是开发者模式下的开发。
+首先，在左侧菜单最后找到开发-&gt;基本配置-&gt;启用服务器配置-&gt;分别填写URL，Token，EncodingAESKey。其中URL就是你在SAE控制台应用名字下面那个URL http://xxx.applinzi.com Token 在你下载的代码中去找（默认为weixin，你也可以自己修改，只要他们保持一致即可。）EncodingAESKey选择随机生成即可。消息加解密方式，默认就行。提交过后我们的公众号就配置好了。
+</code></pre>
+
+<h3>2.5 Hello World !程序测试</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
+</span><span class='line'>/**
+</span><span class='line'>  * wechat php test
+</span><span class='line'>  */
+</span><span class='line'>
+</span><span class='line'>//define your token
+</span><span class='line'>define("TOKEN", "weixin");
+</span><span class='line'>$wechatObj = new wechatCallbackapiTest();
+</span><span class='line'>if($_GET['echostr'])
+</span><span class='line'>{
+</span><span class='line'>    $wechatObj-&gt;valid();
+</span><span class='line'>}else
+</span><span class='line'>{
+</span><span class='line'>    $wechatObj-&gt;responseMsg();
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>class wechatCallbackapiTest
+</span><span class='line'>{
+</span><span class='line'>  public function valid()
+</span><span class='line'>    {
+</span><span class='line'>        $echoStr = $_GET["echostr"];
+</span><span class='line'>
+</span><span class='line'>        //valid signature , option
+</span><span class='line'>        if($this-&gt;checkSignature()){
+</span><span class='line'>          echo $echoStr;
+</span><span class='line'>          exit;
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    public function responseMsg()
+</span><span class='line'>    {
+</span><span class='line'>      //get post data, May be due to the different environments
+</span><span class='line'>      $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+</span><span class='line'>
+</span><span class='line'>          //extract post data
+</span><span class='line'>      if (!empty($postStr)){
+</span><span class='line'>                /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
+</span><span class='line'>                   the best way is to check the validity of xml by yourself */
+</span><span class='line'>                libxml_disable_entity_loader(true);
+</span><span class='line'>                  $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+</span><span class='line'>                $fromUsername = $postObj-&gt;FromUserName;
+</span><span class='line'>                $toUsername = $postObj-&gt;ToUserName;
+</span><span class='line'>                $keyword = trim($postObj-&gt;Content);
+</span><span class='line'>                $time = time();
+</span><span class='line'>                $textTpl = "&lt;xml&gt;
+</span><span class='line'>                          &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;
+</span><span class='line'>                          &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;
+</span><span class='line'>                          &lt;CreateTime&gt;%s&lt;/CreateTime&gt;
+</span><span class='line'>                          &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;
+</span><span class='line'>                          &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;
+</span><span class='line'>                          &lt;FuncFlag&gt;0&lt;/FuncFlag&gt;
+</span><span class='line'>                          &lt;/xml&gt;";             
+</span><span class='line'>  if(!empty( $keyword ))//判断用户发送的信息不为空则回复Hello Wordld！
+</span><span class='line'>                {
+</span><span class='line'>                      $msgType = "text";
+</span><span class='line'>                  $contentStr = "Hello World!";
+</span><span class='line'>                  $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+</span><span class='line'>                  echo $resultStr;
+</span><span class='line'>                }else{
+</span><span class='line'>                  echo "Input something...";
+</span><span class='line'>                }
+</span><span class='line'>
+</span><span class='line'>        }else {
+</span><span class='line'>          echo "";
+</span><span class='line'>          exit;
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>      
+</span><span class='line'>  private function checkSignature()
+</span><span class='line'>  {
+</span><span class='line'>        // you must define TOKEN by yourself
+</span><span class='line'>        if (!defined("TOKEN")) {
+</span><span class='line'>            throw new Exception('TOKEN is not defined!');
+</span><span class='line'>        }
+</span><span class='line'>        
+</span><span class='line'>        $signature = $_GET["signature"];
+</span><span class='line'>        $timestamp = $_GET["timestamp"];
+</span><span class='line'>        $nonce = $_GET["nonce"];
+</span><span class='line'>              
+</span><span class='line'>      $token = TOKEN;
+</span><span class='line'>      $tmpArr = array($token, $timestamp, $nonce);
+</span><span class='line'>        // use SORT_STRING rule
+</span><span class='line'>      sort($tmpArr, SORT_STRING);
+</span><span class='line'>      $tmpStr = implode( $tmpArr );
+</span><span class='line'>      $tmpStr = sha1( $tmpStr );
+</span><span class='line'>      
+</span><span class='line'>      if( $tmpStr == $signature ){
+</span><span class='line'>          return true;
+</span><span class='line'>      }else{
+</span><span class='line'>          return false;
+</span><span class='line'>      }
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>?&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>将代码push到SAE上过后，给公众号发任意消息就能收到HelloWorld！回复。
+
+实现了HelloWorld！实例，还有很多的回复图文，根据关键字实现多客服接入，以及一些其他的API功能调用，这些都可以参考官方的开发者文档。
+</code></pre>
+
+<h2>三、进阶知识</h2>
+
+<h3>3.1公众平台测试账号</h3>
+
+<pre><code>由于我们自己的订阅号很多API不能使用，就需要通过测试账号（可以调用所有的API）来调用其他API
+</code></pre>
+
+<h3>3.2access_token</h3>
+
+<pre><code>公众号的全局唯一票据，公众号调用各接口时都需要使用access_token
+</code></pre>
+
+<h3>3.3网页授权接口</h3>
+
+<pre><code>通过网页授权接口来获取用户的openID(用户关注某一个公众号的唯一标示，且关注不同的公众号openid是不同的)和基本信息。
+</code></pre>
+
+<h3>3.4JSSDK</h3>
+
+<pre><code>可在网页中调用手机拍照，语言，选图等系统功能。
+</code></pre>
+
+<h3>3.5模板消息</h3>
+
+<pre><code>模板消息可以主动给用户发送信息并且不受时间限制
+</code></pre>
+
+<p>除了以上功能外，微信公众平台还有很多的API接口可以调用，用以实现不同的功能，但是基本常用的API在开发文档上都有详细的教程，或者到baidu API 去检索你需要的功能。</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+Apr 25th, 2016</div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>, <a class='category' href='/blog/categories/weixin/'>weixin</a>
+
+
+</div>
+	
+</div>
+</article>
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/">
+		
+			GIT+Octopress搭建个人博客</a>
+	</h2>
+	<div class="entry-content">
+		<h1>GIT+Octopress搭建个人博客</h1>
+
+<blockquote><p>新博客的第一篇博客</p></blockquote>
+
+<p>很久以前就想自己搭个博客，今天终于开工了。在网上找了很多的教程和各种各样的框架，wordpress，jekyll等，最后选择了Octopress+Git搭建。</p>
+
+<h2>一、环境搭建</h2>
+
+<h3><a href="https://git-scm.com/download/">GIT</a>:版本管理工具，将代码托管到GIT。</h3>
+
+<h3><a href="http://rubyinstaller.org/">Ruby+DevKit</a> ：生成静态页面</h3>
+
+<h3><a href="http://jingyan.baidu.com/article/ca41422fe209271eaf99ed7c.html">MarkDownPad</a>：Windows下MarkDown语法编辑器</h3>
+
+<h4>安装与配置</h4>
+
+<pre><code>GIT和Markdown安装直接点击下一步就可以了。
+在安装好git过后，桌面或其他位置点击右键GIT Bash 来配置Github账号（需要先注册GITHUB账号）
+</code></pre>
+
+<hr />
+
+<p>1.1配置GITHUB</p>
+
+<pre><code>```
+git config --global user_name "XXXX"//你的github账号
+git config --global user_email "XXXX"//你的邮箱
+ssh-keygen -t rsa -C "YOUR_EMAIL"
+```
+</code></pre>
+
+<p>下面回车默认为空即可</p>
+
+<p>然后在将你系统盘（大多为C盘）->用户->当前用户（就是你装系统的时候给电脑取的名字）->.ssh文件夹下有id_rsa和id_rsa.pub两个文件打开后者全选复制。
+添加到你的GITHUB的SSH KEYs （GITHUB登录后的setting里面）</p>
+
+<p>回到你的bash</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -T git@github.com</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来测试SSH keYS,提示HI XXX! 则成功</p>
+
+<hr />
+
+<p>1.2配置RUBY</p>
+
+<pre><code>一直下一步在选择安装路径的时候记得勾选第二个选项添加到你的系统路径。  
+安装完成后继续安装DevKit，一直下一步即可，记得选择安装目录。
+</code></pre>
+
+<p>进到DevKit安装目录，打开Bash</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ruby dk.rb init
+</span><span class='line'>ruby dk.rb install</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>1.3安装Octopress</p>
+
+<pre><code>去到你要保存Octopress的位置打开Bash
+git clone git：//github.com/imathis/octopress.git octopress//获取Octopress
+cd octopress
+gem sources -a https://ruby.taobao.org//添加国内RUBY软件源。在WINDOWS系统下有可能会失败 提示SSL错误。
+</code></pre>
+
+<p>建议使用
+$ bundle config mirror.<a href="https://rubygems.org">https://rubygems.org</a> <a href="https://gems.ruby-china.org">https://gems.ruby-china.org</a>
+<a href="https://gems.ruby-china.org/">参考网址</a></p>
+
+<hr />
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem install bundler
+</span><span class='line'>bundler install
+</span><span class='line'>rake install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上步奏完成并无ERROR则环境搭建成功</p>
+
+<p>rake genreate //生成静态页面</p>
+
+<p>rake preview //这行代码会在本地打开4000端口作为测试</p>
+
+<p>你可以打开浏览器 输入 localhost：4000 来访问你的站点。</p>
+
+<h4>生成博客与单页面</h4>
+
+<hr />
+
+<p>1.新建博客</p>
+
+<pre><code>rake new_post["title"] //生成名为title的博客
+</code></pre>
+
+<hr />
+
+<p>2.新建单页面</p>
+
+<pre><code> rake new_page[test]//会生成source/test/index.markdown
+ rake new_page[test/page.html]//会生成source/test/page.html
+</code></pre>
+
+<p>需要使用markdown语法来书写博客</p>
+
+<hr />
+
+<p>3.生成并本地预览</p>
+
+<pre><code>rake generate
+rake preview //http://localhost:4000
+</code></pre>
+
+<h4>部署网站到GITHUB</h4>
+
+<hr />
+
+<p>1.新建仓库</p>
+
+<pre><code>username.github.io
+</code></pre>
+
+<hr />
+
+<p>2.与本地Octopress 目录绑定</p>
+
+<pre><code>rake setup_github_pages//这里会需要你输入你的GITHUB地址，请输入：git@github.com:yourname/yourname.github.com.git (将yourname替换成你的github登录名)
+</code></pre>
+
+<p>注意:这一步不要输入提示中提示的以io结束的地址。
+    rake deploy</p>
+
+<p>成功过后就可以通过访问
+username.github.io 来访问你的个人博客了</p>
+
+<hr />
+
+<p>PS： 第一次用自己搭的博客写博客，markdown语法用起来也不太熟悉。</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+Apr 18th, 2016</div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/git/'>git</a>, <a class='category' href='/blog/categories/octopress/'>octopress</a>
+
+
+</div>
+	
+</div>
+</article>
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2016/04/18/jikexueyuan/">
+		
+			Hllo</a>
+	</h2>
+	<div class="entry-content">
+		<h1>Hello World！</h1>
+
+<h2>So Nice To Meet You！</h2>
+
+<p><strong>The New Blog of Ewan Reton</strong></p>
+
+<ul>
+<li>PHP
+
+<ul>
+<li>sql</li>
+</ul>
+</li>
+<li>HTML</li>
+</ul>
+
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+Apr 18th, 2016</div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/html/'>html</a>, <a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+	
+</div>
+</article>
+
+<nav id="pagenavi">
+    
+    
+    <div class="center"><a href="/blog/archives">Blog Archives</a></div>
+</nav>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>
