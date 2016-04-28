@@ -1,55 +1,87 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: nginx | Blog Like A Hacker]]></title>
-  <link href="http://ewanreton.github.io/blog/categories/nginx/atom.xml" rel="self"/>
-  <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-28T01:50:26+08:00</updated>
-  <id>http://ewanreton.github.io/</id>
-  <author>
-    <name><![CDATA[Ewan Reton]]></name>
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Nginx下PHP环境搭建1 - Blog Like A Hacker</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="Nginx下PHP环境搭建1 一、需要准备的包 libiconv-1.7.tar.gz
+libmcrypt-2.5.7.tar.gz
+mcrypt-2.6.8.tar.gz
+mhash-0.9.3.tar.gz
+php-5.5.34.tar.bz2 二、具体安装 libiconv tar - &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Blog Like A Hacker" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Blog Like A Hacker</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+	<li><a href="/aboutme">About Me</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+	<li><a href="/aboutme">About Me</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.baidu.com" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:ewanreton.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
     
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="https://www.baidu.com" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:ewanreton.github.io">
+	</form>
+</nav>
 
-  
-  <entry>
-    <title type="html"><![CDATA[腾讯云服务器Centos6.5 LNMP环境搭建]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/28/qqyuncontos-huan-jing-da-jian/"/>
-    <updated>2016-04-28T01:01:35+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/28/qqyuncontos-huan-jing-da-jian</id>
-    <content type="html"><![CDATA[<blockquote><p>今天开始搭建前几天买的腾讯云服务器的LNMP环境</p></blockquote>
-
-<h1>一、通过putty.exe连接到云服务器</h1>
-
-<pre><code>下载并打开这个软件后只需要输入云服务器的外网IP其他默认即可
-然后用你的用户名和密码登录云服务器。
-</code></pre>
-
-<h1>二、CentOS环境下通过YUM安装软件</h1>
-
-<pre><code>1. 切换到root权限
-2. yum install -y ...
-3. 系统会自动搜索相关的软件包和依赖关系，并且在界面中提示用户确认搜索到的软件包是否合适，如下图所示：
-</code></pre>
-
-<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Yum_2.png" alt="sd" /></p>
-
-<pre><code>4. 输入“Y”确认后，开始安装软件，安装完成后会提示“Complete”.
-5. 软件安装完成后，可通过命令 rpm -ql 查看软件包具体的安装目录。以查看nginx的安装目录为例：
-#rpm -ql nginx
-6.可通过命令 rpm -q 查看软件包的版本信息。以查看nginx的版本为例：
-#rpm -q nginx
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Nginx下PHP环境搭建1]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing/"/>
-    <updated>2016-04-26T22:53:05+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing</id>
-    <content type="html"><![CDATA[<blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Nginx下PHP环境搭建1</h2>
+	<div class="entry-content"><blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
 
 <h1>一、需要准备的包</h1>
 
@@ -279,104 +311,90 @@ mysql&gt;
 </code></pre>
 
 <p>————修改新密码成功</p>
-]]></content>
-  </entry>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+Apr 26th, 2016</div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/nginx/'>nginx</a>, <a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		
+		
+	</div>
+	
+	
+   <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
   
-  <entry>
-    <title type="html"><![CDATA[初识Nginx]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/25/nginx/"/>
-    <updated>2016-04-25T21:11:48+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/25/nginx</id>
-    <content type="html"><![CDATA[<blockquote><p>今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础</p></blockquote>
-
-<h1>一、常用的服务器软件</h1>
-
-<ul>
-<li>1 IIS：只能在Windows下运行性能不如Linux一类服务器</li>
-<li>2 Tomcat： 面向Java的重量级服务器</li>
-<li>3 Nginx：轻量级服务器，能支持较高的并发连接</li>
-<li>4 Apache：稳定，开源，跨平台，但是高并发支持较弱</li>
-</ul>
+</div>
 
 
-<h1>二、Nginx的优缺点</h1>
 
-<ul>
-<li>优点：可以实现高并发，部署简单，内存消耗较少，成本低等</li>
-<li>缺点：rewrite功能不够强大，模块没有Apache多。</li>
-</ul>
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="/blog/2016/04/26/nginx-php-huan-jing" data-title="Nginx下PHP环境搭建1" data-url="http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"ewanreton"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end --></div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2016
 
+    Ewan Reton
 
-<h1>三、Nginx环境的搭建</h1>
-
-<ol>
-<li><p>Linux：</p>
-
-<ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载安装包</li>
-<li>tar -zxvf nginx-1.9.15.tar.gz 解压</li>
-<li>进入解压后的文件夹 ./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>cd /usr/local 在该文件下看到Nginx则安装成功</li>
-</ul>
-</li>
-<li><p>Windows：</p>
-
-<ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载Windows安装包</li>
-<li>解压即可</li>
-</ul>
-</li>
-<li><p>常见错误：</p>
-
-<ol>
-<li>C compiler not found
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install gcc gcc-c++ autoconf automake</li>
-</ul>
-</li>
-<li><p>requires the PCRE library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install pcre pcre-devel</li>
-</ul>
-</li>
-<li><p>requires the zlib library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install zlib zlib-devel</li>
-</ul>
-</li>
-</ol>
-</li>
-</ol>
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
 
 
-<h1>四、启动服务</h1>
-
-<ul>
-<li><p>Linux：</p>
-
-<ul>
-<li>/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</li>
-</ul>
-</li>
-<li><p>Windows:</p>
-
-<ul>
-<li>运行nginx.exe</li>
-</ul>
 
 
-<p>  打开浏览器访问Localhost，能访问则启动成功。</p></li>
-</ul>
 
-]]></content>
-  </entry>
-  
-</feed>
+
+</body>
+</html>
