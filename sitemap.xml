@@ -13,6 +13,10 @@
 <lastmod>2016-04-29T09:36:19+08:00</lastmod>
 </url>
 <url>
+<loc>http://ewanreton.github.io/blog/2016/04/29/test/</loc>
+<lastmod>2016-04-29T09:36:19+08:00</lastmod>
+</url>
+<url>
 <loc>http://ewanreton.github.io/blog/2016/04/28/linux-mysql-code/</loc>
 <lastmod>2016-04-28T01:24:16+08:00</lastmod>
 </url>
@@ -49,6 +53,10 @@
 <lastmod>2016-04-18T15:18:17+08:00</lastmod>
 </url>
 <url>
+<loc>http://ewanreton.github.io/blog/2014/11/01/how-to-fix-octopress-build-warning-layout-nil-requested/</loc>
+<lastmod>2014-11-01T18:29:26+08:00</lastmod>
+</url>
+<url>
 <loc>http://ewanreton.github.io/404.html</loc>
 </url>
 <url>
@@ -61,6 +69,9 @@
 <loc>http://ewanreton.github.io/blog/categories/</loc>
 </url>
 <url>
+<loc>http://ewanreton.github.io/blog/categories/octopress/</loc>
+</url>
+<url>
 <loc>http://ewanreton.github.io/blog/categories/php/</loc>
 </url>
 <url>
@@ -68,9 +79,6 @@
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/categories/git/</loc>
-</url>
-<url>
-<loc>http://ewanreton.github.io/blog/categories/octopress/</loc>
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/categories/weixin/</loc>
