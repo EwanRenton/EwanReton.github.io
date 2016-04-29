@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-29T23:35:40+08:00</updated>
+  <updated>2016-04-29T23:39:41+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -1329,11 +1329,12 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
     <link href="http://ewanreton.github.io/blog/2016/04/29/test/"/>
     <updated>2016-04-29T09:36:19+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/29/test</id>
-    <content type="html"><![CDATA[<p><pree class="prettyprint">
-&lt;?php
+    <content type="html"><![CDATA[<pre class="prettyprint php">
+<?php
     echo"11";
 ?>
-</pre></p>
+</pre>
+
 ]]></content>
   </entry>
   
