@@ -4,7 +4,7 @@
   <title><![CDATA[Blog Like A Hacker]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-29T09:55:34+08:00</updated>
+  <updated>2016-04-29T09:58:24+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -96,197 +96,361 @@
 </table>
 
 
-<p>···
-create table deepcate
-(
-id int(10) unsigned not null  auto_increment primary key,
-pid int(11) unsigned    not null,
-catename    varchar(30) not null,
-cateorder   int(11) unsigned    default 0,
-createtime  int(10) not null
-);</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>create table deepcate
+</span><span class='line'>(
+</span><span class='line'>id int(10) unsigned   not null  auto_increment primary key,
+</span><span class='line'>pid   int(11) unsigned    not null,
+</span><span class='line'>catename  varchar(30) not null,
+</span><span class='line'>cateorder int(11) unsigned    default 0,
+</span><span class='line'>createtime    int(10) not null
+</span><span class='line'>);
+</span><span class='line'>
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(0,'新闻',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(0,'图片',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(1,'国内新闻',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(1,'国际新闻',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(3,'北京新闻',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(4,'美国新闻',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(2,'美女图片',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(2,'风景图片',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(7,'日韩明星',0,0);
+</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(9,'日本AV',0,0);
+</span><span class='line'>
+</span><span class='line'>select * from deepcate;</span></code></pre></td></tr></table></div></figure>
 
-<p>insert into deepcate(pid,catename,cateorder,createtime)values(0,&lsquo;新闻&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(0,&lsquo;图片&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(1,&lsquo;国内新闻&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(1,&lsquo;国际新闻&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(3,&lsquo;北京新闻&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(4,&lsquo;美国新闻&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(2,&lsquo;美女图片&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(2,&lsquo;风景图片&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(7,&lsquo;日韩明星&rsquo;,0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(9,&lsquo;日本AV&rsquo;,0,0);</p>
-
-<p>select * from deepcate;
-···</p>
 
 <blockquote><p>php 代码实现</p></blockquote>
 
-<p>···
-&lt;?php
-header(&ldquo;Content-Type:text/html;Charset=UTF-8&rdquo;);
-// php无限分类下拉列表的代码实现
-include_once(&lsquo;db.inc.php&rsquo;) ;</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
+</span><span class='line'>header("Content-Type:text/html;Charset=UTF-8");
+</span><span class='line'>// php无限分类下拉列表的代码实现
+</span><span class='line'>include_once('db.inc.php') ;
+</span><span class='line'>
+</span><span class='line'>function getList($pid=0,&$result=array(),$spac=0)
+</span><span class='line'>{
+</span><span class='line'>    $spac=$spac+2;
+</span><span class='line'>    $sql=" SELECT * FROM deepcate WHERE pid=$pid ";
+</span><span class='line'>    $res=mysql_query($sql);
+</span><span class='line'>   
+</span><span class='line'>    while($row=mysql_fetch_assoc($res)){
+</span><span class='line'>        $row['catename']=str_repeat('&nbsp;&nbsp;',$spac).'|--'.$row['catename'];
+</span><span class='line'>        $result[]=$row;
+</span><span class='line'>        getList($row['id'],$result,$spac);
+</span><span class='line'>    }
+</span><span class='line'>    return $result;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>function displayCate($pid=0,$selected=0){
+</span><span class='line'>     $rs=getList($pid);
+</span><span class='line'>     $str="";
+</span><span class='line'>     $str.="&lt;select name='cate'&gt;";
+</span><span class='line'>    foreach($rs as $v){
+</span><span class='line'>        if($v['id']==$selected){
+</span><span class='line'>            $selected="selected";
+</span><span class='line'>        }
+</span><span class='line'>       $str.="&lt;option {$selected}&gt;";
+</span><span class='line'>       $str.= $v['catename'];
+</span><span class='line'>       $str.= "&lt;/option&gt;";
+</span><span class='line'>    }
+</span><span class='line'>    return $str.= "&lt;/select&gt;";
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>echo displayCate();
+</span><span class='line'>
+</span><span class='line'>echo "&lt;hr/&gt;&lt;hr/&gt;";
+</span><span class='line'>function getCatePath($cid,&$result){
+</span><span class='line'>    $sql="SELECT * FROM deepcate WHERE id=$cid ";
+</span><span class='line'>    $rs=mysql_query($sql);
+</span><span class='line'>    $row=mysql_fetch_assoc($rs);
+</span><span class='line'>    if($row){
+</span><span class='line'>        $result[]=$row;
+</span><span class='line'>        getCatePath($row['pid'],$result);
+</span><span class='line'>    }
+</span><span class='line'>    krsort($result);
+</span><span class='line'>    return $result;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>function displayCatePath($cid,$url="deepcate.php?cid="){
+</span><span class='line'>    $res=getCatePath($cid,$result);
+</span><span class='line'>    $str="";
+</span><span class='line'>    foreach($res as $v){
+</span><span class='line'>        $str.= "&lt;a href='{$url}{$v['id']}'&gt;{$v['catename']}&lt;/a&gt;&gt;&gt;";
+</span><span class='line'>    }return $str;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>echo displayCatePath(10);</span></code></pre></td></tr></table></div></figure>
 
-<p>function getList($pid=0,&amp;$result=array(),$spac=0)
-{
-    $spac=$spac+2;
-    $sql=&ldquo; SELECT * FROM deepcate WHERE pid=$pid &rdquo;;
-    $res=mysql_query($sql);</p>
-
-<pre><code>while($row=mysql_fetch_assoc($res)){
-    $row['catename']=str_repeat('&amp;nbsp;&amp;nbsp;',$spac).'|--'.$row['catename'];
-    $result[]=$row;
-    getList($row['id'],$result,$spac);
-}
-return $result;
-</code></pre>
-
-<p>}</p>
-
-<p>function displayCate($pid=0,$selected=0){
-     $rs=getList($pid);
-     $str=&ldquo;&rdquo;;
-     $str.=&ldquo;<select name='cate'>&rdquo;;
-    foreach($rs as $v){
-        if($v[&lsquo;id&rsquo;]==$selected){
-            $selected=&ldquo;selected&rdquo;;
-        }
-       $str.=&ldquo;<option {$selected}>&rdquo;;
-       $str.= $v[&lsquo;catename&rsquo;];
-       $str.= &ldquo;</option>&rdquo;;
-    }
-    return $str.= &ldquo;</select>&rdquo;;
-}</p>
-
-<p>echo displayCate();</p>
-
-<p>echo &ldquo;<hr/><hr/>&rdquo;;
-function getCatePath($cid,&amp;$result){
-    $sql=&ldquo;SELECT * FROM deepcate WHERE id=$cid &rdquo;;
-    $rs=mysql_query($sql);
-    $row=mysql_fetch_assoc($rs);
-    if($row){
-        $result[]=$row;
-        getCatePath($row[&lsquo;pid&rsquo;],$result);
-    }
-    krsort($result);
-    return $result;
-}</p>
-
-<p>function displayCatePath($cid,$url=&ldquo;deepcate.php?cid=&rdquo;){
-    $res=getCatePath($cid,$result);
-    $str=&ldquo;&rdquo;;
-    foreach($res as $v){
-        $str.= &ldquo;<a href='{$url}{$v['id']}'>{$v[&lsquo;catename&rsquo;]}</a>>>&rdquo;;
-    }return $str;
-}</p>
-
-<p>echo displayCatePath(10);
-···</p>
 
 <h1>二、全路径实现</h1>
 
-<p>···
-use imooc;
-create table    likecate
-(
-id  int(11) not null  auto_increment primary key,
-path    varchar(200)    not null,
-catename    varchar(30) not null,
-cateorder   int(11) not null    default 0,
-createtime  int(11) not null
-);</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>use imooc;
+</span><span class='line'>create table  likecate
+</span><span class='line'>(
+</span><span class='line'>id    int(11) not null  auto_increment primary key,
+</span><span class='line'>path  varchar(200)    not null,
+</span><span class='line'>catename  varchar(30) not null,
+</span><span class='line'>cateorder int(11) not null    default 0,
+</span><span class='line'>createtime    int(11) not null
+</span><span class='line'>);
+</span><span class='line'>
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('','手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1','功能手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2','老人手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2','儿童手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1','智能手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,5','andriod手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,5','ios手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,5','winphoto手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2,4','色盲手机',0,0);
+</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2,3','大字手机',0,0);
+</span><span class='line'>
+</span><span class='line'>select * from likecate;
+</span><span class='line'>
+</span><span class='line'>select id,catename,path,concat(path,',',id) as fullpath from likecate where 1 order by fullpath asc;
+</span><span class='line'>
+</span><span class='line'>#结果显示如图
+</span><span class='line'>+----+--------------+-------+----------+
+</span><span class='line'>| id | catename     | path  | fullpath |
+</span><span class='line'>+----+--------------+-------+----------+
+</span><span class='line'>|  1 | 手机         |       | ,1       |
+</span><span class='line'>|  2 | 功能手机     | 1     | 1,2      |
+</span><span class='line'>|  3 | 老人手机     | 1,2   | 1,2,3    |
+</span><span class='line'>| 10 | 大字手机     | 1,2,3 | 1,2,3,10 |
+</span><span class='line'>|  4 | 儿童手机     | 1,2   | 1,2,4    |
+</span><span class='line'>|  9 | 色盲手机     | 1,2,4 | 1,2,4,9  |
+</span><span class='line'>|  5 | 智能手机     | 1     | 1,5      |
+</span><span class='line'>|  6 | andriod手机  | 1,5   | 1,5,6    |
+</span><span class='line'>|  7 | ios手机      | 1,5   | 1,5,7    |
+</span><span class='line'>|  8 | winphoto手机 | 1,5   | 1,5,8    |
+</span><span class='line'>+----+--------------+-------+----------+</span></code></pre></td></tr></table></div></figure>
 
-<p>insert into likecate(path,catename,cateorder,createtime)values(&lsquo;&rsquo;,&lsquo;手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1&rsquo;,&lsquo;功能手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2&rsquo;,&lsquo;老人手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2&rsquo;,&lsquo;儿童手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1&rsquo;,&lsquo;智能手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,5&rsquo;,&lsquo;andriod手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,5&rsquo;,&lsquo;ios手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,5&rsquo;,&lsquo;winphoto手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2,4&rsquo;,&lsquo;色盲手机&rsquo;,0,0);
-insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2,3&rsquo;,&lsquo;大字手机&rsquo;,0,0);</p>
-
-<p>select * from likecate;</p>
-
-<p>select id,catename,path,concat(path,&lsquo;,&rsquo;,id) as fullpath from likecate where 1 order by fullpath asc;</p>
-
-<h1>结果显示如图</h1>
-
-<p>+&mdash;-+&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
-| id | catename     | path  | fullpath |
-+&mdash;-+&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
-|  1 | 手机         |       | ,1       |
-|  2 | 功能手机     | 1     | 1,2      |
-|  3 | 老人手机     | 1,2   | 1,2,3    |
-| 10 | 大字手机     | 1,2,3 | 1,2,3,10 |
-|  4 | 儿童手机     | 1,2   | 1,2,4    |
-|  9 | 色盲手机     | 1,2,4 | 1,2,4,9  |
-|  5 | 智能手机     | 1     | 1,5      |
-|  6 | andriod手机  | 1,5   | 1,5,6    |
-|  7 | ios手机      | 1,5   | 1,5,7    |
-|  8 | winphoto手机 | 1,5   | 1,5,8    |
-+&mdash;-+&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
-···</p>
 
 <blockquote><p>php代码实现</p></blockquote>
 
-<p>···
-&lt;?php
-header(&ldquo;Content-Type:text/html;Charset=UTF-8&rdquo;);
-//递归无限分类原理
-include_once (&lsquo;db.inc.php&rsquo;);</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
+</span><span class='line'>header("Content-Type:text/html;Charset=UTF-8");
+</span><span class='line'>//递归无限分类原理
+</span><span class='line'>include_once ('db.inc.php');
+</span><span class='line'> 
+</span><span class='line'>function likecate(){
+</span><span class='line'>    $sql="select id,catename,path,concat(path,',',id) as fullpath from likecate where 1 order by fullpath asc";
+</span><span class='line'>    $res=mysql_query($sql);
+</span><span class='line'>    $result=array();
+</span><span class='line'>    while($row=mysql_fetch_assoc($res)){
+</span><span class='line'>        $deep=count(explode(',',trim($row['fullpath'],',')));
+</span><span class='line'>         
+</span><span class='line'>        $row['catename']=str_repeat('&nbsp;&nbsp;',$deep*4).'|--'.$row['catename'];
+</span><span class='line'>        $result[]=$row;
+</span><span class='line'>    }
+</span><span class='line'>    return $result;
+</span><span class='line'>}
+</span><span class='line'> 
+</span><span class='line'> 
+</span><span class='line'>$res=likecate();
+</span><span class='line'>echo "&lt;select name='cate'&gt;";
+</span><span class='line'>foreach($res as $v){
+</span><span class='line'>    echo "&lt;option&gt;{$v['catename']}&lt;/option&gt;";
+</span><span class='line'>}
+</span><span class='line'>echo "&lt;/select&gt;";
+</span><span class='line'> 
+</span><span class='line'>echo "&lt;hr/&gt;&lt;hr/&gt;";
+</span><span class='line'>function getPathCate($cateid){
+</span><span class='line'>    $sql="select *,concat(path,',',id)fullpath from likecate where id=$cateid";
+</span><span class='line'>    $res=mysql_query($sql);
+</span><span class='line'>    $row=mysql_fetch_assoc($res);
+</span><span class='line'>    $ids=$row['fullpath'];
+</span><span class='line'>    $sql="select * from likecate where id in($ids) order by id asc";
+</span><span class='line'>    $res=mysql_query($sql);
+</span><span class='line'>    $result=array();
+</span><span class='line'>    while($row=mysql_fetch_assoc($res)){
+</span><span class='line'>        $result[]=$row;
+</span><span class='line'>    }
+</span><span class='line'>    return $result;
+</span><span class='line'>}
+</span><span class='line'> 
+</span><span class='line'>function displayCatePath($cateid,$link='likecate.php?cid='){
+</span><span class='line'>    $res=getPathCate($cateid);
+</span><span class='line'>    $str="";
+</span><span class='line'>    foreach($res as $v){
+</span><span class='line'>        $str.="&lt;a href='{$link}'&gt;{$v['catename']}&lt;/a&gt;&gt;";
+</span><span class='line'>    }
+</span><span class='line'>    return $str;
+</span><span class='line'>}  
+</span><span class='line'> 
+</span><span class='line'>echo displayCatePath(4,'likecate.php?p=1&cid=');</span></code></pre></td></tr></table></div></figure>
 
-<p>function likecate(){
-    $sql=&ldquo;select id,catename,path,concat(path,&lsquo;,&rsquo;,id) as fullpath from likecate where 1 order by fullpath asc&rdquo;;
-    $res=mysql_query($sql);
-    $result=array();
-    while($row=mysql_fetch_assoc($res)){
-        $deep=count(explode(&lsquo;,&rsquo;,trim($row[&lsquo;fullpath&rsquo;],&lsquo;,&rsquo;)));</p>
-
-<pre><code>    $row['catename']=str_repeat('&amp;nbsp;&amp;nbsp;',$deep*4).'|--'.$row['catename'];
-    $result[]=$row;
-}
-return $result;
-</code></pre>
-
-<p>}</p>
-
-<p>$res=likecate();
-echo &ldquo;<select name='cate'>&rdquo;;
-foreach($res as $v){
-    echo &ldquo;<option>{$v[&lsquo;catename&rsquo;]}</option>&rdquo;;
-}
-echo &ldquo;</select>&rdquo;;</p>
-
-<p>echo &ldquo;<hr/><hr/>&rdquo;;
-function getPathCate($cateid){
-    $sql=&ldquo;select *,concat(path,&lsquo;,&rsquo;,id)fullpath from likecate where id=$cateid&rdquo;;
-    $res=mysql_query($sql);
-    $row=mysql_fetch_assoc($res);
-    $ids=$row[&lsquo;fullpath&rsquo;];
-    $sql=&ldquo;select * from likecate where id in($ids) order by id asc&rdquo;;
-    $res=mysql_query($sql);
-    $result=array();
-    while($row=mysql_fetch_assoc($res)){
-        $result[]=$row;
-    }
-    return $result;
-}</p>
-
-<p>function displayCatePath($cateid,$link=&lsquo;likecate.php?cid=&rsquo;){
-    $res=getPathCate($cateid);
-    $str=&ldquo;&rdquo;;
-    foreach($res as $v){
-        $str.=&ldquo;<a href='{$link}'>{$v[&lsquo;catename&rsquo;]}</a>>&rdquo;;
-    }
-    return $str;
-}</p>
-
-<p>echo displayCatePath(4,&lsquo;likecate.php?p=1&amp;cid=&rsquo;);
-···</p>
 ]]></content>
   </entry>
   
