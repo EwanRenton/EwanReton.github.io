@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-29T23:19:16+08:00</updated>
+  <updated>2016-04-29T23:21:31+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -435,80 +435,142 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
 <blockquote><p>快速统计某类型log的count值</p></blockquote>
 
 <p>SeasLog在扩展中使用管道调用shell命令 grep -wc快速地取得count值，并返回值(array || int)给PHP。
-```
-$countResult_1 = SeasLog::analyzerCount();
-$countResult_2 = SeasLog::analyzerCount(SEASLOG_WARNING);
-$countResult_3 = SeasLog::analyzerCount(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));</p>
-
-<p>var_dump($countResult_1,$countResult_2,$countResult_3);
-/*
-array(8) {
-  [&ldquo;debug&rdquo;]=>
-  int(3)
-  [&ldquo;info&rdquo;]=>
-  int(3)
-  [&ldquo;notice&rdquo;]=>
-  int(3)
-  [&ldquo;warning&rdquo;]=>
-  int(3)
-  [&ldquo;error&rdquo;]=>
-  int(6)
-  [&ldquo;critical&rdquo;]=>
-  int(3)
-  [&ldquo;alert&rdquo;]=>
-  int(3)
-  [&ldquo;emergency&rdquo;]=>
-  int(3)
-}</p>
-
-<p>int(7)</p>
-
-<p>int(1)</p>
-
-<p>*/
-```</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$countResult_1 = SeasLog::analyzerCount();
+</span><span class='line'>$countResult_2 = SeasLog::analyzerCount(SEASLOG_WARNING);
+</span><span class='line'>$countResult_3 = SeasLog::analyzerCount(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;var_dump($countResult_1,$countResult_2,$countResult_3);
+</span><span class='line'>/*
+</span><span class='line'>array(8) {
+</span><span class='line'>  [&ldquo;debug&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;info&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;notice&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;warning&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;error&rdquo;]=&gt;
+</span><span class='line'>  int(6)
+</span><span class='line'>  [&ldquo;critical&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;alert&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;emergency&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int(7)&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int(1)&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;*/</span></code></pre></td></tr></table></div></figure></p>
 
 <blockquote><p>获取某类型log列表</p></blockquote>
 
 <p>SeasLog在扩展中使用管道调用shell命令 grep -w快速地取得列表，并返回array给PHP。
-```
-$detailErrorArray_inAll   = SeasLog::analyzerDetail(SEASLOG_ERROR);
-$detailErrorArray_today   = SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));</p>
-
-<p>var_dump($detailErrorArray_inAll,$detailErrorArray_today);</p>
-
-<p>/<em>
-SeasLog::analyzerDetail(SEASLOG_ERROR) == SeasLog::analyzerDetail(SEASLOG_ERROR,&lsquo;</em>&rsquo;);
-取当前模块下所有level为 SEASLOG_ERROR 的信息列表:
-array(6) {
- [0] =>
-  string(66) &ldquo;error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 &rdquo;
-  [1] =>
-  string(66) &ldquo;error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 &rdquo;
-  [2] =>
-  string(66) &ldquo;error | 8620 | 1393172044.862 | 2014:02:24 00:14:04 | test error 3 &rdquo;
-  [3] =>
-  string(66) &ldquo;error | 8646 | 1393172045.989 | 2014:02:24 00:14:05 | test error 3 &rdquo;
-  [4] =>
-  string(66) &ldquo;error | 8672 | 1393172047.882 | 2014:02:24 00:14:07 | test error 3 &rdquo;
-  [5] =>
-  string(66) &ldquo;error | 8698 | 1393172048.736 | 2014:02:24 00:14:08 | test error 3 &rdquo;
-}</p>
-
-<p>SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));
-只取得当前模块下，当前一天内,level为SEASLOG_ERROR 的信息列表:
-array(2) {
-  [0] =>
-  string(66) &ldquo;error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 &rdquo;
-  [1] =>
-  string(66) &ldquo;error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 &rdquo;
-}</p>
-
-<p>同理，取当月
-$detailErrorArray_mouth = SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ym&rsquo;,time()));</p>
-
-<p>*/
-```</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$detailErrorArray_inAll   = SeasLog::analyzerDetail(SEASLOG_ERROR);
+</span><span class='line'>$detailErrorArray_today   = SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;var_dump($detailErrorArray_inAll,$detailErrorArray_today);&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;/&lt;em&gt;
+</span><span class='line'>SeasLog::analyzerDetail(SEASLOG_ERROR) == SeasLog::analyzerDetail(SEASLOG_ERROR,&lsquo;&lt;/em&gt;&rsquo;);
+</span><span class='line'>取当前模块下所有level为 SEASLOG_ERROR 的信息列表:
+</span><span class='line'>array(6) {
+</span><span class='line'> [0] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 &rdquo;
+</span><span class='line'>  [1] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 &rdquo;
+</span><span class='line'>  [2] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8620 | 1393172044.862 | 2014:02:24 00:14:04 | test error 3 &rdquo;
+</span><span class='line'>  [3] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8646 | 1393172045.989 | 2014:02:24 00:14:05 | test error 3 &rdquo;
+</span><span class='line'>  [4] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8672 | 1393172047.882 | 2014:02:24 00:14:07 | test error 3 &rdquo;
+</span><span class='line'>  [5] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8698 | 1393172048.736 | 2014:02:24 00:14:08 | test error 3 &rdquo;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));
+</span><span class='line'>只取得当前模块下，当前一天内,level为SEASLOG_ERROR 的信息列表:
+</span><span class='line'>array(2) {
+</span><span class='line'>  [0] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 &rdquo;
+</span><span class='line'>  [1] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 &rdquo;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;同理，取当月
+</span><span class='line'>$detailErrorArray_mouth = SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ym&rsquo;,time()));&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;*/</span></code></pre></td></tr></table></div></figure></p>
 ]]></content>
   </entry>
   
