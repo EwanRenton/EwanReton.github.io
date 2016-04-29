@@ -9,9 +9,9 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php, weixin 微信公众号开发 微信公众号开发 上星期突然突发奇想，想弄个微信公众号来玩。然后再网上找了一些教程过就开始了。 一、前期准备 1.1一个微信公众号 1.2SAE 用来放你的代码 二、开始开发 2.1公众号的分类 公众号分为服务号，订阅号，和企业号三种
-简单的来说：
-订阅号： &hellip;">
+	<meta name="description" content="nginx 初识Nginx 今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础 一、常用的服务器软件 1 IIS：只能在Windows下运行性能不如Linux一类服务器
+2 Tomcat： 面向Java的重量级服务器
+3 Nginx：轻量级服务器， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -101,6 +101,129 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-25T21:11:48+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/nginx/'>nginx</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/04/25/nginx/" itemprop="url">初识Nginx</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础</p></blockquote>
+
+<h1>一、常用的服务器软件</h1>
+
+<ul>
+<li>1 IIS：只能在Windows下运行性能不如Linux一类服务器</li>
+<li>2 Tomcat： 面向Java的重量级服务器</li>
+<li>3 Nginx：轻量级服务器，能支持较高的并发连接</li>
+<li>4 Apache：稳定，开源，跨平台，但是高并发支持较弱</li>
+</ul>
+
+
+<h1>二、Nginx的优缺点</h1>
+
+<ul>
+<li>优点：可以实现高并发，部署简单，内存消耗较少，成本低等</li>
+<li>缺点：rewrite功能不够强大，模块没有Apache多。</li>
+</ul>
+
+
+<h1>三、Nginx环境的搭建</h1>
+
+<ol>
+<li><p>Linux：</p>
+
+<ul>
+<li><a href="http://nginx.org/">Nginx官网</a>下载安装包</li>
+<li>tar -zxvf nginx-1.9.15.tar.gz 解压</li>
+<li>进入解压后的文件夹 ./configure</li>
+<li>make</li>
+<li>make install</li>
+<li>cd /usr/local 在该文件下看到Nginx则安装成功</li>
+</ul>
+</li>
+<li><p>Windows：</p>
+
+<ul>
+<li><a href="http://nginx.org/">Nginx官网</a>下载Windows安装包</li>
+<li>解压即可</li>
+</ul>
+</li>
+<li><p>常见错误：</p>
+
+<ol>
+<li>C compiler not found
+
+<ul>
+<li>进入root权限</li>
+<li>yum -y install gcc gcc-c++ autoconf automake</li>
+</ul>
+</li>
+<li><p>requires the PCRE library</p>
+
+<ul>
+<li>进入root权限</li>
+<li>yum -y install pcre pcre-devel</li>
+</ul>
+</li>
+<li><p>requires the zlib library</p>
+
+<ul>
+<li>进入root权限</li>
+<li>yum -y install zlib zlib-devel</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+
+
+<h1>四、启动服务</h1>
+
+<ul>
+<li><p>Linux：</p>
+
+<ul>
+<li>/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</li>
+</ul>
+</li>
+<li><p>Windows:</p>
+
+<ul>
+<li>运行nginx.exe</li>
+</ul>
+
+
+<p>  打开浏览器访问Localhost，能访问则启动成功。</p></li>
+</ul>
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">

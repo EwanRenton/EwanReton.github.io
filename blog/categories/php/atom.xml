@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-30T00:50:39+08:00</updated>
+  <updated>2016-04-30T01:46:43+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -845,11 +845,13 @@ echo displayCatePath(4,'likecate.php?p=1&amp;cid=');
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[代码怎么高亮]]></title>
+    <title type="html"><![CDATA[我也是一个有颜色的代码了]]></title>
     <link href="http://ewanreton.github.io/blog/2016/04/29/test/"/>
     <updated>2016-04-29T09:36:19+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/29/test</id>
-    <content type="html"><![CDATA[<pre><code class="php">    echo "11";
+    <content type="html"><![CDATA[<pre><code class="php this is a php">&lt;?php
+    echo "11";
+?&gt;
 </code></pre>
 
 <pre class="prettyprint text">

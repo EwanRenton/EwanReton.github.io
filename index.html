@@ -9,7 +9,14 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="octopress 解决 Octopress 警告 Layout Nil Requested 给Octopress换了主题过后重新generate会出警告Layout Nil Requested。 主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null &hellip;">
+	<meta name="description" content="Octopress-code-highlight 首先我要用祭出一段代码。。 1
+2
+3
+4
+5
+6
+&lt;?php for($i=0;i&lt;100;i++){ echo &quot;Octopress 的代码高亮真的真的有坑！！！&quot;
+} ?&gt; 之前在写博客的时候就有发现， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -99,6 +106,253 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-30T00:57:01+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/04/30/octopress-code-highlight/" itemprop="url">Octopress-code-highlight</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>首先我要用祭出一段代码。。</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;Octopress 的代码高亮真的真的有坑！！！&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>之前在写博客的时候就有发现，我的用markdown语法写出来的代码好像是和别人的不一样。后来发现是我的代码没有用高亮。人家也是一个有追求的PHPer（尴尬脸）。我就查markdown语法啊。
+语法是这样给我说的</p>
+
+<p><strong>markdown 语法实现代码高亮有两种方法</strong></p>
+
+<pre><code>1  ```[language] [title] [url] [link text]
+     code snippet
+   ```
+2 {\% codeblock [title] [lang:language] [url] [link text] \%}
+    code snippet
+{\% endcodeblock \%}
+</code></pre>
+
+<p>唉，原来这么简单。改代码走起->rake generate ->reke deploy</p>
+
+<p>去看看我可爱的带颜色的代码呢。</p>
+
+<p>！！！！！
+为什么我的博客一片空白了！！！</p>
+
+<p>然后我去度娘，去google。。</p>
+
+<p>终于找到跟我一样懵逼的小伙伴<a href="http://www.tuicool.com/articles/myqIba">戳过去同情他</a></p>
+
+<hr />
+
+<blockquote><p>按照这个小伙伴的思路我开始装Python</p></blockquote>
+
+<p>我装的是<a href="https://www.python.org/downloads/release/python-2711/">Python2.7.11</a> 选择 Windows x86-64 MSI installer下载。然后一直下一步安装。</p>
+
+<blockquote><p>安装完成后添加环境变量
+<a href="http://www.blogjava.net/lishunli/archive/2012/03/18/372115.html">这个博客可以参考</a>
+鼠标右击我的电脑，选择属性，再选择高级系统设置，右下角有一个环境变量，点进去</p></blockquote>
+
+<p><img src="https://pic1.zhimg.com/6afe9ded178646e6c71e0c3fd908bdb8_b.jpg" alt="1" /></p>
+
+<p>找到path项，选择编辑，把你的Python安装路径(如：C:\Python27)输入进去，注意要用一个 ; 符号与前面的路径分开，再点确定就可以了。完事后可以运行cmd，输入python，如下显示就是成功了
+<img src="https://pic4.zhimg.com/7c56fca865253473857066067a0c053b_b.jpg" alt="2" /></p>
+
+<blockquote><p>这个时候突然发现了另一篇博文</p></blockquote>
+
+<p>这个博文看起来要简单点<a href="http://www.cnblogs.com/oec2003/archive/2013/05/27/3100896.html">传送门</a></p>
+
+<blockquote><p>按照下一篇博文的方法</p></blockquote>
+
+<pre class="prettyprint text">
+安装Python
+安装Python,也是一路next就可以，博客的代码高亮用到了Python的Pygments模块，在Python中安装第三方库需要使用easy_install，在下面地址下载跟Python相对应的安装程序安装后就可以使用easy_install了。
+
+https://pypi.python.org/pypi/setuptools
+easy_install会安装在Python安装目录的Scripts目录中，例如我的Python目录是C:\Python27，所以需要将C:\Python27\Scripts目录加入到环境变量中才能在命令提示符中使用easy_install命令。
+
+在命令提示符中输入如下命令就可以安装Pygments了。
+
+easy_install pygments
+</pre>
+
+
+<p><a href="https://pypi.python.org/pypi/setuptools">https://pypi.python.org/pypi/setuptools</a>去找到Windows (simplified)又懵逼了。它给了一段代码需要自己编译运行<a href="https://bootstrap.pypa.io/ez_setup.py">ez_setup.py</a>新建文本文档将网页上的代码全部粘贴下来，保存重命名为ez_setup.py</p>
+
+<pre class="prettyprint text">
+ Win+R
+ cmd
+ 进到你刚刚保存的那文件的路径
+ python ez_setup.py //安装easy_install
+ 等到安装完成过后
+ 将C:\Python27\Scripts目录加入到环境变量中前面的C:\Python27\和你之前添加的Python的环境变量一样
+ easy_install pygments
+ 等到这一步完成后，基本就算大工告成了
+</pre>
+
+
+<p> 如果你还是出现相同问题的话，那请找网管重启机器。</p>
+
+<hr />
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">echo</span><span class="s2">&quot;不出意外的话你的问题也应该解决了。</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">echo</span><span class="s2">&quot;你看我是不是一段有颜色的代码啊！&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>后记</h1>
+
+<blockquote><p>在解决上述问题的过程中，了解到另一种代码高亮的方法</p></blockquote>
+
+<p><a href="http://jingyan.baidu.com/article/67508eb4e660ed9cca1ce4ec.html">请戳这里</a></p>
+
+<p>使用google-code-prettify可以用来很方便地对网页中的程序代码进行高亮显示,从而在视觉上使得网页上的代码看得比较舒服,这对网站站长来说是很重要的。</p>
+
+<p>有两种方法来启用google-code-prettify,下面简要介绍一下步骤。</p>
+
+<blockquote><p>方法一</p></blockquote>
+
+<p>(1) 从<a href="https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953">https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953</a> 中打包下载pretty.css以及pretty.js,并保存到本地服务器的相应目录中来引用</p>
+
+<p>(2) 引用pretty.css以及pretty.js,然后在网页中引用,引用方法为</p>
+
+<pre><code>&lt;link href="你保存的目录/prettify.css" type="text/css" rel="stylesheet" /&gt;
+
+&lt;script type="text/javascript" src="你保存的目录/prettify.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>(3)</p>
+
+<pre><code>&lt;body&gt;标签改为&lt;body onload="prettyPrint()"&gt;
+</code></pre>
+
+<p>(4) 将源代码用标签</p>
+
+<pre><code>&lt;pre class="prettyprint"&gt;这是你的代码&lt;/pre&gt;
+</code></pre>
+
+<p>包含起来,例如</p>
+
+<pre><code>&lt;pre class="prettyprint"&gt;
+
+#include "x.h"
+
+main(){
+
+ print("hello world!");
+
+}
+
+&lt;/pre&gt;
+</code></pre>
+
+<p>相应的显示效果为:</p>
+
+<h2><img src="http://hiphotos.baidu.com/exp/pic/item/0fb505d5ad6eddc4ef4d78d73bdbb6fd52663331.jpg" alt="3" /></h2>
+
+<blockquote><p>方法二</p></blockquote>
+
+<p>(1) 到网址 <a href="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js">https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js</a> 中或者从<a href="http://www.colafile.com/file/145957">http://www.colafile.com/file/145957</a> 下载run_prettify.js文件</p>
+
+<p>(2) 引用run_prettify.js文件,方法为</p>
+
+<pre><code>&lt;script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>或者</p>
+
+<pre><code>&lt;script src="你保存的目录/run_prettify.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>(3) 将源代码用标签</p>
+
+<pre><code>&lt;pre class="prettyprint"&gt;这是你的代码&lt;/pre&gt;
+</code></pre>
+
+<p>包含起来,例如</p>
+
+<pre><code>&lt;pre class="prettyprint"&gt;
+
+#include "x.h"
+
+main(){
+
+    print("hello world!");
+
+}
+
+&lt;/pre&gt;
+</code></pre>
+
+<p>相应的显示效果为:</p>
+
+<p><img src="http://hiphotos.baidu.com/exp/pic/item/72ccb7773912b31b40ea01058418367adbb4e1de.jpg" alt="4" /></p>
+
+<p>如果你有更高的使用要求，可以到<a href="https://code.google.com/p/google-code-prettify/wiki/GettingStarted">https://code.google.com/p/google-code-prettify/wiki/GettingStarted</a>这个网页中看更高级的使用方法</p>
+
+<h1>但是</h1>
+
+<p>这种方法在使用过程中，当是PHP代码时：如</p>
+
+<pre><code>&lt;pre class="prettyprint php"&gt;
+    &lt;?php
+        echo "test!";
+    ?&gt;
+&lt;/pre&gt;
+</code></pre>
+
+<p>这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</p>
+
+<p>改成如下格式就能正常实现代码高亮效果。</p>
+
+<pre><code>    &lt;pre class="prettyprint php"&gt;
+        //去掉了PHP的开始和结束符
+        echo "test!";
+
+    &lt;/pre&gt;
+</code></pre>
+
+<p>我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1514,10 +1768,14 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
 </div>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/29/test/" itemprop="url">代码怎么高亮</a></h1>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/04/29/test/" itemprop="url">我也是一个有颜色的代码了</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">echo</span> <span class="s2">&quot;11&quot;</span><span class="p">;</span>
+		<figure class='code'><figcaption><span>this is a php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;11&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -2889,129 +3147,6 @@ mysql&gt;
 <li>在请求API时会动态生成URL 并且都离不开 Access Token</li>
 <li>Access Token具有较长生命周期（十天半个月）</li>
 <li>Access Token过期过后可以选择重新登录或者在请求API时使用need_refresh_token（各个平台不同）=true 来刷新Access Token</li>
-</ul>
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-04-25T21:11:48+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/nginx/'>nginx</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/25/nginx/" itemprop="url">初识Nginx</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础</p></blockquote>
-
-<h1>一、常用的服务器软件</h1>
-
-<ul>
-<li>1 IIS：只能在Windows下运行性能不如Linux一类服务器</li>
-<li>2 Tomcat： 面向Java的重量级服务器</li>
-<li>3 Nginx：轻量级服务器，能支持较高的并发连接</li>
-<li>4 Apache：稳定，开源，跨平台，但是高并发支持较弱</li>
-</ul>
-
-
-<h1>二、Nginx的优缺点</h1>
-
-<ul>
-<li>优点：可以实现高并发，部署简单，内存消耗较少，成本低等</li>
-<li>缺点：rewrite功能不够强大，模块没有Apache多。</li>
-</ul>
-
-
-<h1>三、Nginx环境的搭建</h1>
-
-<ol>
-<li><p>Linux：</p>
-
-<ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载安装包</li>
-<li>tar -zxvf nginx-1.9.15.tar.gz 解压</li>
-<li>进入解压后的文件夹 ./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>cd /usr/local 在该文件下看到Nginx则安装成功</li>
-</ul>
-</li>
-<li><p>Windows：</p>
-
-<ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载Windows安装包</li>
-<li>解压即可</li>
-</ul>
-</li>
-<li><p>常见错误：</p>
-
-<ol>
-<li>C compiler not found
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install gcc gcc-c++ autoconf automake</li>
-</ul>
-</li>
-<li><p>requires the PCRE library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install pcre pcre-devel</li>
-</ul>
-</li>
-<li><p>requires the zlib library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install zlib zlib-devel</li>
-</ul>
-</li>
-</ol>
-</li>
-</ol>
-
-
-<h1>四、启动服务</h1>
-
-<ul>
-<li><p>Linux：</p>
-
-<ul>
-<li>/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</li>
-</ul>
-</li>
-<li><p>Windows:</p>
-
-<ul>
-<li>运行nginx.exe</li>
-</ul>
-
-
-<p>  打开浏览器访问Localhost，能访问则启动成功。</p></li>
 </ul>
 
 
