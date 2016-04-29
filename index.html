@@ -7,10 +7,31 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="Linux 下Mysql 常用命令总结 一、linux下mysql的基本命令： 1. linux下启动mysql的命令：
-mysqladmin start
-/ect/init.d/mysql start (前面为mysql的安装路径)
-/usr/local/mysql/bin/ &hellip;">
+	<meta name="description" content="PHP无限级分类主要有两种实现方式，通过递归和全路径实现 一、递归实现 在数据库中存储如下格式的表： ID
+pid
+catename
+cateorder
+createtime 1
+0
+新闻
+0
+0 2
+0
+图片
+0
+0 3
+1
+国内新闻
+0
+0 4
+1
+国际新闻
+0
+0 5
+3
+北京新闻
+0
+0 &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -79,6 +100,308 @@ mysqladmin start
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2016/04/29/wu-xian-ji-fen-lei/">
+		
+			PHP无限级分类</a>
+	</h2>
+	<div class="entry-content">
+		<blockquote><p>PHP无限级分类主要有两种实现方式，通过递归和全路径实现</p></blockquote>
+
+<h1>一、递归实现</h1>
+
+<pre><code>在数据库中存储如下格式的表：
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th style="text-align:center;">pid</th>
+<th style="text-align:center;">catename</th>
+<th style="text-align:center;">cateorder</th>
+<th style="text-align:right;">createtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:center;">新闻</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:center;">图片</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align:center;">1</td>
+<td style="text-align:center;">国内新闻</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+<tr>
+<td>4</td>
+<td style="text-align:center;">1</td>
+<td style="text-align:center;">国际新闻</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+<tr>
+<td>5</td>
+<td style="text-align:center;">3</td>
+<td style="text-align:center;">北京新闻</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+<tr>
+<td>6</td>
+<td style="text-align:center;">4</td>
+<td style="text-align:center;">美国新闻</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+<tr>
+<td>7</td>
+<td style="text-align:center;">2</td>
+<td style="text-align:center;">美女图片</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+<tr>
+<td>8</td>
+<td style="text-align:center;">2</td>
+<td style="text-align:center;">风景图片</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:right;">0</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>···
+create table deepcate
+(
+id int(10) unsigned not null  auto_increment primary key,
+pid int(11) unsigned    not null,
+catename    varchar(30) not null,
+cateorder   int(11) unsigned    default 0,
+createtime  int(10) not null
+);</p>
+
+<p>insert into deepcate(pid,catename,cateorder,createtime)values(0,&lsquo;新闻&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(0,&lsquo;图片&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(1,&lsquo;国内新闻&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(1,&lsquo;国际新闻&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(3,&lsquo;北京新闻&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(4,&lsquo;美国新闻&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(2,&lsquo;美女图片&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(2,&lsquo;风景图片&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(7,&lsquo;日韩明星&rsquo;,0,0);
+insert into deepcate(pid,catename,cateorder,createtime)values(9,&lsquo;日本AV&rsquo;,0,0);</p>
+
+<p>select * from deepcate;
+···</p>
+
+<blockquote><p>php 代码实现</p></blockquote>
+
+<p>···
+&lt;?php
+header(&ldquo;Content-Type:text/html;Charset=UTF-8&rdquo;);
+// php无限分类下拉列表的代码实现
+include_once(&lsquo;db.inc.php&rsquo;) ;</p>
+
+<p>function getList($pid=0,&amp;$result=array(),$spac=0)
+{
+    $spac=$spac+2;
+    $sql=&ldquo; SELECT * FROM deepcate WHERE pid=$pid &rdquo;;
+    $res=mysql_query($sql);</p>
+
+<pre><code>while($row=mysql_fetch_assoc($res)){
+    $row['catename']=str_repeat('&amp;nbsp;&amp;nbsp;',$spac).'|--'.$row['catename'];
+    $result[]=$row;
+    getList($row['id'],$result,$spac);
+}
+return $result;
+</code></pre>
+
+<p>}</p>
+
+<p>function displayCate($pid=0,$selected=0){
+     $rs=getList($pid);
+     $str=&ldquo;&rdquo;;
+     $str.=&ldquo;<select name='cate'>&rdquo;;
+    foreach($rs as $v){
+        if($v[&lsquo;id&rsquo;]==$selected){
+            $selected=&ldquo;selected&rdquo;;
+        }
+       $str.=&ldquo;<option {$selected}>&rdquo;;
+       $str.= $v[&lsquo;catename&rsquo;];
+       $str.= &ldquo;</option>&rdquo;;
+    }
+    return $str.= &ldquo;</select>&rdquo;;
+}</p>
+
+<p>echo displayCate();</p>
+
+<p>echo &ldquo;<hr/><hr/>&rdquo;;
+function getCatePath($cid,&amp;$result){
+    $sql=&ldquo;SELECT * FROM deepcate WHERE id=$cid &rdquo;;
+    $rs=mysql_query($sql);
+    $row=mysql_fetch_assoc($rs);
+    if($row){
+        $result[]=$row;
+        getCatePath($row[&lsquo;pid&rsquo;],$result);
+    }
+    krsort($result);
+    return $result;
+}</p>
+
+<p>function displayCatePath($cid,$url=&ldquo;deepcate.php?cid=&rdquo;){
+    $res=getCatePath($cid,$result);
+    $str=&ldquo;&rdquo;;
+    foreach($res as $v){
+        $str.= &ldquo;<a href='{$url}{$v['id']}'>{$v[&lsquo;catename&rsquo;]}</a>>>&rdquo;;
+    }return $str;
+}</p>
+
+<p>echo displayCatePath(10);
+···</p>
+
+<h1>二、全路径实现</h1>
+
+<p>···
+use imooc;
+create table    likecate
+(
+id  int(11) not null  auto_increment primary key,
+path    varchar(200)    not null,
+catename    varchar(30) not null,
+cateorder   int(11) not null    default 0,
+createtime  int(11) not null
+);</p>
+
+<p>insert into likecate(path,catename,cateorder,createtime)values(&lsquo;&rsquo;,&lsquo;手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1&rsquo;,&lsquo;功能手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2&rsquo;,&lsquo;老人手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2&rsquo;,&lsquo;儿童手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1&rsquo;,&lsquo;智能手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,5&rsquo;,&lsquo;andriod手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,5&rsquo;,&lsquo;ios手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,5&rsquo;,&lsquo;winphoto手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2,4&rsquo;,&lsquo;色盲手机&rsquo;,0,0);
+insert into likecate(path,catename,cateorder,createtime)values(&lsquo;1,2,3&rsquo;,&lsquo;大字手机&rsquo;,0,0);</p>
+
+<p>select * from likecate;</p>
+
+<p>select id,catename,path,concat(path,&lsquo;,&rsquo;,id) as fullpath from likecate where 1 order by fullpath asc;</p>
+
+<h1>结果显示如图</h1>
+
+<p>+&mdash;-+&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
+| id | catename     | path  | fullpath |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
+|  1 | 手机         |       | ,1       |
+|  2 | 功能手机     | 1     | 1,2      |
+|  3 | 老人手机     | 1,2   | 1,2,3    |
+| 10 | 大字手机     | 1,2,3 | 1,2,3,10 |
+|  4 | 儿童手机     | 1,2   | 1,2,4    |
+|  9 | 色盲手机     | 1,2,4 | 1,2,4,9  |
+|  5 | 智能手机     | 1     | 1,5      |
+|  6 | andriod手机  | 1,5   | 1,5,6    |
+|  7 | ios手机      | 1,5   | 1,5,7    |
+|  8 | winphoto手机 | 1,5   | 1,5,8    |
++&mdash;-+&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;-+&mdash;&mdash;&mdash;-+
+···</p>
+
+<blockquote><p>php代码实现</p></blockquote>
+
+<p>···
+&lt;?php
+header(&ldquo;Content-Type:text/html;Charset=UTF-8&rdquo;);
+//递归无限分类原理
+include_once (&lsquo;db.inc.php&rsquo;);</p>
+
+<p>function likecate(){
+    $sql=&ldquo;select id,catename,path,concat(path,&lsquo;,&rsquo;,id) as fullpath from likecate where 1 order by fullpath asc&rdquo;;
+    $res=mysql_query($sql);
+    $result=array();
+    while($row=mysql_fetch_assoc($res)){
+        $deep=count(explode(&lsquo;,&rsquo;,trim($row[&lsquo;fullpath&rsquo;],&lsquo;,&rsquo;)));</p>
+
+<pre><code>    $row['catename']=str_repeat('&amp;nbsp;&amp;nbsp;',$deep*4).'|--'.$row['catename'];
+    $result[]=$row;
+}
+return $result;
+</code></pre>
+
+<p>}</p>
+
+<p>$res=likecate();
+echo &ldquo;<select name='cate'>&rdquo;;
+foreach($res as $v){
+    echo &ldquo;<option>{$v[&lsquo;catename&rsquo;]}</option>&rdquo;;
+}
+echo &ldquo;</select>&rdquo;;</p>
+
+<p>echo &ldquo;<hr/><hr/>&rdquo;;
+function getPathCate($cateid){
+    $sql=&ldquo;select *,concat(path,&lsquo;,&rsquo;,id)fullpath from likecate where id=$cateid&rdquo;;
+    $res=mysql_query($sql);
+    $row=mysql_fetch_assoc($res);
+    $ids=$row[&lsquo;fullpath&rsquo;];
+    $sql=&ldquo;select * from likecate where id in($ids) order by id asc&rdquo;;
+    $res=mysql_query($sql);
+    $result=array();
+    while($row=mysql_fetch_assoc($res)){
+        $result[]=$row;
+    }
+    return $result;
+}</p>
+
+<p>function displayCatePath($cateid,$link=&lsquo;likecate.php?cid=&rsquo;){
+    $res=getPathCate($cateid);
+    $str=&ldquo;&rdquo;;
+    foreach($res as $v){
+        $str.=&ldquo;<a href='{$link}'>{$v[&lsquo;catename&rsquo;]}</a>>&rdquo;;
+    }
+    return $str;
+}</p>
+
+<p>echo displayCatePath(4,&lsquo;likecate.php?p=1&amp;cid=&rsquo;);
+···</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+Apr 29th, 2016</div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+	
+</div>
+</article>
 
 
     <article class="post">
