@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Blog Like A Hacker]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-29T21:14:23+08:00</updated>
+  <updated>2016-04-29T21:18:49+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -45,7 +45,7 @@
 <p> 到<a href="http://pecl.php.net/">pecl</a>搜索seaslog并下载
  解压后
  可自行编译。
-<code>php
+<code>
 $ cd seaslog //进到解压目录
 $ phpize
 $ ./configure --with-php-config=/path/to/php-config //path to 为你的PHP安装目录
@@ -94,7 +94,8 @@ SEASLOG_EMERGENCY "emergency"
 
 <h2>都提供哪些方法</h2>
 
-<pre><code>&lt;?php 
+<pre><code class="php">
+&lt;?php 
 /** 
  * @author neeke@php.net 云智慧 
  */ 
