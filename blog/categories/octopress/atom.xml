@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-29T23:06:04+08:00</updated>
+  <updated>2016-04-29T23:12:38+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,33 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[解决 Octopress 警告 Layout Nil Requested]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested/"/>
+    <updated>2016-04-29T23:08:07+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested</id>
+    <content type="html"><![CDATA[<blockquote><p>给Octopress换了主题过后重新generate会出警告Layout Nil Requested。</p></blockquote>
+
+<p>主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null 即可</p>
+
+<p>Fix this error by replacing from file:</p>
+
+<blockquote><p>layout: nil</p></blockquote>
+
+<p>with:</p>
+
+<blockquote><p>layout: null</p></blockquote>
+
+<p>in files:</p>
+
+<ul>
+<li>source/atom.xml</li>
+<li>source/_includes/custom/category_feed.xml</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GIT+Octopress搭建个人博客]]></title>
