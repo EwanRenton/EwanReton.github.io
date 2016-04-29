@@ -1,0 +1,55 @@
+---
+layout: post
+title: "初识Nginx"
+date: 2016-04-25 21:11:48 +0800
+comments: true
+categories: [Nginx] 
+---
+> 今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础
+
+# 一、常用的服务器软件
+* 1 IIS：只能在Windows下运行性能不如Linux一类服务器
+* 2 Tomcat： 面向Java的重量级服务器
+* 3 Nginx：轻量级服务器，能支持较高的并发连接
+* 4 Apache：稳定，开源，跨平台，但是高并发支持较弱
+
+#二、Nginx的优缺点
+* 优点：可以实现高并发，部署简单，内存消耗较少，成本低等
+* 缺点：rewrite功能不够强大，模块没有Apache多。
+
+#三、Nginx环境的搭建
+
+1. Linux：
+
+	* [Nginx官网](http://nginx.org/)下载安装包
+	* tar -zxvf nginx-1.9.15.tar.gz 解压
+	* 进入解压后的文件夹 ./configure
+	* make
+	* make install
+	* cd /usr/local 在该文件下看到Nginx则安装成功
+2. Windows：
+	* [Nginx官网](http://nginx.org/)下载Windows安装包
+	* 解压即可
+
+3. 常见错误：
+	1. C compiler not found
+		* 进入root权限
+		* yum -y install gcc gcc-c++ autoconf automake
+	2. requires the PCRE library
+		* 进入root权限
+		* yum -y install pcre pcre-devel
+	
+	3. requires the zlib library
+		* 进入root权限
+		* yum -y install zlib zlib-devel
+
+
+# 四、启动服务
+
+* Linux：
+	* /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+
+* Windows:
+	* 运行nginx.exe
+	
+	打开浏览器访问Localhost，能访问则启动成功。
