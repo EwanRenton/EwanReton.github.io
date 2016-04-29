@@ -1,13 +1,15 @@
 
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<title>PHP无限级分类 - Blog Like A Hacker</title>
-	<meta name="author" content="Ewan Reton">
+  <meta charset="utf-8">
+  <title>PHP无限级分类 - Blog Like A Hacker</title>
+  <meta name="author" content="Ewan Reton">
 
-	
-	<meta name="description" content="PHP无限级分类主要有两种实现方式，通过递归和全路径实现 一、递归实现 在数据库中存储如下格式的表： ID
+  
+  <meta name="description" content="PHP无限级分类主要有两种实现方式，通过递归和全路径实现 一、递归实现 在数据库中存储如下格式的表： ID
 pid
 catename
 cateorder
@@ -32,76 +34,91 @@ createtime 1
 北京新闻
 0
 0 &hellip;">
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
 
-	<link href="/atom.xml" rel="alternate" title="Blog Like A Hacker" type="application/atom+xml">
-	<link rel="canonical" href="">
-	<link href="/favicon.png" rel="shortcut icon">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-	
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Blog Like A Hacker" type="application/atom+xml">
+  <!-- font-family: 'Knewave', cursive; -->
+<link href='http://fonts.googleapis.com/css?family=Knewave' rel='stylesheet' type='text/css'>
+<!-- font-family: 'Cantata One', serif; -->
+<link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'>
+
+  
+
 </head>
 
-
-<body>
-	<header id="header" class="inner"><h1><a href="/">Blog Like A Hacker</a></h1>
-<nav id="main-nav"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-	<li><a href="/aboutme">About Me</a></li>
-</ul>
-</nav>
-<nav id="mobile-nav">
-	<div class="alignleft menu">
-		<a class="button">Menu</a>
-		<div class="container"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-	<li><a href="/aboutme">About Me</a></li>
-</ul>
-</div>
-	</div>
-	<div class="alignright search">
-		<a class="button"></a>
-		<div class="container">
-			<form action="https://www.baidu.com" method="get">
-				<input type="text" name="q" results="0">
-				<input type="hidden" name="q" value="site:ewanreton.github.io">
-			</form>
-		</div>
-	</div>
-</nav>
-<nav id="sub-nav" class="alignright">
-	<div class="social">
-		
-		
-		
-		
-    
-		
-		
-		
-		
-		
-		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
-		
-    
-	</div>
-	<form class="search" action="https://www.baidu.com" method="get">
-		<input class="alignright" type="text" name="q" results="0">
-		<input type="hidden" name="q" value="site:ewanreton.github.io">
-	</form>
-</nav>
+<body   >
+  <header role="banner"><hgroup>
+  <h1>
+      <a href="/">Blog Like A Hacker</a>
+      
+        <span>不要被自己感动.</span>
+      
+  </h1>
+</hgroup>
 
 </header>
-	
-		
-	
-	<div id="content" class="inner"><article class="post">
-	<h2 class="title">PHP无限级分类</h2>
-	<div class="entry-content"><blockquote><p>PHP无限级分类主要有两种实现方式，通过递归和全路径实现</p></blockquote>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.baidu.com" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ewanreton.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">PHP无限级分类</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-29T09:36:19+08:00" pubdate data-updated="true"></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p>PHP无限级分类主要有两种实现方式，通过递归和全路径实现</p></blockquote>
 
 <h1>一、递归实现</h1>
 
@@ -537,82 +554,108 @@ createtime 1
 </div>
 
 
-<div class="meta">
-	<div class="date">
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ewan Reton</span></span>
+
+      
 
 
 
 
-Apr 29th, 2016</div>
-	<div class="tags">
 
 
-	<a class='category' href='/blog/categories/php/'>php</a>
 
 
-</div>
-	
-</div>
-</article>
+  
 
-	<div class="share">
-	<div class="addthis_toolbox addthis_default_style ">
-		
-		
-		
-		
-	</div>
-	
-	
-   <!-- JiaThis Button BEGIN -->
-<div class="jiathis_style_32x32">
-	<a class="jiathis_button_qzone"></a>
-	<a class="jiathis_button_tsina"></a>
-	<a class="jiathis_button_tqq"></a>
-	<a class="jiathis_button_weixin"></a>
-	<a class="jiathis_button_renren"></a>
-	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-	<a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-<!-- JiaThis Button END -->
+
+<time datetime="2016-04-29T09:36:19+08:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
   
 </div>
 
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/04/28/linux-mysql-code/" title="Previous Post: Linux-MYSQL-常用命令">&laquo; Linux-MYSQL-常用命令</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/04/29/php-seaslog/" title="Next Post: PHP高性能日志SeasLog">PHP高性能日志SeasLog &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
 
-
-<section id="comment">
-    <h2 class="title">Comments</h2>
-    <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="/blog/2016/04/29/wu-xian-ji-fen-lei" data-title="PHP无限级分类" data-url="http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei/"></div>
-<!-- 多说评论框 end -->
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-var duoshuoQuery = {short_name:"ewanreton"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-	</script>
-<!-- 多说公共JS代码 end --></div>
-</section>
 </div>
-	<footer id="footer" class="inner">Copyright &copy; 2016
 
-    Ewan Reton
+<aside class="sidebar">
+  
+    <section class="first odd">
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/29/php-seaslog/">PHP高性能日志SeasLog</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/29/wu-xian-ji-fen-lei/">PHP无限级分类</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/28/linux-mysql-code/">Linux-MYSQL-常用命令</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/28/qqyuncontos-huan-jing-da-jian/">腾讯云服务器Centos6.5 LNMP环境搭建</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/26/nginx-php-huan-jing/">Nginx下PHP环境搭建1</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Ewan Reton -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> and <a href="https://github.com/gluttony/object-octopress-theme">Object</a></span>
+</p>
 
 </footer>
-	<script src="/javascripts/slash.js"></script>
-<script src="/javascripts/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-	$('.fancybox').fancybox();
-})(jQuery);
-</script> <!-- Delete or comment this line to disable Fancybox -->
+  
+
+
+
+
+
 
 
 
