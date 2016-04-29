@@ -4,7 +4,7 @@
   <title><![CDATA[Blog Like A Hacker]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-29T09:58:24+08:00</updated>
+  <updated>2016-04-29T12:46:16+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,847 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP高性能日志SeasLog]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/29/php-seaslog/"/>
+    <updated>2016-04-29T09:59:55+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/29/php-seaslog</id>
+    <content type="html"><![CDATA[<blockquote><p>PHP高性能日志SeasLog</p></blockquote>
+
+<h1>一、什么是SeasLog</h1>
+
+<p>SeasLog是一个C语言编写的PHP扩展，提供一组规范标准的功能函数，在PHP项目中方便、规范、高效地写日志，以及快速地读取和查询日志。</p>
+
+<h1>二、为什么需要日志系统</h1>
+
+<ol>
+<li>了解系统运行情况</li>
+<li>记录用户操作信息</li>
+<li>收集需要</li>
+</ol>
+
+
+<h1>三、为什么选择SeasLog</h1>
+
+<ol>
+<li>高性能 带有缓冲池功能。</li>
+<li>无需配置</li>
+<li>功能完善，使用简单
+
+<h1>四、SeasLog安装</h1>
+
+<p> 到<a href="http://pecl.php.net/">pecl</a>搜索seaslog并下载
+ 解压后
+ 可自行编译。</p></li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd seaslog //进到解压目录
+</span><span class='line'>$ phpize
+</span><span class='line'>$ ./configure --with-php-config=/path/to/php-config //path to 为你的PHP安装目录
+</span><span class='line'>$ make && make install
+</span><span class='line'>当然，使用PECL管理工具会更方便：
+</span><span class='line'>$ pecl install seaslog</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>seaslog.ini的配置</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; configuration for php SeasLog module 
+</span><span class='line'>extension = seaslog.so 
+</span><span class='line'>seaslog.default_basepath = /log/seaslog-test    ;默认log根目录 
+</span><span class='line'>seaslog.default_logger = default                ;默认logger目录 
+</span><span class='line'>seaslog.disting_type = 1                            ;是否以type分文件 1是 0否(默认) 
+</span><span class='line'>seaslog.disting_by_hour = 1                      ;是否每小时划分一个文件 1是 0否(默认) 
+</span><span class='line'>seaslog.use_buffer = 1                              ;是否启用buffer 1是 0否(默认) 
+</span><span class='line'>seaslog.buffer_size = 100                         ;buffer中缓冲数量 默认0(不使用buffer_size) 
+</span><span class='line'>seaslog.level = 0                                       ;记录日志级别 默认0(所有日志)</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>需要将这里面的数据写到php.ini中去</strong></p>
+
+<pre><code>seaslog.disting_type = 1 开启以type分文件，即log文件区分info\warn\erro
+seaslog.disting_by_hour = 1 开启每小时划分一个文件
+seaslog.use_buffer = 1 开启buffer。默认关闭。当开启此项时，日志预存于内存，当请求结束时(或异常退出时)一次写入文件。
+seaslog.buffer_size = 100 设置缓冲数量为100. 默认为0,即无缓冲数量限制.当buffer_size大于0时,缓冲量达到该值则写一次文件.
+seaslog.level = 3 记录的日志级别.默认为0,即所有日志均记录。当level为1时,关注debug以上级别(包括debug)，以此类推。level大于8时，所有日志均不记录。
+</code></pre>
+
+<h2>默认常量有哪些</h2>
+
+<p>遵循PSR-3标准，SeasLog 共将日志分成8个级别</p>
+
+<pre><code>SEASLOG_DEBUG "debug"
+SEASLOG_INFO "info"
+SEASLOG_NOTICE "notice"
+SEASLOG_WARNING "warning"
+SEASLOG_ERROR "error"
+SEASLOG_CRITICAL "critical"
+SEASLOG_ALERT "alert"
+SEASLOG_EMERGENCY "emergency"
+</code></pre>
+
+<h2>都提供哪些方法</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php 
+</span><span class='line'>/** 
+</span><span class='line'> * @author neeke@php.net 云智慧 
+</span><span class='line'> */ 
+</span><span class='line'> 
+</span><span class='line'>class SeasLog 
+</span><span class='line'>{ 
+</span><span class='line'>    public function __construct() 
+</span><span class='line'>    { 
+</span><span class='line'>        #SeasLog init 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    public function __destruct() 
+</span><span class='line'>    { 
+</span><span class='line'>        #SeasLog distroy 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 设置basePath 
+</span><span class='line'>     * @param $basePath 
+</span><span class='line'>     * @return bool 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function setBasePath($basePath) 
+</span><span class='line'>    { 
+</span><span class='line'>        return TRUE; 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 获取basePath 
+</span><span class='line'>     * @return string 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function getBasePath() 
+</span><span class='line'>    { 
+</span><span class='line'>        return 'the base_path'; 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 设置模块目录 
+</span><span class='line'>     * @param $module 
+</span><span class='line'>     * @return bool 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function setLogger($module) 
+</span><span class='line'>    { 
+</span><span class='line'>        return TRUE; 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 获取最后一次设置的模块目录 
+</span><span class='line'>     * @return string 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function getLastLogger() 
+</span><span class='line'>    { 
+</span><span class='line'>        return 'the lastLogger'; 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 统计所有类型（或单个类型）行数 
+</span><span class='line'>     * @param string $level 
+</span><span class='line'>     * @param string $log_path 
+</span><span class='line'>     * @param null $key_word 
+</span><span class='line'>     * @return array | long 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function analyzerCount($level = 'all',$log_path = '*',$key_word = NULL) 
+</span><span class='line'>    { 
+</span><span class='line'>        return array(); 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 以数组形式，快速取出某类型log的各行详情 
+</span><span class='line'>     * @param $level 
+</span><span class='line'>     * @param string $log_path 
+</span><span class='line'>     * @param null $key_word 
+</span><span class='line'>     * @param int $start 
+</span><span class='line'>     * @param int $limit 
+</span><span class='line'>     * @return array 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function analyzerDetail($level = SEASLOG_INFO,$log_path = '*',$key_word = NULL, $start = 1,$limit = 20) 
+</span><span class='line'>    { 
+</span><span class='line'>        return array(); 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 获得当前日志buffer中的内容 
+</span><span class='line'>     * @return array 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function getBuffer() 
+</span><span class='line'>    { 
+</span><span class='line'>        return array(); 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录debug日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function debug($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_DEBUG 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录info日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function info($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_INFO 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录notice日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function notice($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_NOTICE 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录warning日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function warning($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_WARNING 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录error日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function error($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_ERROR 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录critical日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function critical($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_CRITICAL 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录alert日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function alert($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_ALERT 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 记录emergency日志 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function emergency($message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'>        #$level = SEASLOG_EMERGENCY 
+</span><span class='line'>    } 
+</span><span class='line'> 
+</span><span class='line'>    /** 
+</span><span class='line'>     * 通用日志方法 
+</span><span class='line'>     * @param $level 
+</span><span class='line'>     * @param $message 
+</span><span class='line'>     * @param array $content 
+</span><span class='line'>     * @param string $module 
+</span><span class='line'>     */ 
+</span><span class='line'>    static public function log($level,$message,array $content = array(),$module = '') 
+</span><span class='line'>    { 
+</span><span class='line'> 
+</span><span class='line'>    } 
+</span><span class='line'>} </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>在项目中如何使用</h2>
+
+<blockquote><p>获取与设置basePatn</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/**
+</span><span class='line'> *静态方法可以不实例化直接使用
+</span><span class='line'> *
+</span><span class='line'> */
+</span><span class='line'>$basePath_1 = SeasLog::getBasePath(); 
+</span><span class='line'> 
+</span><span class='line'>SeasLog::setBasePath('/log/base_test'); 
+</span><span class='line'>$basePath_2 = SeasLog::getBasePath(); 
+</span><span class='line'> 
+</span><span class='line'>var_dump($basePath_1,$basePath_2); 
+</span><span class='line'> 
+</span><span class='line'>/* 
+</span><span class='line'>string(19) "/log/seaslog-ciogao" 
+</span><span class='line'>string(14) "/log/base_test" 
+</span><span class='line'>*/ </span></code></pre></td></tr></table></div></figure>
+
+
+<p>直接使用 SeasLog::getBasePath()，将获取php.ini(seaslog.ini)中设置的seaslog.default_basepath 的值。</p>
+
+<p>使用 SeasLog::getBasePath() 函数，将改变 seaslog_get_basepath() 的取值。</p>
+
+<blockquote><p>设置logger与获取lastLogger</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$lastLogger_1 = SeasLog::getLastLogger(); 
+</span><span class='line'> 
+</span><span class='line'>SeasLog::setLogger('testModule/app1'); 
+</span><span class='line'>$lastLogger_2 = SeasLog::getLastLogger(); 
+</span><span class='line'> 
+</span><span class='line'>var_dump($lastLogger_1,$lastLogger_2); 
+</span><span class='line'>/* 
+</span><span class='line'>string(7) "default" 
+</span><span class='line'>string(15) "testModule/app1" 
+</span><span class='line'>*/ </span></code></pre></td></tr></table></div></figure>
+
+
+<p>与basePath相类似的，
+直接使用 SeasLog::getLastLogger()，将获取php.ini(seaslog.ini)中设置的seaslog.default_logger 的值。</p>
+
+<p>使用 SeasLog::setLogger() 函数，将改变 SeasLog::getLastLogger() 的取值。</p>
+
+<h2>SeasLog Logger的使用</h2>
+
+<blockquote><p>获取与设置basePath</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$basePath_1 = SeasLog::getBasePath();
+</span><span class='line'>
+</span><span class='line'>SeasLog::setBasePath('/log/base_test');
+</span><span class='line'>$basePath_2 = SeasLog::getBasePath();
+</span><span class='line'>
+</span><span class='line'>var_dump($basePath_1,$basePath_2);
+</span><span class='line'>
+</span><span class='line'>/*
+</span><span class='line'>string(19) "/log/seaslog-ciogao"
+</span><span class='line'>string(14) "/log/base_test"
+</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>直接使用 SeasLog::getBasePath()，将获取php.ini(seaslog.ini)中设置的 seaslog.default_basepath 的值。</p>
+
+<p>使用 SeasLog::setBasePath() 函数，将改变 SeasLog::getBasePath() 的取值。</p>
+
+<blockquote><p>设置logger与获取lastLogger</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$lastLogger_1 = SeasLog::getLastLogger();
+</span><span class='line'>
+</span><span class='line'>SeasLog::setLogger('testModule/app1');
+</span><span class='line'>$lastLogger_2 = SeasLog::getLastLogger();
+</span><span class='line'>
+</span><span class='line'>var_dump($lastLogger_1,$lastLogger_2);
+</span><span class='line'>/*
+</span><span class='line'>string(7) "default"
+</span><span class='line'>string(15) "testModule/app1"
+</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>与basePath相类似的，</p>
+
+<p>直接使用 SeasLog::getLastLogger()，将获取php.ini(seaslog.ini)中设置的 seaslog.default_logger 的值。</p>
+
+<p>使用 SeasLog::setLogger() 函数，将改变 SeasLog::getLastLogger() 的取值。
+快速写入log</p>
+
+<p>上面已经设置过了basePath与logger，于是log记录的目录已经产生了，</p>
+
+<p>log记录目录 = basePath / logger / {fileName}.log log文件名，以 年月日 分文件，如今天是2014年02月18日期，那么 {fileName} = 20140218;
+还记得 php.ini 中设置的 seaslog.disting_type 吗？</p>
+
+<p>默认的 seaslog.disting_type = 0，如果今天我使用了 SeasLog ，那么将产生最终的log文件：</p>
+
+<p>*　LogFile = basePath / logger / 20140218.log
+如果 seaslog.disting_type = 1，则最终的log文件将是这样的三个文件</p>
+
+<ul>
+<li><p>infoLogFile = basePath / logger / INFO.20140218.log</p></li>
+<li><p>warnLogFile = basePath / logger / WARN.20140218.log</p></li>
+<li><p>erroLogFile = basePath / logger / ERRO.20140218.log</p></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SeasLog::log(SEASLOG_ERROR,'this is a error test by ::log');
+</span><span class='line'>
+</span><span class='line'>SeasLog::debug('this is a {userName} debug',array('{userName}' =&gt; 'neeke'));
+</span><span class='line'>
+</span><span class='line'>SeasLog::info('this is a info log');
+</span><span class='line'>
+</span><span class='line'>SeasLog::notice('this is a notice log');
+</span><span class='line'>
+</span><span class='line'>SeasLog::warning('your {website} was down,please {action} it ASAP!',array('{website}' =&gt; 'github.com','{action}' =&gt; 'rboot'));
+</span><span class='line'>
+</span><span class='line'>SeasLog::error('a error log');
+</span><span class='line'>
+</span><span class='line'>SeasLog::critical('some thing was critical');
+</span><span class='line'>
+</span><span class='line'>SeasLog::alert('yes this is a {messageName}',array('{messageName}' =&gt; 'alertMSG'));
+</span><span class='line'>
+</span><span class='line'>SeasLog::emergency('Just now, the house next door was completely burnt out! {note}',array('{note}' =&gt; 'it`s a joke'));
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>/*
+</span><span class='line'>这些函数同时也接受第3个参数为logger的设置项
+</span><span class='line'>注意，当last_logger == 'default'时等同于:
+</span><span class='line'>SeasLog::setLogger('test/new/path');
+</span><span class='line'>SeasLog::error('test error 3');
+</span><span class='line'>如果已经在前文使用过SeasLog::setLogger()函数，第3个参数的log只在此处临时使用，不影响下文。
+</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>log格式统一为： {type} | {pid} | {timeStamp} |{dateTime} | {logInfo}</p></blockquote>
+
+<pre><code>error | 23625 | 1406422432.786 | 2014:07:27 08:53:52 | this is a error test by log
+debug | 23625 | 1406422432.786 | 2014:07:27 08:53:52 | this is a neeke debug
+info | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | this is a info log
+notice | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | this is a notice log
+warning | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | your github.com was down,please rboot it ASAP!
+error | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | a error log
+critical | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | some thing was critical
+emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house next door was completely burnt out! it is a joke
+</code></pre>
+
+<h2>SeasLog Analyzer的使用</h2>
+
+<blockquote><p>快速统计某类型log的count值</p></blockquote>
+
+<p>SeasLog在扩展中使用管道调用shell命令 grep -wc快速地取得count值，并返回值(array || int)给PHP。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$countResult_1 = SeasLog::analyzerCount();
+</span><span class='line'>$countResult_2 = SeasLog::analyzerCount(SEASLOG_WARNING);
+</span><span class='line'>$countResult_3 = SeasLog::analyzerCount(SEASLOG_ERROR,date('Ymd',time()));
+</span><span class='line'>
+</span><span class='line'>var_dump($countResult_1,$countResult_2,$countResult_3);
+</span><span class='line'>/*
+</span><span class='line'>array(8) {
+</span><span class='line'>  ["debug"]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  ["info"]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  ["notice"]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  ["warning"]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  ["error"]=&gt;
+</span><span class='line'>  int(6)
+</span><span class='line'>  ["critical"]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  ["alert"]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  ["emergency"]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>int(7)
+</span><span class='line'>
+</span><span class='line'>int(1)
+</span><span class='line'>
+</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>获取某类型log列表</p></blockquote>
+
+<p>SeasLog在扩展中使用管道调用shell命令 grep -w快速地取得列表，并返回array给PHP。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$detailErrorArray_inAll   = SeasLog::analyzerDetail(SEASLOG_ERROR);
+</span><span class='line'>$detailErrorArray_today   = SeasLog::analyzerDetail(SEASLOG_ERROR,date('Ymd',time()));
+</span><span class='line'>
+</span><span class='line'>var_dump($detailErrorArray_inAll,$detailErrorArray_today);
+</span><span class='line'>
+</span><span class='line'>/*
+</span><span class='line'>SeasLog::analyzerDetail(SEASLOG_ERROR) == SeasLog::analyzerDetail(SEASLOG_ERROR,'*');
+</span><span class='line'>取当前模块下所有level为 SEASLOG_ERROR 的信息列表:
+</span><span class='line'>array(6) {
+</span><span class='line'> [0] =&gt;
+</span><span class='line'>  string(66) "error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 "
+</span><span class='line'>  [1] =&gt;
+</span><span class='line'>  string(66) "error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 "
+</span><span class='line'>  [2] =&gt;
+</span><span class='line'>  string(66) "error | 8620 | 1393172044.862 | 2014:02:24 00:14:04 | test error 3 "
+</span><span class='line'>  [3] =&gt;
+</span><span class='line'>  string(66) "error | 8646 | 1393172045.989 | 2014:02:24 00:14:05 | test error 3 "
+</span><span class='line'>  [4] =&gt;
+</span><span class='line'>  string(66) "error | 8672 | 1393172047.882 | 2014:02:24 00:14:07 | test error 3 "
+</span><span class='line'>  [5] =&gt;
+</span><span class='line'>  string(66) "error | 8698 | 1393172048.736 | 2014:02:24 00:14:08 | test error 3 "
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>SeasLog::analyzerDetail(SEASLOG_ERROR,date('Ymd',time()));
+</span><span class='line'>只取得当前模块下，当前一天内,level为SEASLOG_ERROR 的信息列表:
+</span><span class='line'>array(2) {
+</span><span class='line'>  [0] =&gt;
+</span><span class='line'>  string(66) "error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 "
+</span><span class='line'>  [1] =&gt;
+</span><span class='line'>  string(66) "error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 "
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>同理，取当月
+</span><span class='line'>$detailErrorArray_mouth = SeasLog::analyzerDetail(SEASLOG_ERROR,date('Ym',time()));
+</span><span class='line'>
+</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP无限级分类]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Blog Like A Hacker]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-29T09:58:24+08:00</updated>
+  <updated>2016-04-29T12:46:16+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,566 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP高性能日志SeasLog]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/29/php-seaslog/"/>
+    <updated>2016-04-29T09:59:55+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/29/php-seaslog</id>
+    <content type="html"><![CDATA[<blockquote><p>PHP高性能日志SeasLog</p></blockquote>
+
+<h1>一、什么是SeasLog</h1>
+
+<p>SeasLog是一个C语言编写的PHP扩展，提供一组规范标准的功能函数，在PHP项目中方便、规范、高效地写日志，以及快速地读取和查询日志。</p>
+
+<h1>二、为什么需要日志系统</h1>
+
+<ol>
+<li>了解系统运行情况</li>
+<li>记录用户操作信息</li>
+<li>收集需要</li>
+</ol>
+
+
+<h1>三、为什么选择SeasLog</h1>
+
+<ol>
+<li>高性能 带有缓冲池功能。</li>
+<li>无需配置</li>
+<li>功能完善，使用简单
+
+<h1>四、SeasLog安装</h1>
+
+<p> 到<a href="http://pecl.php.net/">pecl</a>搜索seaslog并下载
+ 解压后
+ 可自行编译。
+<code>
+$ cd seaslog //进到解压目录
+$ phpize
+$ ./configure --with-php-config=/path/to/php-config //path to 为你的PHP安装目录
+$ make &amp;&amp; make install
+当然，使用PECL管理工具会更方便：
+$ pecl install seaslog
+</code></p></li>
+</ol>
+
+
+<h2>seaslog.ini的配置</h2>
+
+<pre><code>; configuration for php SeasLog module 
+extension = seaslog.so 
+seaslog.default_basepath = /log/seaslog-test    ;默认log根目录 
+seaslog.default_logger = default                ;默认logger目录 
+seaslog.disting_type = 1                            ;是否以type分文件 1是 0否(默认) 
+seaslog.disting_by_hour = 1                      ;是否每小时划分一个文件 1是 0否(默认) 
+seaslog.use_buffer = 1                              ;是否启用buffer 1是 0否(默认) 
+seaslog.buffer_size = 100                         ;buffer中缓冲数量 默认0(不使用buffer_size) 
+seaslog.level = 0                                       ;记录日志级别 默认0(所有日志)
+</code></pre>
+
+<p><strong>需要将这里面的数据写到php.ini中去</strong></p>
+
+<pre><code>seaslog.disting_type = 1 开启以type分文件，即log文件区分info\warn\erro
+seaslog.disting_by_hour = 1 开启每小时划分一个文件
+seaslog.use_buffer = 1 开启buffer。默认关闭。当开启此项时，日志预存于内存，当请求结束时(或异常退出时)一次写入文件。
+seaslog.buffer_size = 100 设置缓冲数量为100. 默认为0,即无缓冲数量限制.当buffer_size大于0时,缓冲量达到该值则写一次文件.
+seaslog.level = 3 记录的日志级别.默认为0,即所有日志均记录。当level为1时,关注debug以上级别(包括debug)，以此类推。level大于8时，所有日志均不记录。
+</code></pre>
+
+<h2>默认常量有哪些</h2>
+
+<p>遵循PSR-3标准，SeasLog 共将日志分成8个级别</p>
+
+<pre><code>SEASLOG_DEBUG "debug"
+SEASLOG_INFO "info"
+SEASLOG_NOTICE "notice"
+SEASLOG_WARNING "warning"
+SEASLOG_ERROR "error"
+SEASLOG_CRITICAL "critical"
+SEASLOG_ALERT "alert"
+SEASLOG_EMERGENCY "emergency"
+</code></pre>
+
+<h2>都提供哪些方法</h2>
+
+<pre><code>&lt;?php 
+/** 
+ * @author neeke@php.net 云智慧 
+ */ 
+
+class SeasLog 
+{ 
+    public function __construct() 
+    { 
+        #SeasLog init 
+    } 
+
+    public function __destruct() 
+    { 
+        #SeasLog distroy 
+    } 
+
+    /** 
+     * 设置basePath 
+     * @param $basePath 
+     * @return bool 
+     */ 
+    static public function setBasePath($basePath) 
+    { 
+        return TRUE; 
+    } 
+
+    /** 
+     * 获取basePath 
+     * @return string 
+     */ 
+    static public function getBasePath() 
+    { 
+        return 'the base_path'; 
+    } 
+
+    /** 
+     * 设置模块目录 
+     * @param $module 
+     * @return bool 
+     */ 
+    static public function setLogger($module) 
+    { 
+        return TRUE; 
+    } 
+
+    /** 
+     * 获取最后一次设置的模块目录 
+     * @return string 
+     */ 
+    static public function getLastLogger() 
+    { 
+        return 'the lastLogger'; 
+    } 
+
+    /** 
+     * 统计所有类型（或单个类型）行数 
+     * @param string $level 
+     * @param string $log_path 
+     * @param null $key_word 
+     * @return array | long 
+     */ 
+    static public function analyzerCount($level = 'all',$log_path = '*',$key_word = NULL) 
+    { 
+        return array(); 
+    } 
+
+    /** 
+     * 以数组形式，快速取出某类型log的各行详情 
+     * @param $level 
+     * @param string $log_path 
+     * @param null $key_word 
+     * @param int $start 
+     * @param int $limit 
+     * @return array 
+     */ 
+    static public function analyzerDetail($level = SEASLOG_INFO,$log_path = '*',$key_word = NULL, $start = 1,$limit = 20) 
+    { 
+        return array(); 
+    } 
+
+    /** 
+     * 获得当前日志buffer中的内容 
+     * @return array 
+     */ 
+    static public function getBuffer() 
+    { 
+        return array(); 
+    } 
+
+    /** 
+     * 记录debug日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function debug($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_DEBUG 
+    } 
+
+    /** 
+     * 记录info日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function info($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_INFO 
+    } 
+
+    /** 
+     * 记录notice日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function notice($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_NOTICE 
+    } 
+
+    /** 
+     * 记录warning日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function warning($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_WARNING 
+    } 
+
+    /** 
+     * 记录error日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function error($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_ERROR 
+    } 
+
+    /** 
+     * 记录critical日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function critical($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_CRITICAL 
+    } 
+
+    /** 
+     * 记录alert日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function alert($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_ALERT 
+    } 
+
+    /** 
+     * 记录emergency日志 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function emergency($message,array $content = array(),$module = '') 
+    { 
+        #$level = SEASLOG_EMERGENCY 
+    } 
+
+    /** 
+     * 通用日志方法 
+     * @param $level 
+     * @param $message 
+     * @param array $content 
+     * @param string $module 
+     */ 
+    static public function log($level,$message,array $content = array(),$module = '') 
+    { 
+
+    } 
+} 
+</code></pre>
+
+<h2>在项目中如何使用</h2>
+
+<blockquote><p>获取与设置basePatn</p></blockquote>
+
+<pre><code>/**
+ *静态方法可以不实例化直接使用
+ *
+ */
+$basePath_1 = SeasLog::getBasePath(); 
+
+SeasLog::setBasePath('/log/base_test'); 
+$basePath_2 = SeasLog::getBasePath(); 
+
+var_dump($basePath_1,$basePath_2); 
+
+/* 
+string(19) "/log/seaslog-ciogao" 
+string(14) "/log/base_test" 
+*/ 
+</code></pre>
+
+<p>直接使用 SeasLog::getBasePath()，将获取php.ini(seaslog.ini)中设置的seaslog.default_basepath 的值。</p>
+
+<p>使用 SeasLog::getBasePath() 函数，将改变 seaslog_get_basepath() 的取值。</p>
+
+<blockquote><p>设置logger与获取lastLogger</p></blockquote>
+
+<pre><code>$lastLogger_1 = SeasLog::getLastLogger(); 
+
+SeasLog::setLogger('testModule/app1'); 
+$lastLogger_2 = SeasLog::getLastLogger(); 
+
+var_dump($lastLogger_1,$lastLogger_2); 
+/* 
+string(7) "default" 
+string(15) "testModule/app1" 
+*/ 
+</code></pre>
+
+<p>与basePath相类似的，
+直接使用 SeasLog::getLastLogger()，将获取php.ini(seaslog.ini)中设置的seaslog.default_logger 的值。</p>
+
+<p>使用 SeasLog::setLogger() 函数，将改变 SeasLog::getLastLogger() 的取值。</p>
+
+<h2>SeasLog Logger的使用</h2>
+
+<blockquote><p>获取与设置basePath</p></blockquote>
+
+<pre><code>$basePath_1 = SeasLog::getBasePath();
+
+SeasLog::setBasePath('/log/base_test');
+$basePath_2 = SeasLog::getBasePath();
+
+var_dump($basePath_1,$basePath_2);
+
+/*
+string(19) "/log/seaslog-ciogao"
+string(14) "/log/base_test"
+*/
+</code></pre>
+
+<p>直接使用 SeasLog::getBasePath()，将获取php.ini(seaslog.ini)中设置的 seaslog.default_basepath 的值。</p>
+
+<p>使用 SeasLog::setBasePath() 函数，将改变 SeasLog::getBasePath() 的取值。</p>
+
+<blockquote><p>设置logger与获取lastLogger</p></blockquote>
+
+<pre><code>$lastLogger_1 = SeasLog::getLastLogger();
+
+SeasLog::setLogger('testModule/app1');
+$lastLogger_2 = SeasLog::getLastLogger();
+
+var_dump($lastLogger_1,$lastLogger_2);
+/*
+string(7) "default"
+string(15) "testModule/app1"
+*/
+</code></pre>
+
+<p>与basePath相类似的，</p>
+
+<p>直接使用 SeasLog::getLastLogger()，将获取php.ini(seaslog.ini)中设置的 seaslog.default_logger 的值。</p>
+
+<p>使用 SeasLog::setLogger() 函数，将改变 SeasLog::getLastLogger() 的取值。
+快速写入log</p>
+
+<p>上面已经设置过了basePath与logger，于是log记录的目录已经产生了，</p>
+
+<p>log记录目录 = basePath / logger / {fileName}.log log文件名，以 年月日 分文件，如今天是2014年02月18日期，那么 {fileName} = 20140218;
+还记得 php.ini 中设置的 seaslog.disting_type 吗？</p>
+
+<p>默认的 seaslog.disting_type = 0，如果今天我使用了 SeasLog ，那么将产生最终的log文件：</p>
+
+<p>*　LogFile = basePath / logger / 20140218.log
+如果 seaslog.disting_type = 1，则最终的log文件将是这样的三个文件</p>
+
+<ul>
+<li><p>infoLogFile = basePath / logger / INFO.20140218.log</p></li>
+<li><p>warnLogFile = basePath / logger / WARN.20140218.log</p></li>
+<li><p>erroLogFile = basePath / logger / ERRO.20140218.log</p></li>
+</ul>
+
+
+<pre><code>SeasLog::log(SEASLOG_ERROR,'this is a error test by ::log');
+
+SeasLog::debug('this is a {userName} debug',array('{userName}' =&gt; 'neeke'));
+
+SeasLog::info('this is a info log');
+
+SeasLog::notice('this is a notice log');
+
+SeasLog::warning('your {website} was down,please {action} it ASAP!',array('{website}' =&gt; 'github.com','{action}' =&gt; 'rboot'));
+
+SeasLog::error('a error log');
+
+SeasLog::critical('some thing was critical');
+
+SeasLog::alert('yes this is a {messageName}',array('{messageName}' =&gt; 'alertMSG'));
+
+SeasLog::emergency('Just now, the house next door was completely burnt out! {note}',array('{note}' =&gt; 'it`s a joke'));
+
+
+/*
+这些函数同时也接受第3个参数为logger的设置项
+注意，当last_logger == 'default'时等同于:
+SeasLog::setLogger('test/new/path');
+SeasLog::error('test error 3');
+如果已经在前文使用过SeasLog::setLogger()函数，第3个参数的log只在此处临时使用，不影响下文。
+*/
+</code></pre>
+
+<blockquote><p>log格式统一为： {type} | {pid} | {timeStamp} |{dateTime} | {logInfo}</p></blockquote>
+
+<pre><code>error | 23625 | 1406422432.786 | 2014:07:27 08:53:52 | this is a error test by log
+debug | 23625 | 1406422432.786 | 2014:07:27 08:53:52 | this is a neeke debug
+info | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | this is a info log
+notice | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | this is a notice log
+warning | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | your github.com was down,please rboot it ASAP!
+error | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | a error log
+critical | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | some thing was critical
+emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house next door was completely burnt out! it is a joke
+</code></pre>
+
+<h2>SeasLog Analyzer的使用</h2>
+
+<blockquote><p>快速统计某类型log的count值</p></blockquote>
+
+<p>SeasLog在扩展中使用管道调用shell命令 grep -wc快速地取得count值，并返回值(array || int)给PHP。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$countResult_1 = SeasLog::analyzerCount();
+</span><span class='line'>$countResult_2 = SeasLog::analyzerCount(SEASLOG_WARNING);
+</span><span class='line'>$countResult_3 = SeasLog::analyzerCount(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;var_dump($countResult_1,$countResult_2,$countResult_3);
+</span><span class='line'>/*
+</span><span class='line'>array(8) {
+</span><span class='line'>  [&ldquo;debug&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;info&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;notice&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;warning&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;error&rdquo;]=&gt;
+</span><span class='line'>  int(6)
+</span><span class='line'>  [&ldquo;critical&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;alert&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>  [&ldquo;emergency&rdquo;]=&gt;
+</span><span class='line'>  int(3)
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int(7)&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int(1)&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;*/</span></code></pre></td></tr></table></div></figure></p>
+
+<blockquote><p>获取某类型log列表</p></blockquote>
+
+<p>SeasLog在扩展中使用管道调用shell命令 grep -w快速地取得列表，并返回array给PHP。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$detailErrorArray_inAll   = SeasLog::analyzerDetail(SEASLOG_ERROR);
+</span><span class='line'>$detailErrorArray_today   = SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;var_dump($detailErrorArray_inAll,$detailErrorArray_today);&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;/&lt;em&gt;
+</span><span class='line'>SeasLog::analyzerDetail(SEASLOG_ERROR) == SeasLog::analyzerDetail(SEASLOG_ERROR,&lsquo;&lt;/em&gt;&rsquo;);
+</span><span class='line'>取当前模块下所有level为 SEASLOG_ERROR 的信息列表:
+</span><span class='line'>array(6) {
+</span><span class='line'> [0] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 &rdquo;
+</span><span class='line'>  [1] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 &rdquo;
+</span><span class='line'>  [2] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8620 | 1393172044.862 | 2014:02:24 00:14:04 | test error 3 &rdquo;
+</span><span class='line'>  [3] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8646 | 1393172045.989 | 2014:02:24 00:14:05 | test error 3 &rdquo;
+</span><span class='line'>  [4] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8672 | 1393172047.882 | 2014:02:24 00:14:07 | test error 3 &rdquo;
+</span><span class='line'>  [5] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8698 | 1393172048.736 | 2014:02:24 00:14:08 | test error 3 &rdquo;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ymd&rsquo;,time()));
+</span><span class='line'>只取得当前模块下，当前一天内,level为SEASLOG_ERROR 的信息列表:
+</span><span class='line'>array(2) {
+</span><span class='line'>  [0] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 &rdquo;
+</span><span class='line'>  [1] =&gt;
+</span><span class='line'>  string(66) &ldquo;error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 &rdquo;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;同理，取当月
+</span><span class='line'>$detailErrorArray_mouth = SeasLog::analyzerDetail(SEASLOG_ERROR,date(&lsquo;Ym&rsquo;,time()));&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;*/</span></code></pre></td></tr></table></div></figure></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP无限级分类]]></title>
@@ -766,30 +1326,6 @@ class wechatCallbackapiTest
 </code></pre>
 
 <p>除了以上功能外，微信公众平台还有很多的API接口可以调用，用以实现不同的功能，但是基本常用的API在开发文档上都有详细的教程，或者到baidu API 去检索你需要的功能。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Hllo]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/18/jikexueyuan/"/>
-    <updated>2016-04-18T15:18:17+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/18/jikexueyuan</id>
-    <content type="html"><![CDATA[<h1>Hello World！</h1>
-
-<h2>So Nice To Meet You！</h2>
-
-<p><strong>The New Blog of Ewan Reton</strong></p>
-
-<ul>
-<li>PHP
-
-<ul>
-<li>sql</li>
-</ul>
-</li>
-<li>HTML</li>
-</ul>
-
 ]]></content>
   </entry>
   
