@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-30T01:49:30+08:00</updated>
+  <updated>2016-04-30T01:50:51+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Octopress-code-highlight]]></title>
+    <title type="html"><![CDATA[Octopress代码高亮问题（Windows10）]]></title>
     <link href="http://ewanreton.github.io/blog/2016/04/30/octopress-code-highlight/"/>
     <updated>2016-04-30T00:57:01+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/30/octopress-code-highlight</id>
