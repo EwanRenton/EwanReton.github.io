@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-04-30T22:08:00+08:00</updated>
+  <updated>2016-05-02T00:16:59+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -183,72 +183,6 @@ username.github.io 来访问你的个人博客了</p>
 <hr />
 
 <p>PS： 第一次用自己搭的博客写博客，markdown语法用起来也不太熟悉。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to fix Octopress build warning Layout nil requested]]></title>
-    <link href="http://ewanreton.github.io/blog/2014/11/01/how-to-fix-octopress-build-warning-layout-nil-requested/"/>
-    <updated>2014-11-01T18:29:26+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2014/11/01/how-to-fix-octopress-build-warning-layout-nil-requested</id>
-    <content type="html"><![CDATA[<p>想要將之前寫的文章重新 Build 成靜態網頁的時候發生了錯誤，主要原因應該是對於 nill 值無法判定導致錯誤的問題，只要將有出現錯誤的檔案將 nill 改成 null 即可</p>
-
-<pre class="prettyprint text">
-$ rake generate
-## Generating Site with Jekyll
-unchanged sass/screen.scss
-Configuration file: /Users/Neo/Octopress/_config.yml
-            Source: source
-       Destination: public
-      Generating...
-     Build Warning: Layout 'nil'
-       requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-                    done.
- Auto-regeneration: disabled. Use --watch to enable.
-</pre>
-
-
-<p>Fix this error by replacing from file:</p>
-
-<blockquote><p>layout: nil</p></blockquote>
-
-<p>with:</p>
-
-<blockquote><p>layout: null</p></blockquote>
-
-<p>in files:</p>
-
-<ul>
-<li><strong>source/atom.xml</strong></li>
-<li><strong>source/_includes/custom/category_feed.xml</strong></li>
-</ul>
-
 ]]></content>
   </entry>
   
