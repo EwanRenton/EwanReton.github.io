@@ -9,9 +9,8 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="Octpress自定义配置和主题安装 Octpress 基本配置 在_config.yml文件中。可以直接修改title，author等基本信息。 # ----------------------- #
-# Main Configs #
-# ----------------------- # &hellip;">
+	<meta name="description" content="php PHP性能优化初识 PHP性能优化 一、PHP性能优化问题解析 PHP的性能问题，占整体项目性能问题的比例不足50%，所以在考虑性能优化项目的时候，不要局限于仅优化PHP。 PHP的性能优化问题的解决方向（困难度从容易到简单） PHP语言级的性能优化
+PHP周边问题的性能优化（开发环境等 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -99,6 +98,437 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-04T22:46:21+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/04/php-xing-neng-you-hua/" itemprop="url">PHP性能优化初识</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>PHP性能优化</p></blockquote>
+
+<h1>一、PHP性能优化问题解析</h1>
+
+<p>PHP的性能问题，占整体项目性能问题的比例不足50%，所以在考虑性能优化项目的时候，不要局限于仅优化PHP。</p>
+
+<p>PHP的性能优化问题的解决方向（困难度从容易到简单）</p>
+
+<pre><code>PHP语言级的性能优化
+PHP周边问题的性能优化（开发环境等）
+PHP语言自身分析、优化（底层C）
+</code></pre>
+
+<h2>压力测试工具简介</h2>
+
+<p><strong>Apache Benchmark（ab）</strong></p>
+
+<p>简介</p>
+
+<pre><code>ab是由Apache提供的压力测试软件。安装Apache服务器时会自带该压测软件。
+</code></pre>
+
+<p>如何使用</p>
+
+<pre><code>./ab -n1000 -c100 http://www.baidu.com （目标网址）
+-n 请求数
+-c 并发数
+url 目标压测地址
+</code></pre>
+
+<p>结果分析</p>
+
+<pre><code>主要看
+Request per second 每秒接受的请求数
+Time per request   一个请求的耗时
+</code></pre>
+
+<h1>二、PHP语言级的优化</h1>
+
+<p><strong>优化点：少写代码，多用PHP自身能力,多使用PHP内置的函数，变量，常量</strong></p>
+
+<p><strong>性能问题：自写代码冗余较多，可读性不佳，并且性能低</strong></p>
+
+<p>为什么性能低？</p>
+
+<pre><code>我们自己写的代码每次需要编译解析成底层语言，每一次请求都会处理一遍开销很大。
+</code></pre>
+
+<hr />
+
+<p><strong>PHP内置函数的性能优劣</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP内置函数之间依然存在着快慢差异
+</code></pre>
+
+<p>多去了解PHP内置函数的时间复杂度</p>
+
+<p>举例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$start</span><span class="o">=</span><span class="nx">current_time</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$arr</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">200000</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="nv">$i</span><span class="o">&lt;</span><span class="mi">200000</span><span class="p">){</span>
+</span><span class='line'>      <span class="o">++</span><span class="nv">$i</span><span class="p">;</span>
+</span><span class='line'>      <span class="c1">//isset($arr[$i]); //测试结果50多ms</span>
+</span><span class='line'>      <span class="nb">array_key_exists</span><span class="p">(</span><span class="nv">$i</span><span class="p">,</span><span class="nv">$arr</span><span class="p">);</span> <span class="c1">//测试结果80多ms</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nv">$end</span><span class="o">=</span><span class="nx">current_time</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;Lost Time:&quot;</span><span class="o">.</span><span class="nb">number_format</span><span class="p">(</span><span class="nv">$end</span><span class="o">-</span><span class="nv">$start</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="sd">/**</span>
+</span><span class='line'><span class="sd">  *返回一个微秒级别的时间戳</span>
+</span><span class='line'><span class="sd">  */</span>
+</span><span class='line'>  <span class="k">function</span> <span class="nf">current_time</span><span class="p">(){</span>
+</span><span class='line'>      <span class="k">list</span><span class="p">(</span><span class="nv">$usec</span><span class="p">,</span><span class="nv">$sec</span><span class="p">)</span><span class="o">=</span><span class="nb">explode</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nb">microtime</span><span class="p">());</span>
+</span><span class='line'>      <span class="k">return</span> <span class="p">((</span><span class="nx">float</span><span class="p">)</span><span class="nv">$usce</span><span class="o">+</span><span class="p">(</span><span class="nx">float</span><span class="p">)</span><span class="nv">$sec</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"> </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试结果说明isset比array_key_exists函数更优化。</p>
+
+<hr />
+
+<p><strong>减少PHP魔法函数的使用</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP提供的魔法函数性能不佳
+</code></pre>
+
+<p>举例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">test</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$var</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">__get</span><span class="p">(</span><span class="nv">$varname</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">var</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">while</span><span class="p">(</span><span class="nv">$i</span><span class="o">&lt;</span><span class="mi">10000</span><span class="o">-</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">=</span><span class="k">new</span> <span class="nx">test</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">-&gt;</span><span class="na">var</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="c1">//大概80ms</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">test</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nv">$var</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">//public function __get($varname){</span>
+</span><span class='line'>      <span class="c1">//return $this-&gt;var;</span>
+</span><span class='line'>  <span class="c1">//}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">while</span><span class="p">(</span><span class="nv">$i</span><span class="o">&lt;</span><span class="mi">100000</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">=</span><span class="k">new</span> <span class="nx">test</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">-&gt;</span><span class="na">var</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="c1">//大概50ms</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不使用魔法函数，性能更优化。</p>
+
+<p>PS：</p>
+
+<pre><code>在Linux中可以使用 time php test.php
+会输出三个时间，主要关注user为执行时间
+</code></pre>
+
+<hr />
+
+<p><strong>产生额外开销的错误抑制符@</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>@的实际逻辑是在代码开始前结束后增加Opcode 忽略报错。
+在@这行前加入Opcode忽略报错，又在这行结束后再加入Opcode，恢复报错。
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;XXX&quot;</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用VLD扩展看Opcode代码：</p>
+
+<pre><code>php -dvld.active=1 -dvld.execute=0 at.php //我们只看代码不执行
+
+有三行代码
+加上@符号后
+有五行代码
+</code></pre>
+
+<p>建议不要使用错误抑制符@，
+多使用try catch</p>
+
+<hr />
+
+<p><strong>合理使用内存</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP有内存回收机制保底，但也要小心使用内存。
+</code></pre>
+
+<p>利用unset（）及时释放不适用的内存（注：unset（）出现注销不掉的情况）</p>
+
+<hr />
+
+<p><strong>尽量少的使用正则表达式</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>正则表达式的回溯开销较大。
+</code></pre>
+
+<hr />
+
+<p><strong>避免在循环内做运算</strong></p>
+
+<p>情况描述:</p>
+
+<pre><code>循环内的计算式将会被重复计算
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;Hello World!&quot;</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nv">$i</span><span class="o">&lt;</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span><span class="nv">$i</span><span class="o">++</span><span class="p">){</span><span class="c1">//每次循环都会计算这个字符串的长度</span>
+</span><span class='line'>      <span class="c1">//do something</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>改进：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;Hello World!&quot;</span>
+</span><span class='line'>  <span class="nv">$strlen</span><span class="o">=</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$str</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nv">$i</span><span class="o">&lt;</span><span class="nv">$strlen</span><span class="p">;</span><span class="nv">$i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//do something</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p><strong>减少计算密集型业务</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP的语言特性决定了PHP不适合密集型运算的场景。
+因为PHP是基于C语言的，所以在处理大型运算的时候开销是比C大很多的。
+</code></pre>
+
+<p>适合的场景：</p>
+
+<pre><code>衔接Webserver与后端服务，UI呈现。
+</code></pre>
+
+<hr />
+
+<p><strong>务必使用带引号字符串做键值</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP会将没有引号的键值当做常量，产生查找常量的开销。
+</code></pre>
+
+<hr />
+
+<h1>三、PHP周边问题的性能优化</h1>
+
+<p><strong>Linux 运行环境</strong></p>
+
+<p><strong>减少文件类的操作</strong></p>
+
+<p>常见PHP场景的开销次序：</p>
+
+<pre><code>读写内存&lt;&lt;读写数据库（数据库有内存缓存）&lt;读写磁盘&lt;读写网络数据（网络延迟）
+</code></pre>
+
+<hr />
+
+<p><strong>优化网络请求</strong></p>
+
+<p>可能的问题：
+    1. 对方接口的不确定因素
+    2. 网络稳定性</p>
+
+<p>优化：</p>
+
+<pre><code>1. 设置超时时间
+    连接超时（２００ｍｓ）
+    读超时（８００ｍｓ）
+    写超时（５００ｍｓ）
+２.　串行请求并行化
+    使用curl_multi_*() //取决于最长的连接时间所以不推荐
+    使用swoole扩展　　
+</code></pre>
+
+<hr />
+
+<p><strong>压缩PHP接口输出</strong></p>
+
+<p>使用Gzip压缩即可</p>
+
+<p>优点：</p>
+
+<pre><code>利于我们的数据输出，Client能更快获取数据
+</code></pre>
+
+<p>缺点：</p>
+
+<pre><code>产生cpu额外开销
+</code></pre>
+
+<p>可以考虑当数据大于多少时再使用压缩来优化。</p>
+
+<hr />
+
+<p><strong>缓存重复计算的内容</strong></p>
+
+<p>什么情况下：</p>
+
+<pre><code>多次请求，内容不变 //使用模板渲染缓存 如smarty 开启caching
+</code></pre>
+
+<hr />
+
+<p><strong>重叠时间窗口思想和旁路方案</strong></p>
+
+<pre><code>在几个任务不强依赖前一个任务的输出或者返回时。可以在上一个任务没完成时就执行下一个任务
+</code></pre>
+
+<hr />
+
+<h1>四、PHP性能分析</h1>
+
+<p><strong>用XHPorf进行PHP性能问题的具体分析</strong></p>
+
+<p>XHPorf：源自Facebook的PHP性能优化工具
+其他工具：</p>
+
+<pre><code>ab -压力测试
+vld -opcode 代码分析
+</code></pre>
+
+<p><a href="http://www.imooc.com/video/4275">here</a></p>
+
+<h1>五、PHP性能瓶颈究极办法</h1>
+
+<p>Opcode Cache ： PHP扩展APC，memcache</p>
+
+<p>通过PHP扩展代替原PHP代码中高频逻辑</p>
+
+<p>Runtime优化： HHVM</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -3008,375 +3438,6 @@ mysql&gt;
 </code></pre>
 
 <p>————修改新密码成功</p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-04-26T18:55:40+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/linux/'>linux</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/26/linux-chang-yong-min-ling/" itemprop="url">Linux常用命令</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>Linux 命令总结</p></blockquote>
-
-<h1>一、常用目录作用</h1>
-
-<ul>
-<li>/ 根目录</li>
-<li>/bin 命令保存目录（普通用户可以读取的命令）</li>
-<li>/boot 启动目录，启动相关文件</li>
-<li>/dev  设备文件保存目录</li>
-<li>/etc  配置文件目录</li>
-<li>/home 普通用户家目录</li>
-<li>/lib  系统库保存目录</li>
-<li>/mnt  系统挂载目录</li>
-<li>/media    挂载目录</li>
-<li>/root 超级用户的家目录</li>
-<li>/tmp  临时目录</li>
-<li>/sbin 命令保存目录（超级用户才能使用）</li>
-<li>/proc 直接写入内存</li>
-<li>/sys  ~</li>
-<li><p>/usr  系统软件资源目录</p>
-
-<ul>
-<li>/usr/bin  系统命令（普通用户）</li>
-<li>/usr/sbin 系统命令（超级用户）</li>
-</ul>
-</li>
-<li><p>/var  系统相关文档</p></li>
-</ul>
-
-
-<hr />
-
-<h1>二、常用基本命令</h1>
-
-<h2>2.1 目录和文件处理命令</h2>
-
-<ul>
-<li><p>mkdir [选项] [目录名] 创建目录</p>
-
-<ul>
-<li>-p 递归创建</li>
-</ul>
-</li>
-<li><p>rm [选项] [目录名] 删除</p>
-
-<ul>
-<li>-r 删除目录</li>
-<li>-f 强制</li>
-</ul>
-</li>
-<li><p>mv [原文件或目录] [目标目录] 剪切或改名</p>
-
-<ul>
-<li>没有选项 剪切文件和目录使用相同命令</li>
-</ul>
-</li>
-<li>cp [选项] [原文件或目录] [目标目录]
-
-<ul>
-<li>-r 复制目录</li>
-<li>-p 连带文件属性复制</li>
-<li>-d 若源文件是连接文件，则赋值连接属性</li>
-<li>-a 相当于-pdr</li>
-</ul>
-</li>
-<li><p>cd</p>
-
-<ul>
-<li>~ 进入家目录</li>
-<li><ul>
-<li>进入上次目录</li>
-</ul>
-</li>
-<li>.. 进入上级目录</li>
-<li>. 进入当前目录</li>
-</ul>
-</li>
-<li><p>pwd 显示当前所在位置</p></li>
-<li><p>ls [选项] [目录]</p>
-
-<ul>
-<li>-l 长格式 详细信息</li>
-<li>-h 人性化显示大小 如-lh 会把大小变成能看懂的格式如128k</li>
-<li>-a 显示所有文件</li>
-<li>-d 查看目录属性</li>
-<li>-i 显示inode id号</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>2.2链接命令</h2>
-
-<ul>
-<li><p>硬链接 不推荐 ln  [原文件] [目标文件]</p>
-
-<ul>
-<li>拥有相同的i节点和存储block块，可以看做是同一个文件。相当于一个文件的两个接入。</li>
-<li>可以通过i节点识别</li>
-<li>不能跨分区</li>
-<li>不能针对目录使用</li>
-</ul>
-</li>
-<li><p>软链接</p>
-
-<ul>
-<li>类似Windows快捷方式</li>
-<li>软链接拥有自己的I节点和Block块，但是数据中只保存原文件的文件名和节点号，并没有实际文件数据</li>
-<li>lrwxrwxrwx l 软链接 软链接的权限都为 rwxrwxrwx、</li>
-<li>修改任意文件，另一个都改变</li>
-<li>删除原文件，软链接不能使用</li>
-</ul>
-</li>
-<li>ln -s [原文件] [目标文件] 软链接 （原文件一定要写绝对路径）</li>
-</ul>
-
-
-<h2>2.3 文件搜索命令</h2>
-
-<ul>
-<li>配置文件 /etc/updatedb.conf
-
-<ul>
-<li>PRUNE_BIND_MOUNTS=&ldquo;yes&rdquo; #开启器搜索限制</li>
-<li>PRUNEFS = #搜索时不搜索的文件系统</li>
-<li>PRUNENAMES = #搜索时不搜索的文件系统</li>
-<li>PRUNEPATHS = # 搜索时不搜多的路径</li>
-</ul>
-</li>
-<li><p>locate [文件名] 在后台数据库按文件名搜索，搜索速度较快</p>
-
-<ul>
-<li>/var/lib/mlocate #locate命令搜索的数据库</li>
-<li>updatadb 强制更新数据库（默认一天一更新）</li>
-</ul>
-</li>
-<li><p>whereis [选项] [命令] 搜索命令的命令 输出命令位置和帮助文档位置  只能查系统命令</p>
-
-<ul>
-<li>-b 只看命令所在位置</li>
-<li>-m 只看帮助文档所在位置</li>
-</ul>
-</li>
-<li><p>which [命令] 找到命令和别命</p></li>
-<li><p>find [搜索范围] [搜索文件]</p>
-
-<ul>
-<li>find / -name install.log</li>
-<li>避免大范围搜索，非常消耗系统资源</li>
-<li>*匹配任意内容</li>
-<li>？匹配任意一个字符</li>
-<li>[]任意中括号之内的一个内容</li>
-<li>find / -iname install.log 不区分大小写</li>
-<li>find / -user root 按所有者搜索</li>
-<li>find / -user -nouser 搜索没有所有者的文件</li>
-<li><p>find /var/log -mtime +10 查找十天前修改的文件</p>
-
-<ul>
-<li>atime 文件访问时间 -10 十天内</li>
-<li>ctime 改变文件属性  10 十天当天</li>
-<li>mtime 修改文件内容 +10 十天前</li>
-</ul>
-</li>
-<li><p>find . -size 25k 查找当前目录25k的文件</p>
-
-<ul>
-<li>-25 小于25k</li>
-<li>+25 大于25k</li>
-</ul>
-</li>
-<li><p>find . -inum xxx 查找当前目录i节点为XX的文件</p></li>
-<li>find /etc -size +20k -a -50k  ect下大于20k小于50k的问价
-
-<ul>
-<li>-a  and 逻辑与</li>
-<li>-o  or  逻辑或</li>
-</ul>
-</li>
-<li>find /etc -size +20k -a -50k -exec ls -lh {} \;将查找到的文件LS出来
-
-<ul>
-<li>-exec/-ok 命令 {} \ ; 对搜索结果执行操作、</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>grep [选项] 字符串 文件名 在文件中匹配符合条件的字符串</p>
-
-<ul>
-<li>-i 忽略大小写</li>
-<li>-v 排除指定字符串</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>2.4帮助命令</h2>
-
-<ul>
-<li><p>man  命令</p>
-
-<ul>
-<li>man一共有1-9级 man -f 命令 查看命令有几个帮助级别</li>
-<li>man [1-9] 命令 查看现有级别的帮助</li>
-</ul>
-</li>
-<li><p>&ndash;help    或许选项帮助</p>
-
-<ul>
-<li>ls &ndash;help 获取选项</li>
-</ul>
-</li>
-<li>help shell内部命令 获取shell内部命令帮助
-
-<ul>
-<li>用 whereis cd 来看是否为内部命令，没有执行文件则为内部命令</li>
-<li>如 help cd</li>
-</ul>
-</li>
-<li>info 详细命令帮助 太复杂 不常用
-
-<h1>2.5压缩与解压缩命令</h1></li>
-<li>常用压缩格式：.zip .gz .bz2 .tar.gz .tar.bz2</li>
-<li>zip [目标文件] [源文件]
-
-<ul>
-<li>zip -r [压缩目录名] [源目录]</li>
-<li>unzip [压缩文件] 解压缩</li>
-</ul>
-</li>
-<li>gzip [源文件] 生成.gz文件 #源文件消失
-
-<ul>
-<li>gzip -c 源文件 > 压缩文件 #压缩为.gz 源文件不消失</li>
-<li>gzip -r 压缩目录下所有子文件 但是不能压缩目录</li>
-<li>gzip -d 压缩包 #解压缩</li>
-<li>gunzip 压缩包 #解压缩</li>
-</ul>
-</li>
-<li>bz2 不能压缩目录
-
-<ul>
-<li>bzip2 源文件  #不保留源文件</li>
-<li>bzip2 -k 源文件  #保留源文件</li>
-<li>bzip2 -d 压缩包  #-k保留源文件</li>
-<li>bunzip2  压缩包  #-k保留源文件</li>
-</ul>
-</li>
-<li><p>tar -jcvf 压缩包名.tar.bz2 源文件</p>
-
-<ul>
-<li>-z 压缩为.tar.gz</li>
-<li>-c 打包</li>
-<li>-v 显示打包过程</li>
-<li>-f 指定打包后的文件名</li>
-</ul>
-</li>
-<li><p>tar -jxvf 压缩包名.tar.bz2 加 -C 指定解压缩位置</p>
-
-<ul>
-<li>-z 解压缩.tar.gz
-
-<h1>2.6关机重启命令</h1></li>
-</ul>
-</li>
-<li><p>shutdown [选项] [时间] &amp; #加&amp;表示在后台运行</p>
-
-<ul>
-<li>-c 取消前一个关机命令</li>
-<li>-h 关机</li>
-<li>-r 重启</li>
-</ul>
-</li>
-<li><p>poweroff</p></li>
-<li><p>reboot</p></li>
-<li><p>init 【0-6】</p>
-
-<ul>
-<li>0 关机</li>
-<li>1 单用户</li>
-<li>2 不完全多用户，不含NFS</li>
-<li>3 完全多用户</li>
-<li>4 未分配</li>
-<li>5 图形界面</li>
-<li>6 重启</li>
-</ul>
-</li>
-</ul>
-
-
-<h1>2.7挂载命令</h1>
-
-<ul>
-<li>mount #查看系统已挂载的设备</li>
-<li>mount -a #根据配置文件/etc/fstab 的内容 下的设备自动挂载</li>
-<li><p>mount [-t 文件系统] [-o 特殊选项] 设备文件名 挂载点</p>
-
-<ul>
-<li>-t ext3 ext4 iso9660（光盘）</li>
-</ul>
-</li>
-<li><p>挂载光盘</p>
-
-<ol>
-<li>mkdir /mnt/cdroom</li>
-<li>mount -t iso9660 /dev/sr0 /mnt/cdrom/ 其中-t在这里可省略因为系统知道sr0为光盘，知道它的文件系统。</li>
-<li>umount 设备文件名或挂载点 #卸载 必须卸载！！！</li>
-</ol>
-</li>
-<li><p>挂载U盘</p>
-
-<ol>
-<li>fdisk -l 查看系统中已经识别的硬盘</li>
-<li>mount -t vfat /dec/sdbx/mnt/usb/ #sdbX通过上一条命令查看可知</li>
-<li>Linux默认不支持NTFS文件系统，需要下载ntfs-3g安装可以挂载ntfs但是也只能读。</li>
-</ol>
-</li>
-</ul>
-
-
-<h1>2.8其他常用命令</h1>
-
-<ul>
-<li>用户登录查看
-
-<ul>
-<li>w  #查看登录登录用户的信息 输出一些信息 包括占用cpu等</li>
-<li>who</li>
-<li>输出 用户名 登录登录终端 登录时间和IP</li>
-<li>last 查询登录日志 /var/log/wtmp</li>
-<li>lastlog 查看每个用户的最后登录信息/var/log/lastlog</li>
-</ul>
-</li>
-</ul>
-
 
 		
 		

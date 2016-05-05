@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-02T00:38:58+08:00</updated>
+  <updated>2016-05-05T21:09:45+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,411 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP性能优化初识]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/04/php-xing-neng-you-hua/"/>
+    <updated>2016-05-04T22:46:21+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/04/php-xing-neng-you-hua</id>
+    <content type="html"><![CDATA[<blockquote><p>PHP性能优化</p></blockquote>
+
+<h1>一、PHP性能优化问题解析</h1>
+
+<p>PHP的性能问题，占整体项目性能问题的比例不足50%，所以在考虑性能优化项目的时候，不要局限于仅优化PHP。</p>
+
+<p>PHP的性能优化问题的解决方向（困难度从容易到简单）</p>
+
+<pre><code>PHP语言级的性能优化
+PHP周边问题的性能优化（开发环境等）
+PHP语言自身分析、优化（底层C）
+</code></pre>
+
+<h2>压力测试工具简介</h2>
+
+<p><strong>Apache Benchmark（ab）</strong></p>
+
+<p>简介</p>
+
+<pre><code>ab是由Apache提供的压力测试软件。安装Apache服务器时会自带该压测软件。
+</code></pre>
+
+<p>如何使用</p>
+
+<pre><code>./ab -n1000 -c100 http://www.baidu.com （目标网址）
+-n 请求数
+-c 并发数
+url 目标压测地址
+</code></pre>
+
+<p>结果分析</p>
+
+<pre><code>主要看
+Request per second 每秒接受的请求数
+Time per request   一个请求的耗时
+</code></pre>
+
+<h1>二、PHP语言级的优化</h1>
+
+<p><strong>优化点：少写代码，多用PHP自身能力,多使用PHP内置的函数，变量，常量</strong></p>
+
+<p><strong>性能问题：自写代码冗余较多，可读性不佳，并且性能低</strong></p>
+
+<p>为什么性能低？</p>
+
+<pre><code>我们自己写的代码每次需要编译解析成底层语言，每一次请求都会处理一遍开销很大。
+</code></pre>
+
+<hr />
+
+<p><strong>PHP内置函数的性能优劣</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP内置函数之间依然存在着快慢差异
+</code></pre>
+
+<p>多去了解PHP内置函数的时间复杂度</p>
+
+<p>举例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$start</span><span class="o">=</span><span class="nx">current_time</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$arr</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">200000</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="nv">$i</span><span class="o">&lt;</span><span class="mi">200000</span><span class="p">){</span>
+</span><span class='line'>      <span class="o">++</span><span class="nv">$i</span><span class="p">;</span>
+</span><span class='line'>      <span class="c1">//isset($arr[$i]); //测试结果50多ms</span>
+</span><span class='line'>      <span class="nb">array_key_exists</span><span class="p">(</span><span class="nv">$i</span><span class="p">,</span><span class="nv">$arr</span><span class="p">);</span> <span class="c1">//测试结果80多ms</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nv">$end</span><span class="o">=</span><span class="nx">current_time</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;Lost Time:&quot;</span><span class="o">.</span><span class="nb">number_format</span><span class="p">(</span><span class="nv">$end</span><span class="o">-</span><span class="nv">$start</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="sd">/**</span>
+</span><span class='line'><span class="sd">  *返回一个微秒级别的时间戳</span>
+</span><span class='line'><span class="sd">  */</span>
+</span><span class='line'>  <span class="k">function</span> <span class="nf">current_time</span><span class="p">(){</span>
+</span><span class='line'>      <span class="k">list</span><span class="p">(</span><span class="nv">$usec</span><span class="p">,</span><span class="nv">$sec</span><span class="p">)</span><span class="o">=</span><span class="nb">explode</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nb">microtime</span><span class="p">());</span>
+</span><span class='line'>      <span class="k">return</span> <span class="p">((</span><span class="nx">float</span><span class="p">)</span><span class="nv">$usce</span><span class="o">+</span><span class="p">(</span><span class="nx">float</span><span class="p">)</span><span class="nv">$sec</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"> </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试结果说明isset比array_key_exists函数更优化。</p>
+
+<hr />
+
+<p><strong>减少PHP魔法函数的使用</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP提供的魔法函数性能不佳
+</code></pre>
+
+<p>举例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">test</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="nv">$var</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">__get</span><span class="p">(</span><span class="nv">$varname</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">var</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">while</span><span class="p">(</span><span class="nv">$i</span><span class="o">&lt;</span><span class="mi">10000</span><span class="o">-</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">=</span><span class="k">new</span> <span class="nx">test</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">-&gt;</span><span class="na">var</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="c1">//大概80ms</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">test</span><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nv">$var</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">//public function __get($varname){</span>
+</span><span class='line'>      <span class="c1">//return $this-&gt;var;</span>
+</span><span class='line'>  <span class="c1">//}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="k">while</span><span class="p">(</span><span class="nv">$i</span><span class="o">&lt;</span><span class="mi">100000</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">=</span><span class="k">new</span> <span class="nx">test</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$test</span><span class="o">-&gt;</span><span class="na">var</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="c1">//大概50ms</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不使用魔法函数，性能更优化。</p>
+
+<p>PS：</p>
+
+<pre><code>在Linux中可以使用 time php test.php
+会输出三个时间，主要关注user为执行时间
+</code></pre>
+
+<hr />
+
+<p><strong>产生额外开销的错误抑制符@</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>@的实际逻辑是在代码开始前结束后增加Opcode 忽略报错。
+在@这行前加入Opcode忽略报错，又在这行结束后再加入Opcode，恢复报错。
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;XXX&quot;</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用VLD扩展看Opcode代码：</p>
+
+<pre><code>php -dvld.active=1 -dvld.execute=0 at.php //我们只看代码不执行
+
+有三行代码
+加上@符号后
+有五行代码
+</code></pre>
+
+<p>建议不要使用错误抑制符@，
+多使用try catch</p>
+
+<hr />
+
+<p><strong>合理使用内存</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP有内存回收机制保底，但也要小心使用内存。
+</code></pre>
+
+<p>利用unset（）及时释放不适用的内存（注：unset（）出现注销不掉的情况）</p>
+
+<hr />
+
+<p><strong>尽量少的使用正则表达式</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>正则表达式的回溯开销较大。
+</code></pre>
+
+<hr />
+
+<p><strong>避免在循环内做运算</strong></p>
+
+<p>情况描述:</p>
+
+<pre><code>循环内的计算式将会被重复计算
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;Hello World!&quot;</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nv">$i</span><span class="o">&lt;</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span><span class="nv">$i</span><span class="o">++</span><span class="p">){</span><span class="c1">//每次循环都会计算这个字符串的长度</span>
+</span><span class='line'>      <span class="c1">//do something</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>改进：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;Hello World!&quot;</span>
+</span><span class='line'>  <span class="nv">$strlen</span><span class="o">=</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$str</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nv">$i</span><span class="o">&lt;</span><span class="nv">$strlen</span><span class="p">;</span><span class="nv">$i</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//do something</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p><strong>减少计算密集型业务</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP的语言特性决定了PHP不适合密集型运算的场景。
+因为PHP是基于C语言的，所以在处理大型运算的时候开销是比C大很多的。
+</code></pre>
+
+<p>适合的场景：</p>
+
+<pre><code>衔接Webserver与后端服务，UI呈现。
+</code></pre>
+
+<hr />
+
+<p><strong>务必使用带引号字符串做键值</strong></p>
+
+<p>情况描述：</p>
+
+<pre><code>PHP会将没有引号的键值当做常量，产生查找常量的开销。
+</code></pre>
+
+<hr />
+
+<h1>三、PHP周边问题的性能优化</h1>
+
+<p><strong>Linux 运行环境</strong></p>
+
+<p><strong>减少文件类的操作</strong></p>
+
+<p>常见PHP场景的开销次序：</p>
+
+<pre><code>读写内存&lt;&lt;读写数据库（数据库有内存缓存）&lt;读写磁盘&lt;读写网络数据（网络延迟）
+</code></pre>
+
+<hr />
+
+<p><strong>优化网络请求</strong></p>
+
+<p>可能的问题：
+    1. 对方接口的不确定因素
+    2. 网络稳定性</p>
+
+<p>优化：</p>
+
+<pre><code>1. 设置超时时间
+    连接超时（２００ｍｓ）
+    读超时（８００ｍｓ）
+    写超时（５００ｍｓ）
+２.　串行请求并行化
+    使用curl_multi_*() //取决于最长的连接时间所以不推荐
+    使用swoole扩展　　
+</code></pre>
+
+<hr />
+
+<p><strong>压缩PHP接口输出</strong></p>
+
+<p>使用Gzip压缩即可</p>
+
+<p>优点：</p>
+
+<pre><code>利于我们的数据输出，Client能更快获取数据
+</code></pre>
+
+<p>缺点：</p>
+
+<pre><code>产生cpu额外开销
+</code></pre>
+
+<p>可以考虑当数据大于多少时再使用压缩来优化。</p>
+
+<hr />
+
+<p><strong>缓存重复计算的内容</strong></p>
+
+<p>什么情况下：</p>
+
+<pre><code>多次请求，内容不变 //使用模板渲染缓存 如smarty 开启caching
+</code></pre>
+
+<hr />
+
+<p><strong>重叠时间窗口思想和旁路方案</strong></p>
+
+<pre><code>在几个任务不强依赖前一个任务的输出或者返回时。可以在上一个任务没完成时就执行下一个任务
+</code></pre>
+
+<hr />
+
+<h1>四、PHP性能分析</h1>
+
+<p><strong>用XHPorf进行PHP性能问题的具体分析</strong></p>
+
+<p>XHPorf：源自Facebook的PHP性能优化工具
+其他工具：</p>
+
+<pre><code>ab -压力测试
+vld -opcode 代码分析
+</code></pre>
+
+<p><a href="http://www.imooc.com/video/4275">here</a></p>
+
+<h1>五、PHP性能瓶颈究极办法</h1>
+
+<p>Opcode Cache ： PHP扩展APC，memcache</p>
+
+<p>通过PHP扩展代替原PHP代码中高频逻辑</p>
+
+<p>Runtime优化： HHVM</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octpress自定义配置和主题安装]]></title>
