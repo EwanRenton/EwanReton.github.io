@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-10T21:53:33+08:00</updated>
+  <updated>2016-05-10T21:56:35+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,543 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[做死的Centos-Atom]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/10/centos-atom/"/>
+    <updated>2016-05-10T20:37:45+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/10/centos-atom</id>
+    <content type="html"><![CDATA[<blockquote><p>昨天晚上突然冒出一个念头在我的Centos6.5的虚拟机上装Atom并且装上那个炫酷的插件来装波大逼。然后很悲催，软件没装上不说，系统也被搞坏了。</p></blockquote>
+
+<h1>兴高采烈的去下Atom</h1>
+
+<p>在github上找到了Atom的<a href="https://github.com/atom/atom">开源项目</a>，根据指引下载好了rpm包。
+然后<code>sudo yum localinstall atom.x86_64.rpm</code></p>
+
+<p>不出意外出现了问题。</p>
+
+<p>当时忘了截图，不过我大概都还记得出了哪些问题。</p>
+
+<blockquote><p>这里有个极度懵逼的事情</p></blockquote>
+
+<pre><code>我最开始在Centos中下Atom由于网络不好，时断时续就没管，后来切过去看。
+咦~为什么这么快就下好了，开心的安装。恩，问题来了 libnode.so 找不到。
+恩，有问题嘛很正常。度娘之。
+
+度娘好像并不能告诉我什么，是时候翻墙了。翻出去过后的答案也是牛头不对马嘴。
+
+忧郁了好一会，突然发现尼玛，这个包只有20+MB啊！！！！
+</code></pre>
+
+<p><strong>这次包下好了完全没问题</strong></p>
+
+<p>安装中也出了一些问题。</p>
+
+<p>但是我记不太清楚了0。0</p>
+
+<pre><code>其实是因为出的问题太多了，本来想安装成功过后做一个总结，之前查得解决方案的网页也都存了书签。
+
+可是，后来软件没装好，系统被玩坏了。。书签和历史记录全部丢失了，，我就有点懵逼了。。。
+</code></pre>
+
+<p>解决了一些问题过后，安装完成了。</p>
+
+<p><strong>开心的atom想打开atom</strong></p>
+
+<p>恩，提莫的。</p>
+
+<p>error！ error！！</p>
+
+<p><strong>version `GLIBCXX_3.4.9' not found</strong></p>
+
+<p>因为我解决问题的博文已经搞丢了，刚刚重新找了一篇大概差不多
+<a href="http://blog.csdn.net/officercat/article/details/39520227">传送门</a></p>
+
+<pre><code class="php">$ ll /lib64/libc.so.6  
+lrwxrwxrwx 1 root root 19 Sep 23 08:29 /lib64/libc.so.6 -&gt; /lib64/libc-2.12.so  
+</code></pre>
+
+<p>libc.so.6是一个软连接，当前的glibc是2.12版本,我遇到的事GLIBC_2.15找不到的问题，所以需至少升级到2.15</p>
+
+<p>首先，从网上下载glibc 2.15的rpm安装包，但这个不容易，因为.rpm针对的是centOS和redhat，高版本安装包很少见。也可以直接从其他系统上好一个编译好的文件</p>
+
+<p>libc.so.6（对应glibc 2.15或者更高的），不过最保险的方式就是下载源代码在本地编译一次（有的人实在编译不成功，那也只能从别的地方找一份了）</p>
+
+<p>各个版本的glibc可以从<a href="http://ftp.gnu.org/gnu/glibc/">http://ftp.gnu.org/gnu/glibc/</a>找，包括其插件glibc-port</p>
+
+<p>最新到2.20，我保守的选择2.15</p>
+
+<p>对于低版本glibc，还有glibc-linuxthreads-2.x需要编译，可参考很多网上文档，但2.15没有，所以不用了
+```php
+wget <a href="http://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz">http://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz</a></p>
+
+<p>wget <a href="http://ftp.gnu.org/gnu/glibc/glibc-ports-2.15.tar.gz">http://ftp.gnu.org/gnu/glibc/glibc-ports-2.15.tar.gz</a></p>
+
+<p>tar -xvf  glibc-2.15.tar.gz</p>
+
+<p>tar -xvf  glibc-ports-2.15.tar.gz</p>
+
+<p>mv glibc-ports-2.15 glibc-2.15/ports</p>
+
+<p>mkdir glibc-build-2.15</p>
+
+<p>cd glibc-build-2.15</p>
+
+<p>../glibc-2.15/configure  &ndash;prefix=/usr &ndash;disable-profile &ndash;enable-add-ons &ndash;with-headers=/usr/include &ndash;with-binutils=/usr/bin</p>
+
+<p>make</p>
+
+<p>make install
+```</p>
+
+<p>如果提示install成功，去看glibc所在的共享库：</p>
+
+<pre><code>ll /lib64/libc* 
+</code></pre>
+
+<p>可以看到2.12的旧库文件还在，多了2.15版本的库文件，而且软链接文件全部指向了2.15版本。</p>
+
+<pre class="prettyprint">
+-rwxr-xr-x  1 root root 1921096 Aug 30 02:16 /lib64/libc-2.12.so  
+-rwxr-xr-x  1 root root 9801632 Sep 25 13:46 /lib64/libc-2.15.so  
+lrwxrwxrwx. 1 root root      18 May 19 18:51 /lib64/libcap-ng.so.0 -> libcap-ng.so.0.0.0  
+-rwxr-xr-x. 1 root root   18672 Jun 25  2011 /lib64/libcap-ng.so.0.0.0  
+lrwxrwxrwx. 1 root root      14 May 19 18:51 /lib64/libcap.so.2 -> libcap.so.2.16  
+-rwxr-xr-x  1 root root   19016 Dec  8  2011 /lib64/libcap.so.2.16  
+lrwxrwxrwx. 1 root root      19 May 19 18:57 /lib64/libcgroup.so.1 -> libcgroup.so.1.0.40  
+-rwxr-xr-x  1 root root   97016 Dec  9  2013 /lib64/libcgroup.so.1.0.40  
+-rwxr-xr-x  1 root root  197064 Aug 30 02:16 /lib64/libcidn-2.12.so  
+-rwxr-xr-x  1 root root  267972 Sep 25 13:46 /lib64/libcidn-2.15.so  
+lrwxrwxrwx  1 root root      15 Sep 25 13:52 /lib64/libcidn.so.1 -> libcidn-2.15.so  
+lrwxrwxrwx. 1 root root      17 May 19 18:51 /lib64/libcom_err.so.2 -> libcom_err.so.2.1  
+-rwxr-xr-x  1 root root   17256 Nov 22  2013 /lib64/libcom_err.so.2.1  
+-rwxr-xr-x  1 root root   40400 Aug 30 02:16 /lib64/libcrypt-2.12.so  
+-rwxr-xr-x  1 root root  142947 Sep 25 13:46 /lib64/libcrypt-2.15.so  
+lrwxrwxrwx. 1 root root      22 May 19 18:57 /lib64/libcryptsetup.so.1 -> libcryptsetup.so.1.1.0  
+-rwxr-xr-x  1 root root   97072 Jun 22  2012 /lib64/libcryptsetup.so.1.1.0  
+lrwxrwxrwx  1 root root      16 Sep 25 13:52 /lib64/libcrypt.so.1 -> libcrypt-2.15.so  
+lrwxrwxrwx  1 root root      12 Sep 25 13:52 /lib64/libc.so.6 -> libc-2.15.so  
+</pre>
+
+
+<p>有些人会在make install后出现error。这儿error我没去细究,经过网友提醒，可能是因为没有sudo造成的，因为make install就是把文件拷贝到几个受保护的系统目录下。</p>
+
+<p>如果还是不行，可以查看一下系统此时的GLIBC版本，参考一开始的做法。如果版本未升级，我们只能手动安装一下：</p>
+
+<p>首先make是成功了，那么我们会发现build目录下编译出了一个新的libc.so.6 （/glibc-build-2.15/libc.so.6， 我们会发现这实际上也是一个软连接，真实的lib文件时libc.so， 输出</p>
+
+<pre><code class="php">$ ll  libc.so.6  
+lrwxrwxrwx 1 root root 7 Sep 23 07:41 libc.so.6 -&gt; libc.so  
+[usr@linux glibc-build-2.15]$ strings libc.so | grep GLIBC  
+GLIBC_2.2.5  
+GLIBC_2.2.6  
+GLIBC_2.3  
+GLIBC_2.3.2  
+GLIBC_2.3.3  
+GLIBC_2.3.4  
+GLIBC_2.4  
+GLIBC_2.5  
+GLIBC_2.6  
+GLIBC_2.7  
+GLIBC_2.8  
+GLIBC_2.9  
+GLIBC_2.10  
+GLIBC_2.11  
+GLIBC_2.12  
+GLIBC_2.13  
+GLIBC_2.14  
+GLIBC_2.15  
+GLIBC_PRIVATE  
+</code></pre>
+
+<p>这是我们需要的lib了，然后去更新系统的库。</p>
+
+<p>这里要注意，更新系统里的链接（我的是/lib64/libc.so.6) 很容易出错，我不清楚有没有更好的办法，一般都是删除旧链接，建立新链接</p>
+
+<p>但删除旧链接后，很多命令直接不能用了，因为此时中不到glibc的库了。这个时候就需要临时指定一个glibc库，方法如下（libc.so改个名以便好以后更新的其他版本区分）</p>
+
+<pre><code class="php">[usr@linux cp /****/glibc-build-2.15/libc.so /lib64/libc-2.15.so  
+
+rm -rf /lib64/libc.so.6  
+LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6  
+</code></pre>
+
+<p>连接更新成功，再编译的话，GLIBC_2.15及以下版本的依赖问题就不会出现了。</p>
+
+<blockquote><p>恩，到这里我也有话要说，我当时也是耿直，在这一步我重复了两三次！！！我耿直到从低版本一个一个往高版本安装啊。我真傻，真的。。。</p>
+
+<hr />
+
+<p><strong>/usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.14' not found</strong></p></blockquote>
+
+<p>出现这种问题就是因为编译库的编译器和编译当前程序的编译器版本是不一样的，在具体一点就是因为，当前程序的编译器的版本是比较低的，只要升级一下就可以了。可以用如下命令查看一下当前GCC版本：</p>
+
+<pre class="prettyprint">
+strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  
+GLIBCXX_3.4  
+GLIBCXX_3.4.1  
+GLIBCXX_3.4.2  
+GLIBCXX_3.4.3  
+GLIBCXX_3.4.4  
+GLIBCXX_3.4.5  
+GLIBCXX_3.4.6  
+GLIBCXX_3.4.7  
+GLIBCXX_3.4.8  
+GLIBCXX_3.4.9  
+GLIBCXX_3.4.10  
+GLIBCXX_3.4.11  
+GLIBCXX_3.4.12  
+GLIBCXX_3.4.13  
+GLIBCXX_FORCE_NEW  
+GLIBCXX_DEBUG_MESSAGE_LENGTH  
+</pre>
+
+
+<p>并没有动态库中要求的GCC版本 “GLIBCXX_3.4.14”，所以需要进行升级一下我们的GCC版本，升级过程如下：</p>
+
+<p>下载新版本的GCC，地址为<a href="http://ftp.de.debian.org/debian/pool/main/g/gcc-4.7/libstdc++6_4.7.2-5_i386.deb">点击打开链接</a> （这里也有一个坑，今天真的是傻！！！）</p>
+
+<p>下载下来之后，用如下命令开始解压</p>
+
+<pre class="prettyprint">
+ar -x libstdc++6_4.7.2-5_i386.deb && tar xvf data.tar.gz  
+如果你的文件目录为GCC（如果不是，把GCC改为相应的目录即可），依次执行下面命令：
+
+
+cd GCC/usr/lib/i380-linux-gun 
+su root  
+cp libstdc++.so.6.0.17 /usr/lib 
+cd /usr/lib   
+rm libstdc++.so.6  
+ln -s libstdc++.so.6.0.17 libstdc++.so.6 
+strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  
+
+GLIBCXX_3.4  
+GLIBCXX_3.4.1  
+GLIBCXX_3.4.2  
+GLIBCXX_3.4.3  
+GLIBCXX_3.4.4  
+GLIBCXX_3.4.5  
+GLIBCXX_3.4.6  
+GLIBCXX_3.4.7  
+GLIBCXX_3.4.8  
+GLIBCXX_3.4.9  
+GLIBCXX_3.4.10  
+GLIBCXX_3.4.11  
+GLIBCXX_3.4.12  
+GLIBCXX_3.4.13  
+GLIBCXX_3.4.14  
+GLIBCXX_3.4.15  
+GLIBCXX_3.4.16  
+GLIBCXX_3.4.17  
+GLIBCXX_DEBUG_MESSAGE_LENGTH  
+</pre>
+
+
+<p>到这里其实就改结束了。可是回去atom</p>
+
+<p>恩。不错，不是原来的错误了，重新报了一个错误。（具体的错误我忘了）</p>
+
+<p>后来在解决的时候才发现这个错误是因为我之前下载安装的libstdc是32位的，但是我的Atom是64位的就出错了。然后再这个过程中，我之前以为是我创建软链接的时候创建错误，我把lib和lib64里面的<code>libstdc++.so.6</code> 都删了重新创建了一次。然后就GG了，这个时候连firefox浏览器都跟着崩溃了。后来意识到这个问题过后重新安装了64位的<code>libstdc++.so.6</code>解决了这个问题。</p>
+
+<p><strong>undefined symbol g_bytes_unref</strong></p>
+
+<p>这是遇到的最后的问题，也是彻底解决我的问题。。</p>
+
+<p>在国内的网站上很少有这个问题的解决方法，后来找到一个论坛说是因为
+<code>GBytes is relatively new, only since glib-2.32</code> 准备更新glib库</p>
+
+<p><a href="http://blog.chinaunix.net/uid-26000296-id-5159364.html">博文</a></p>
+
+<p>检查系统当前的版本
+<code>php
+ rpm -qi glibc
+</code></p>
+
+<p>在CentOS中用更新命令到2.5已经是最新版本了，只好手动下载 glibc的源码包编译安装更新。
+可以在 <a href="http://ftp.gnu.org/pub/gnu/glibc/%E7%9C%8B%E5%88%B0%E5%BD%93%E5%89%8D%E7%9A%84%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC%EF%BC%8C">http://ftp.gnu.org/pub/gnu/glibc/%E7%9C%8B%E5%88%B0%E5%BD%93%E5%89%8D%E7%9A%84%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC%EF%BC%8C</a>
+我看到的最新版本是glibc-2.22。</p>
+
+<pre><code class="php"> cd /usr/src 
+ mkdir glibc-2.22-build 
+ wget http://ftp.gnu.org/pub/gnu/glibc/glibc-2.22.tar.gz
+ tar zxvf glibc-2.22.tar.gz 
+ cd /usr/src/glibc-2.22-build/ 
+ export CFLAGS="-g -O2 -march=i686" 
+  网上有些地方加优化开关 -O2  时（大写字母O），写的是 -02 （数字零），
+  所以拷贝过来仍然出现3中的错误，所以请注意。
+ /usr/src/glibc-2.22-build/glibc-2.22/configure --prefix=/usr/src/glibc-2.22-build/ --with-headers=/usr/include
+ make 
+ make install
+</code></pre>
+
+<p>报错</p>
+
+<pre><code class="php">*** These critical programs are missing or too old: as ld compiler
+*** Check the INSTALL file for required versions.
+
+解决办法:
+问题原因： 
+缺少autoconf或版本太低
+
+
+下载安装新版本
+
+
+ wget ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.68.tar.gz
+ tar zxvf autoconf-2.68.tar.gz
+ cd autoconf-2.68
+ ./configure --prefix=/usr/
+ make &amp;&amp; make install
+</code></pre>
+
+<p>我进行到了这一步，然后虚拟机卡住了，卡了好久。。</p>
+
+<p>然后我干出了今天干过最蠢的事<strong>我直接用VM重启了它</strong>（我的Windows卡住就是这样干的[尴尬脸]）</p>
+
+<p>然后再开机我就懵逼了，我firefox的书签没了，历史记录没有，系统还报错。运行几分钟就一直卡住。。</p>
+
+<p>然后我就决定果断弃坑！！！！！</p>
+
+<p>PS： <strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
+
+<pre class="prettyprint">
+多么痛的领悟
+绝对不要随便强制重启！！！！
+用浏览器一定要登录，书签和历史记录才能同步啊！！！
+下次更新东西别再一个版本一个版本的往上装了，耿直过头啊！！！
+</pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linx下安装Git]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/09/linux-git/"/>
+    <updated>2016-05-09T23:25:34+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/09/linux-git</id>
+    <content type="html"><![CDATA[<blockquote><p>考试季过去了，准备开始将日常使用迁移到Linux下，今天想在Linux下装Git，开始觉得这应该是个很简单的事，谁知道这个花了好多时间。</p></blockquote>
+
+<p>首先在网上找了一个博文作为参考，<a href="http://blog.csdn.net/naola2001/article/details/43228769">传送门</a></p>
+
+<p>服务器端：</p>
+
+<pre class="prettyprint text">
+yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-devel
+wget https://github.com/git/git/archive/v2.2.0.tar.gz
+tar zxvf git-2.2.0.tar.gz
+cd git-2.2.0
+make prefix=/usr/local all
+make prefix=/usr/local install  root用户运行
+</pre>
+
+
+<pre><code class="php">如果编译时提示错误：
+LINK git-credential-store
+libgit.a(utf8.o): In function `reencode_string_iconv’:
+/opt/git-master/utf8.c:530: undefined reference to `libiconv’
+libgit.a(utf8.o): In function `reencode_string_len’:
+/opt/git-master/utf8.c:569: undefined reference to `libiconv_open’
+/opt/git-master/utf8.c:588: undefined reference to `libiconv_close’
+/opt/git-master/utf8.c:582: undefined reference to `libiconv_open’
+collect2: ld 返回 1
+make: *** [git-credential-store] 错误 1
+解决办法：
+
+cd /usr/local/src/
+wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+tar -zxvf libiconv-1.14.tar.gz
+cd libiconv-1.14
+./configure -prefix=/usr/local/libiconv  &amp;&amp;  make  &amp;&amp; sudo  make install
+然后回到git继续编译：
+
+cd /usr/local/src/git-1.8.5
+make configure
+./configure --prefix=/usr/local -with-iconv=/usr/local/libiconv
+make
+make install
+
+
+# git --version
+git version 2.2.0
+</code></pre>
+
+<p>按照教程，到这里应该就成功了。
+但是在解决了lib的错误后在回来执行 make 时遇到了错误
+<code>php
+In function `init_gettext_charset':
+/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset'
+collect2: ld returned 1 exit status
+</code></p>
+
+<p>解决方法：<a href="http://mono.1490590.n4.nabble.com/Can-t-compile-git-for-a-long-time-td3336232.html#a4312244">传送门</a>
+其中一个corey_yan的回答成功解决了问题</p>
+
+<pre><code>I encounter the same problem in centos 5.2 and try to solve it for a long time 
+
+libgit.a(gettext.o): In function `init_gettext_charset': 
+/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset' 
+collect2: ld returned 1 exit status 
+
+
+After checking the detail Link command 
+make -n | grep "git-daemon" 
+echo '   ' LINK git-daemon; 
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='&lt;openssl/sha.h&gt;'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcrypto -pthread 
+
+I try to change to 
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='&lt;openssl/sha.h&gt;'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcharset -lcrypto -pthread 
+
+Link error is missing:) 
+
+I try to modify Makefile 
+        EXTLIBS += $(ICONV_LINK) -liconv -lcharset 
+
+then 
+make successfully. 
+
+Hope it can help you.
+</code></pre>
+
+<p>步骤为:
+<code>php
+make -n | grep "git-daemon"
+echo '   ' LINK git-daemon;
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='&lt;openssl/sha.h&gt;'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcrypto -pthread
+//会报一个link错误
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='&lt;openssl/sha.h&gt;'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcharset -lcrypto -pthread
+//Link error is missing:)
+vim Makefile
+找到 EXTLIBS += $(ICONV_LINK) -liconv
+改为 EXTLIBS += $(ICONV_LINK) -liconv -lcharset  //保存退出
+重新make
+make install
+</code>
+成功解决问题。</p>
+
+<hr />
+
+<h1>在原博文下面还有一些功能的安装，现在还没设计到，不过也先贴出来</h1>
+
+<p><strong>下面来安装 gitosis</strong></p>
+
+<blockquote><p>gitosis为Git用户权限管理系统,通过管理服务端的authorized_key文件来执行对用户权限的管理，是一个Python模块包</p></blockquote>
+
+<pre><code class="php">yum install python python-setuptools
+cd /usr/local/src
+git clone git://github.com/res0nat0r/gitosis.git
+cd gitosis
+python setup.py install
+
+OK gitosis 安装成功！
+
+ 配置服务器git：
+0.1 输入以下两条命令
+git config --global user.name "Your Name Here"          
+git config --global user.email "your_email@example.com"  
+可以再输入git config -l查看上面两个是否设置
+</code></pre>
+
+<p><strong>在开发机上生成密钥并上传到服务器上</strong>
+```php
+ssh-keygen -t rsa   #一路回车，不需要设置密码
+scp ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp   #上传公钥到服务器(默认SSH端口22)
+或
+scp -P 3600  ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp</p>
+
+<p>5、服务器上生成git用户，使用git用户并初始化gitosis
+adduser -m git
+su – git
+gitosis-init &lt; /tmp/id_rsa.pub</p>
+
+<h1>显示以下信息即表示成功</h1>
+
+<h1>Initialized empty Git repository in /home/git/repositories/gitosis-admin.git/</h1>
+
+<h1>Reinitialized existing Git repository in /home/git/repositories/gitosis-admin.git/</h1>
+
+<h1>删除密钥</h1>
+
+<p>su – root
+rm -rf /tmp/id_rsa.pub
+禁用shell登录
+注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑/etc/passwd文件完成。找到类似下面的一行：
+[root@git ~]# cat /etc/passwd | grep git
+git:x:1001:1001:git version control:/home/git:/bin/bash</p>
+
+<p>改为：
+[root@git ~]# vim /etc/passwd
+git:x:1001:1001:git version control:/home/git:/usr/bin/git-shell</p>
+
+<p>这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git-shell每次一登录就自动退出。</p>
+
+<p>2，在git用户下，生成私钥和公钥。
+$ssh-keygen –t rsa
+3，在git用户下，拷入id_rsa.pub文件。
+$gitosis-init &lt; id_rsa.pub
+这样在git用户目录下生成了一些目录，gitosis，repositories。
+至此，安装工作完成。
+<code>
+**添加开发者**
+</code>php
+git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。
+$cat /tmp/id_rsa.pub.ubuntu >> authorized_keys
+创建项目仓库
+git管理人员操作：
+$mkdir /home/git/gitproject
+$cd gitproject
+$git &ndash;bare init （创建一个空项目）
+开发者提交项目
+ubuntu开发者操作：
+$git remote add origin git@gitserver:/opt/git/project.git
+$git push origin master
+这样其他开发者的工作也比较简单了：
+$git clone …
+$git push origin master</p>
+
+<p>cd /repo/gitosis-admin
+vim gitosis.conf
+在文件尾增加以下内容
+[group test]  组名称
+writable = test  项目名称
+members = jankerli 密钥用户名</p>
+
+<h1>提交修改</h1>
+
+<p>git add .
+git commit -a -m “add test repo”
+git push
+```
+<strong>初始，增加及使用项目test-git</strong></p>
+
+<pre><code class="php">cd /repo
+mkdir test-git
+cd test-git
+git inti
+touch readme
+git add .
+git commit -a -m “init test-git”
+git remote add origin git@xxx:test.git
+git push origin master
+</code></pre>
+
+<p><strong>在 test 项目新增用户</strong>
+①在新增用户的本机输入ssh-keygen -t rsa生成私钥公钥；
+②把生成的公钥id_rsa.pub上传或复制到 gitosis-admin/keydir文件夹下，并重名，如：jankerli.pub；
+③vim gitosis.conf
+<code>php
+在文件尾增加以下内容
+[group test]
+writable = test
+members = jankerli （此处增加新用户的名称，名称必须与上面重名的jankerli.pub一致，去掉.pub）
+④提交修改
+git add .
+git commit -a -m “add test repo”
+git push
+</code>
+⑤新用户便可通过 git clone git@xxx:test.git 克隆代码到本机了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[linux常用命令]]></title>
