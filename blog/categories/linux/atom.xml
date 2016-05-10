@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-10T21:56:35+08:00</updated>
+  <updated>2016-05-10T22:29:56+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -15,15 +15,16 @@
   
   <entry>
     <title type="html"><![CDATA[做死的Centos-Atom]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/10/centos-atom/"/>
+    <link href="http://ewanreton.github.io/blog/2016/05/10/linux-atom-error/"/>
     <updated>2016-05-10T20:37:45+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/10/centos-atom</id>
+    <id>http://ewanreton.github.io/blog/2016/05/10/linux-atom-error</id>
     <content type="html"><![CDATA[<blockquote><p>昨天晚上突然冒出一个念头在我的Centos6.5的虚拟机上装Atom并且装上那个炫酷的插件来装波大逼。然后很悲催，软件没装上不说，系统也被搞坏了。</p></blockquote>
 
 <h1>兴高采烈的去下Atom</h1>
 
-<p>在github上找到了Atom的<a href="https://github.com/atom/atom">开源项目</a>，根据指引下载好了rpm包。
-然后<code>sudo yum localinstall atom.x86_64.rpm</code></p>
+<p>在github上找到了Atom的<a href="https://github.com/atom/atom">开源项目</a>，根据指引下载好了rpm包。</p>
+
+<p>然后<code>sudo yum localinstall atom.x86_64.rpm</code></p>
 
 <p>不出意外出现了问题。</p>
 
@@ -59,49 +60,34 @@
 
 <p>error！ error！！</p>
 
-<p><strong>version `GLIBCXX_3.4.9' not found</strong></p>
+<p><strong>version GLIBCXX_3.4.9 not found</strong></p>
 
 <p>因为我解决问题的博文已经搞丢了，刚刚重新找了一篇大概差不多
 <a href="http://blog.csdn.net/officercat/article/details/39520227">传送门</a></p>
 
-<pre><code class="php">$ ll /lib64/libc.so.6  
+<pre><code class="php">ll /lib64/libc.so.6  
 lrwxrwxrwx 1 root root 19 Sep 23 08:29 /lib64/libc.so.6 -&gt; /lib64/libc-2.12.so  
 </code></pre>
 
-<p>libc.so.6是一个软连接，当前的glibc是2.12版本,我遇到的事GLIBC_2.15找不到的问题，所以需至少升级到2.15</p>
-
-<p>首先，从网上下载glibc 2.15的rpm安装包，但这个不容易，因为.rpm针对的是centOS和redhat，高版本安装包很少见。也可以直接从其他系统上好一个编译好的文件</p>
-
-<p>libc.so.6（对应glibc 2.15或者更高的），不过最保险的方式就是下载源代码在本地编译一次（有的人实在编译不成功，那也只能从别的地方找一份了）</p>
-
-<p>各个版本的glibc可以从<a href="http://ftp.gnu.org/gnu/glibc/">http://ftp.gnu.org/gnu/glibc/</a>找，包括其插件glibc-port</p>
-
-<p>最新到2.20，我保守的选择2.15</p>
-
-<p>对于低版本glibc，还有glibc-linuxthreads-2.x需要编译，可参考很多网上文档，但2.15没有，所以不用了
-```php
-wget <a href="http://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz">http://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz</a></p>
-
-<p>wget <a href="http://ftp.gnu.org/gnu/glibc/glibc-ports-2.15.tar.gz">http://ftp.gnu.org/gnu/glibc/glibc-ports-2.15.tar.gz</a></p>
-
-<p>tar -xvf  glibc-2.15.tar.gz</p>
-
-<p>tar -xvf  glibc-ports-2.15.tar.gz</p>
-
-<p>mv glibc-ports-2.15 glibc-2.15/ports</p>
-
-<p>mkdir glibc-build-2.15</p>
-
-<p>cd glibc-build-2.15</p>
-
-<p>../glibc-2.15/configure  &ndash;prefix=/usr &ndash;disable-profile &ndash;enable-add-ons &ndash;with-headers=/usr/include &ndash;with-binutils=/usr/bin</p>
-
-<p>make</p>
-
-<p>make install
-```</p>
-
-<p>如果提示install成功，去看glibc所在的共享库：</p>
+<p>libc.so.6是一个软连接，当前的glibc是2.12版本,我遇到的事GLIBC_2.15找不到的问题，所以需至少升级到2.15
+首先，从网上下载glibc 2.15的rpm安装包，但这个不容易，因为.rpm针对的是centOS和redhat，高版本安装包很少见。也可以直接从其他系统上好一个编译好的文件
+libc.so.6（对应glibc 2.15或者更高的），不过最保险的方式就是下载源代码在本地编译一次（有的人实在编译不成功，那也只能从别的地方找一份了）
+各个版本的glibc可以从<a href="http://ftp.gnu.org/gnu/glibc/">下载地址</a>找，包括其插件glibc-port
+最新到2.20，我保守的选择2.15
+对于低版本glibc，还有glibc-linuxthreads-2.x需要编译，可参考很多网上文档，但2.15没有，所以不用了
+<code>php
+wget http://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz   
+wget http://ftp.gnu.org/gnu/glibc/glibc-ports-2.15.tar.gz   
+tar -xvf  glibc-2.15.tar.gz  
+tar -xvf  glibc-ports-2.15.tar.gz   
+mv glibc-ports-2.15 glibc-2.15/ports   
+mkdir glibc-build-2.15    
+cd glibc-build-2.15   
+../glibc-2.15/configure  --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin  
+make   
+make install
+</code>
+如果提示install成功，去看glibc所在的共享库：</p>
 
 <pre><code>ll /lib64/libc* 
 </code></pre>
@@ -137,9 +123,10 @@ lrwxrwxrwx  1 root root      12 Sep 25 13:52 /lib64/libc.so.6 -> libc-2.15.so
 
 <p>首先make是成功了，那么我们会发现build目录下编译出了一个新的libc.so.6 （/glibc-build-2.15/libc.so.6， 我们会发现这实际上也是一个软连接，真实的lib文件时libc.so， 输出</p>
 
-<pre><code class="php">$ ll  libc.so.6  
+<pre><code class="php">
+$ ll  libc.so.6  
 lrwxrwxrwx 1 root root 7 Sep 23 07:41 libc.so.6 -&gt; libc.so  
-[usr@linux glibc-build-2.15]$ strings libc.so | grep GLIBC  
+$ strings libc.so | grep GLIBC  
 GLIBC_2.2.5  
 GLIBC_2.2.6  
 GLIBC_2.3  
@@ -167,7 +154,7 @@ GLIBC_PRIVATE
 
 <p>但删除旧链接后，很多命令直接不能用了，因为此时中不到glibc的库了。这个时候就需要临时指定一个glibc库，方法如下（libc.so改个名以便好以后更新的其他版本区分）</p>
 
-<pre><code class="php">[usr@linux cp /****/glibc-build-2.15/libc.so /lib64/libc-2.15.so  
+<pre><code class="php"> cp /****/glibc-build-2.15/libc.so /lib64/libc-2.15.so  
 
 rm -rf /lib64/libc.so.6  
 LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6  
@@ -175,11 +162,13 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6
 
 <p>连接更新成功，再编译的话，GLIBC_2.15及以下版本的依赖问题就不会出现了。</p>
 
-<blockquote><p>恩，到这里我也有话要说，我当时也是耿直，在这一步我重复了两三次！！！我耿直到从低版本一个一个往高版本安装啊。我真傻，真的。。。</p>
+<blockquote><p>恩，到这里我也有话要说，我当时也是耿直，在这一步我重复了两三次！！！我耿直到从低版本一个一个往高版本安装啊。我真傻，真的。。。</p></blockquote>
 
 <hr />
 
-<p><strong>/usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.14' not found</strong></p></blockquote>
+<p><strong> /usr/lib/libstdc++.so.6: version `GLIBCXX_3.4.14' not found</strong></p>
+
+<p><a href="http://blog.csdn.net/xiaolong2w/article/details/23915171">传送门</a></p>
 
 <p>出现这种问题就是因为编译库的编译器和编译当前程序的编译器版本是不一样的，在具体一点就是因为，当前程序的编译器的版本是比较低的，只要升级一下就可以了。可以用如下命令查看一下当前GCC版本：</p>
 
@@ -304,13 +293,15 @@ GLIBCXX_DEBUG_MESSAGE_LENGTH
 
 <p>我进行到了这一步，然后虚拟机卡住了，卡了好久。。</p>
 
-<p>然后我干出了今天干过最蠢的事<strong>我直接用VM重启了它</strong>（我的Windows卡住就是这样干的[尴尬脸]）</p>
+<p>然后我干出了今天干过最蠢的事<strong>我直接用VM重启了它</strong>（我的Windows卡住就是这样干的(尴尬脸)）</p>
 
 <p>然后再开机我就懵逼了，我firefox的书签没了，历史记录没有，系统还报错。运行几分钟就一直卡住。。</p>
 
 <p>然后我就决定果断弃坑！！！！！</p>
 
-<p>PS： <strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
+<p>PS：</p>
+
+<p><strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
 
 <pre class="prettyprint">
 多么痛的领悟
@@ -450,75 +441,141 @@ git config --global user.email "your_email@example.com"
 </code></pre>
 
 <p><strong>在开发机上生成密钥并上传到服务器上</strong>
-```php
-ssh-keygen -t rsa   #一路回车，不需要设置密码
-scp ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp   #上传公钥到服务器(默认SSH端口22)
-或
-scp -P 3600  ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp</p>
-
-<p>5、服务器上生成git用户，使用git用户并初始化gitosis
-adduser -m git
-su – git
-gitosis-init &lt; /tmp/id_rsa.pub</p>
-
-<h1>显示以下信息即表示成功</h1>
-
-<h1>Initialized empty Git repository in /home/git/repositories/gitosis-admin.git/</h1>
-
-<h1>Reinitialized existing Git repository in /home/git/repositories/gitosis-admin.git/</h1>
-
-<h1>删除密钥</h1>
-
-<p>su – root
-rm -rf /tmp/id_rsa.pub
-禁用shell登录
-注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑/etc/passwd文件完成。找到类似下面的一行：
-[root@git ~]# cat /etc/passwd | grep git
-git:x:1001:1001:git version control:/home/git:/bin/bash</p>
-
-<p>改为：
-[root@git ~]# vim /etc/passwd
-git:x:1001:1001:git version control:/home/git:/usr/bin/git-shell</p>
-
-<p>这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git-shell每次一登录就自动退出。</p>
-
-<p>2，在git用户下，生成私钥和公钥。
-$ssh-keygen –t rsa
-3，在git用户下，拷入id_rsa.pub文件。
-$gitosis-init &lt; id_rsa.pub
-这样在git用户目录下生成了一些目录，gitosis，repositories。
-至此，安装工作完成。
-<code>
-**添加开发者**
-</code>php
-git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。
-$cat /tmp/id_rsa.pub.ubuntu >> authorized_keys
-创建项目仓库
-git管理人员操作：
-$mkdir /home/git/gitproject
-$cd gitproject
-$git &ndash;bare init （创建一个空项目）
-开发者提交项目
-ubuntu开发者操作：
-$git remote add origin git@gitserver:/opt/git/project.git
-$git push origin master
-这样其他开发者的工作也比较简单了：
-$git clone …
-$git push origin master</p>
-
-<p>cd /repo/gitosis-admin
-vim gitosis.conf
-在文件尾增加以下内容
-[group test]  组名称
-writable = test  项目名称
-members = jankerli 密钥用户名</p>
-
-<h1>提交修改</h1>
-
-<p>git add .
-git commit -a -m “add test repo”
-git push
-```
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">rsa</span>   <span class="c1">#一路回车，不需要设置密码</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>   <span class="c1">#上传公钥到服务器(默认SSH端口22)</span>
+</span><span class='line'><span class="nx">或</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">-</span><span class="nx">P</span> <span class="mi">3600</span>  <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="mi">5</span><span class="nx">、服务器上生成git用户，使用git用户并初始化gitosis</span>
+</span><span class='line'><span class="nx">adduser</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">显示以下信息即表示成功</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Initialized</span> <span class="k">empty</span> <span class="nx">Git</span> <span class="nx">repository</span> <span class="nx">in</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">repositories</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span><span class="o">.</span><span class="nx">git</span><span class="o">/&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Reinitialized</span> <span class="nx">existing</span> <span class="nx">Git</span> <span class="nx">repository</span> <span class="nx">in</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">repositories</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span><span class="o">.</span><span class="nx">git</span><span class="o">/&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">删除密钥</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">su</span> <span class="nx">–</span> <span class="nx">root</span>
+</span><span class='line'><span class="nx">rm</span> <span class="o">-</span><span class="nx">rf</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">禁用shell登录</span>
+</span><span class='line'><span class="nx">注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑</span><span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">passwd文件完成。找到类似下面的一行：</span>
+</span><span class='line'><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="p">]</span><span class="c1"># cat /etc/passwd | grep git</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">bash</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">改为：</span>
+</span><span class='line'><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="p">]</span><span class="c1"># vim /etc/passwd</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">shell</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git</span><span class="o">-</span><span class="nx">shell每次一登录就自动退出。</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="mi">2</span><span class="nx">，在git用户下，生成私钥和公钥。</span>
+</span><span class='line'><span class="nv">$ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="nx">–t</span> <span class="nx">rsa</span>
+</span><span class='line'><span class="mi">3</span><span class="nx">，在git用户下，拷入id_rsa</span><span class="o">.</span><span class="nx">pub文件。</span>
+</span><span class='line'><span class="nv">$gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">这样在git用户目录下生成了一些目录，gitosis，repositories。</span>
+</span><span class='line'><span class="nx">至此，安装工作完成。</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">**</span><span class="nx">添加开发者</span><span class="o">**</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">php</span>
+</span><span class='line'><span class="nx">git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。</span>
+</span><span class='line'><span class="nv">$cat</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span><span class="o">.</span><span class="nx">ubuntu</span> <span class="o">&gt;&gt;</span> <span class="nx">authorized_keys</span>
+</span><span class='line'><span class="nx">创建项目仓库</span>
+</span><span class='line'><span class="nx">git管理人员操作：</span>
+</span><span class='line'><span class="nv">$mkdir</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$cd</span> <span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$git</span> <span class="o">&amp;</span><span class="nx">ndash</span><span class="p">;</span><span class="nx">bare</span> <span class="nx">init</span> <span class="nx">（创建一个空项目）</span>
+</span><span class='line'><span class="nx">开发者提交项目</span>
+</span><span class='line'><span class="nx">ubuntu开发者操作：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">gitserver</span><span class="o">:/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">project</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span><span class='line'><span class="nx">这样其他开发者的工作也比较简单了：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="k">clone</span> <span class="nx">…</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span>
+</span><span class='line'><span class="nx">vim</span> <span class="nx">gitosis</span><span class="o">.</span><span class="nx">conf</span>
+</span><span class='line'><span class="nx">在文件尾增加以下内容</span>
+</span><span class='line'><span class="p">[</span><span class="nx">group</span> <span class="nx">test</span><span class="p">]</span>  <span class="nx">组名称</span>
+</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>  <span class="nx">项目名称</span>
+</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">密钥用户名</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">提交修改</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
+</span></code></pre></td></tr></table></div></figure>
 <strong>初始，增加及使用项目test-git</strong></p>
 
 <pre><code class="php">cd /repo
@@ -538,7 +595,7 @@ git push origin master
 ③vim gitosis.conf
 <code>php
 在文件尾增加以下内容
-[group test]
+\[group test\]
 writable = test
 members = jankerli （此处增加新用户的名称，名称必须与上面重名的jankerli.pub一致，去掉.pub）
 ④提交修改

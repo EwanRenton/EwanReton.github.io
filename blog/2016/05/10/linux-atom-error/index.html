@@ -1,0 +1,595 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>做死的Centos-Atom - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="做死的Centos-Atom 昨天晚上突然冒出一个念头在我的Centos6.5的虚拟机上装Atom并且装上那个炫酷的插件来装波大逼。然后很悲催，软件没装上不说，系统也被搞坏了。 兴高采烈的去下Atom 在github上找到了Atom的开源项目，根据指引下载好了rpm包。 然后sudo yum &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/10/linux-atom-error/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">做死的Centos-Atom</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>昨天晚上突然冒出一个念头在我的Centos6.5的虚拟机上装Atom并且装上那个炫酷的插件来装波大逼。然后很悲催，软件没装上不说，系统也被搞坏了。</p></blockquote>
+
+<h1>兴高采烈的去下Atom</h1>
+
+<p>在github上找到了Atom的<a href="https://github.com/atom/atom">开源项目</a>，根据指引下载好了rpm包。</p>
+
+<p>然后<code>sudo yum localinstall atom.x86_64.rpm</code></p>
+
+<p>不出意外出现了问题。</p>
+
+<p>当时忘了截图，不过我大概都还记得出了哪些问题。</p>
+
+<blockquote><p>这里有个极度懵逼的事情</p></blockquote>
+
+<pre><code>我最开始在Centos中下Atom由于网络不好，时断时续就没管，后来切过去看。
+咦~为什么这么快就下好了，开心的安装。恩，问题来了 libnode.so 找不到。
+恩，有问题嘛很正常。度娘之。
+
+度娘好像并不能告诉我什么，是时候翻墙了。翻出去过后的答案也是牛头不对马嘴。
+
+忧郁了好一会，突然发现尼玛，这个包只有20+MB啊！！！！
+</code></pre>
+
+<p><strong>这次包下好了完全没问题</strong></p>
+
+<p>安装中也出了一些问题。</p>
+
+<p>但是我记不太清楚了0。0</p>
+
+<pre><code>其实是因为出的问题太多了，本来想安装成功过后做一个总结，之前查得解决方案的网页也都存了书签。
+
+可是，后来软件没装好，系统被玩坏了。。书签和历史记录全部丢失了，，我就有点懵逼了。。。
+</code></pre>
+
+<p>解决了一些问题过后，安装完成了。</p>
+
+<p><strong>开心的atom想打开atom</strong></p>
+
+<p>恩，提莫的。</p>
+
+<p>error！ error！！</p>
+
+<p><strong>version GLIBCXX_3.4.9 not found</strong></p>
+
+<p>因为我解决问题的博文已经搞丢了，刚刚重新找了一篇大概差不多
+<a href="http://blog.csdn.net/officercat/article/details/39520227">传送门</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ll</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">19</span> <span class="nx">Sep</span> <span class="mi">23</span> <span class="mi">08</span><span class="o">:</span><span class="mi">29</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>libc.so.6是一个软连接，当前的glibc是2.12版本,我遇到的事GLIBC_2.15找不到的问题，所以需至少升级到2.15
+首先，从网上下载glibc 2.15的rpm安装包，但这个不容易，因为.rpm针对的是centOS和redhat，高版本安装包很少见。也可以直接从其他系统上好一个编译好的文件
+libc.so.6（对应glibc 2.15或者更高的），不过最保险的方式就是下载源代码在本地编译一次（有的人实在编译不成功，那也只能从别的地方找一份了）
+各个版本的glibc可以从<a href="http://ftp.gnu.org/gnu/glibc/">下载地址</a>找，包括其插件glibc-port
+最新到2.20，我保守的选择2.15
+对于低版本glibc，还有glibc-linuxthreads-2.x需要编译，可参考很多网上文档，但2.15没有，所以不用了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">glibc</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">glibc</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="nx">ports</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">tar</span> <span class="o">-</span><span class="nx">xvf</span>  <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">tar</span> <span class="o">-</span><span class="nx">xvf</span>  <span class="nx">glibc</span><span class="o">-</span><span class="nx">ports</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">mv</span> <span class="nx">glibc</span><span class="o">-</span><span class="nx">ports</span><span class="o">-</span><span class="mf">2.15</span> <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">/</span><span class="nx">ports</span>
+</span><span class='line'><span class="nb">mkdir</span> <span class="nx">glibc</span><span class="o">-</span><span class="nx">build</span><span class="o">-</span><span class="mf">2.15</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">glibc</span><span class="o">-</span><span class="nx">build</span><span class="o">-</span><span class="mf">2.15</span>
+</span><span class='line'><span class="o">../</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">/</span><span class="nx">configure</span>  <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span> <span class="o">--</span><span class="nx">disable</span><span class="o">-</span><span class="nx">profile</span> <span class="o">--</span><span class="nx">enable</span><span class="o">-</span><span class="nx">add</span><span class="o">-</span><span class="nx">ons</span> <span class="o">--</span><span class="nx">with</span><span class="o">-</span><span class="nx">headers</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="k">include</span> <span class="o">--</span><span class="nx">with</span><span class="o">-</span><span class="nx">binutils</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">bin</span>
+</span><span class='line'><span class="nx">make</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果提示install成功，去看glibc所在的共享库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ll</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">*</span>
+</span><span class='line'> <span class="sb">``</span><span class="err">`</span>
+</span><span class='line'><span class="nx">可以看到2</span><span class="o">.</span><span class="mi">12</span><span class="nx">的旧库文件还在，多了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本的库文件，而且软链接文件全部指向了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本。</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">1921096</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">9801632</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">18</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">0</span> <span class="o">-&gt;</span> <span class="na">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">18672</span> <span class="nx">Jun</span> <span class="mi">25</span>  <span class="mi">2011</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">14</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">2</span> <span class="o">-&gt;</span> <span class="na">libcap</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.16</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">19016</span> <span class="nx">Dec</span>  <span class="mi">8</span>  <span class="mi">2011</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.16</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">19</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">57</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcgroup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcgroup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">40</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">97016</span> <span class="nx">Dec</span>  <span class="mi">9</span>  <span class="mi">2013</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcgroup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">40</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>  <span class="mi">197064</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcidn</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>  <span class="mi">267972</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcidn</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">15</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">52</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcidn</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcidn</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">17</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcom_err</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">2</span> <span class="o">-&gt;</span> <span class="na">libcom_err</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.1</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">17256</span> <span class="nx">Nov</span> <span class="mi">22</span>  <span class="mi">2013</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcom_err</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.1</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">40400</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcrypt</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>  <span class="mi">142947</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcrypt</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">22</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">57</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcryptsetup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcryptsetup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">97072</span> <span class="nx">Jun</span> <span class="mi">22</span>  <span class="mi">2012</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcryptsetup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">16</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">52</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcrypt</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcrypt</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">12</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">52</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span> <span class="o">-&gt;</span> <span class="na">libc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">有些人会在make</span> <span class="nx">install后出现error。这儿error我没去细究</span><span class="p">,</span><span class="nx">经过网友提醒，可能是因为没有sudo造成的，因为make</span> <span class="nx">install就是把文件拷贝到几个受保护的系统目录下。</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">如果还是不行，可以查看一下系统此时的GLIBC版本，参考一开始的做法。如果版本未升级，我们只能手动安装一下：</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">首先make是成功了，那么我们会发现build目录下编译出了一个新的libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span> <span class="nx">（</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="nx">build</span><span class="o">-</span><span class="mf">2.15</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="nx">，</span> <span class="nx">我们会发现这实际上也是一个软连接，真实的lib文件时libc</span><span class="o">.</span><span class="nx">so，</span> <span class="nx">输出</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>php</p>
+
+<p>$ ll  libc.so.6<br/>
+lrwxrwxrwx 1 root root 7 Sep 23 07:41 libc.so.6 -> libc.so<br/>
+$ strings libc.so | grep GLIBC<br/>
+GLIBC_2.2.5<br/>
+GLIBC_2.2.6<br/>
+GLIBC_2.3<br/>
+GLIBC_2.3.2<br/>
+GLIBC_2.3.3<br/>
+GLIBC_2.3.4<br/>
+GLIBC_2.4<br/>
+GLIBC_2.5<br/>
+GLIBC_2.6<br/>
+GLIBC_2.7<br/>
+GLIBC_2.8<br/>
+GLIBC_2.9<br/>
+GLIBC_2.10<br/>
+GLIBC_2.11<br/>
+GLIBC_2.12<br/>
+GLIBC_2.13<br/>
+GLIBC_2.14<br/>
+GLIBC_2.15<br/>
+GLIBC_PRIVATE</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">这是我们需要的lib了，然后去更新系统的库。</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">这里要注意，更新系统里的链接（我的是</span><span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="p">)</span> <span class="nx">很容易出错，我不清楚有没有更好的办法，一般都是删除旧链接，建立新链接</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">但删除旧链接后，很多命令直接不能用了，因为此时中不到glibc的库了。这个时候就需要临时指定一个glibc库，方法如下（libc</span><span class="o">.</span><span class="nx">so改个名以便好以后更新的其他版本区分）</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>php
+ cp /****/glibc-build-2.15/libc.so /lib64/libc-2.15.so</p>
+
+<p>rm -rf /lib64/libc.so.6<br/>
+LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">连接更新成功，再编译的话，GLIBC_2</span><span class="o">.</span><span class="mi">15</span><span class="nx">及以下版本的依赖问题就不会出现了。</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span><span class="nx">恩，到这里我也有话要说，我当时也是耿直，在这一步我重复了两三次！！！我耿直到从低版本一个一个往高版本安装啊。我真傻，真的。。。</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">***</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">**</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">libstdc</span><span class="o">++.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="o">:</span> <span class="nx">version</span> <span class="sb">`GLIBCXX_3.4.14&#39; not found**</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">[传送门](http://blog.csdn.net/xiaolong2w/article/details/23915171)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">出现这种问题就是因为编译库的编译器和编译当前程序的编译器版本是不一样的，在具体一点就是因为，当前程序的编译器的版本是比较低的，只要升级一下就可以了。可以用如下命令查看一下当前GCC版本：</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.1  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.2  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.3  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.5  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.6  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.7  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.8  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.9  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.10  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.11  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.12  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.13  </span>
+</span><span class='line'><span class="sb">GLIBCXX_FORCE_NEW  </span>
+</span><span class='line'><span class="sb">GLIBCXX_DEBUG_MESSAGE_LENGTH  </span>
+</span><span class='line'><span class="sb">&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">并没有动态库中要求的GCC版本 “GLIBCXX_3.4.14”，所以需要进行升级一下我们的GCC版本，升级过程如下：</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">下载新版本的GCC，地址为[点击打开链接](http://ftp.de.debian.org/debian/pool/main/g/gcc-4.7/libstdc++6_4.7.2-5_i386.deb) （这里也有一个坑，今天真的是傻！！！）</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">下载下来之后，用如下命令开始解压</span>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">ar -x libstdc++6_4.7.2-5_i386.deb &amp;&amp; tar xvf data.tar.gz  </span>
+</span><span class='line'><span class="sb">如果你的文件目录为GCC（如果不是，把GCC改为相应的目录即可），依次执行下面命令：</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">cd GCC/usr/lib/i380-linux-gun </span>
+</span><span class='line'><span class="sb">su root  </span>
+</span><span class='line'><span class="sb">cp libstdc++.so.6.0.17 /usr/lib </span>
+</span><span class='line'><span class="sb">cd /usr/lib   </span>
+</span><span class='line'><span class="sb">rm libstdc++.so.6  </span>
+</span><span class='line'><span class="sb">ln -s libstdc++.so.6.0.17 libstdc++.so.6 </span>
+</span><span class='line'><span class="sb">strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  </span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">GLIBCXX_3.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.1  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.2  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.3  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.5  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.6  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.7  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.8  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.9  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.10  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.11  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.12  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.13  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.14  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.15  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.16  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.17  </span>
+</span><span class='line'><span class="sb">GLIBCXX_DEBUG_MESSAGE_LENGTH  </span>
+</span><span class='line'><span class="sb">&lt;/pre&gt;</span>
+</span><span class='line'><span class="sb">到这里其实就改结束了。可是回去atom </span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">恩。不错，不是原来的错误了，重新报了一个错误。（具体的错误我忘了）</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">后来在解决的时候才发现这个错误是因为我之前下载安装的libstdc是32位的，但是我的Atom是64位的就出错了。然后再这个过程中，我之前以为是我创建软链接的时候创建错误，我把lib和lib64里面的```</span><span class="nx">libstdc</span><span class="o">++.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="sb">``` 都删了重新创建了一次。然后就GG了，这个时候连firefox浏览器都跟着崩溃了。后来意识到这个问题过后重新安装了64位的```</span><span class="nx">libstdc</span><span class="o">++.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="sb">``</span><span class="err">`</span><span class="nx">解决了这个问题。</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">**</span><span class="nx">undefined</span> <span class="nx">symbol</span> <span class="nx">g_bytes_unref</span><span class="o">**</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">这是遇到的最后的问题，也是彻底解决我的问题。。</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">在国内的网站上很少有这个问题的解决方法，后来找到一个论坛说是因为</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>GBytes is relatively new, only since glib-2.32``` 准备更新glib库</p>
+
+<p><a href="http://blog.chinaunix.net/uid-26000296-id-5159364.html">博文</a></p>
+
+<p>检查系统当前的版本</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="nx">rpm</span> <span class="o">-</span><span class="nx">qi</span> <span class="nx">glibc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在CentOS中用更新命令到2.5已经是最新版本了，只好手动下载 glibc的源码包编译安装更新。
+可以在 <a href="http://ftp.gnu.org/pub/gnu/glibc/%E7%9C%8B%E5%88%B0%E5%BD%93%E5%89%8D%E7%9A%84%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC%EF%BC%8C">http://ftp.gnu.org/pub/gnu/glibc/%E7%9C%8B%E5%88%B0%E5%BD%93%E5%89%8D%E7%9A%84%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC%EF%BC%8C</a>
+我看到的最新版本是glibc-2.22。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span>
+</span><span class='line'> <span class="nb">mkdir</span> <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span>
+</span><span class='line'> <span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">pub</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">glibc</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">tar</span> <span class="nx">zxvf</span> <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span><span class="o">/</span>
+</span><span class='line'> <span class="nx">export</span> <span class="nx">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-g -O2 -march=i686&quot;</span>
+</span><span class='line'>  <span class="nx">网上有些地方加优化开关</span> <span class="o">-</span><span class="nx">O2</span>  <span class="nx">时（大写字母O），写的是</span> <span class="o">-</span><span class="mo">02</span> <span class="nx">（数字零），</span>
+</span><span class='line'>  <span class="nx">所以拷贝过来仍然出现3中的错误，所以请注意。</span>
+</span><span class='line'> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">/</span><span class="nx">configure</span> <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span><span class="o">/</span> <span class="o">--</span><span class="nx">with</span><span class="o">-</span><span class="nx">headers</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="k">include</span>
+</span><span class='line'> <span class="nx">make</span>
+</span><span class='line'> <span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>报错</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">***</span> <span class="nx">These</span> <span class="nx">critical</span> <span class="nx">programs</span> <span class="nx">are</span> <span class="nx">missing</span> <span class="k">or</span> <span class="nx">too</span> <span class="nx">old</span><span class="o">:</span> <span class="k">as</span> <span class="nx">ld</span> <span class="nx">compiler</span>
+</span><span class='line'><span class="o">***</span> <span class="nx">Check</span> <span class="nx">the</span> <span class="nx">INSTALL</span> <span class="nb">file</span> <span class="k">for</span> <span class="nx">required</span> <span class="nx">versions</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">解决办法</span><span class="o">:</span>
+</span><span class='line'><span class="nx">问题原因：</span>
+</span><span class='line'><span class="nx">缺少autoconf或版本太低</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">下载安装新版本</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">wget</span> <span class="nx">ftp</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">autoconf</span><span class="o">/</span><span class="nx">autoconf</span><span class="o">-</span><span class="mf">2.68</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">tar</span> <span class="nx">zxvf</span> <span class="nx">autoconf</span><span class="o">-</span><span class="mf">2.68</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">cd</span> <span class="nx">autoconf</span><span class="o">-</span><span class="mf">2.68</span>
+</span><span class='line'> <span class="o">./</span><span class="nx">configure</span> <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span>
+</span><span class='line'> <span class="nx">make</span> <span class="o">&amp;&amp;</span> <span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我进行到了这一步，然后虚拟机卡住了，卡了好久。。</p>
+
+<p>然后我干出了今天干过最蠢的事<strong>我直接用VM重启了它</strong>（我的Windows卡住就是这样干的(尴尬脸)）</p>
+
+<p>然后再开机我就懵逼了，我firefox的书签没了，历史记录没有，系统还报错。运行几分钟就一直卡住。。</p>
+
+<p>然后我就决定果断弃坑！！！！！</p>
+
+<p>PS：</p>
+
+<p><strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
+
+<pre class="prettyprint">
+多么痛的领悟
+绝对不要随便强制重启！！！！
+用浏览器一定要登录，书签和历史记录才能同步啊！！！
+下次更新东西别再一个版本一个版本的往上装了，耿直过头啊！！！
+</pre>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

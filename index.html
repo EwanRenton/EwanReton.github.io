@@ -9,8 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php PHP性能优化初识 PHP性能优化 一、PHP性能优化问题解析 PHP的性能问题，占整体项目性能问题的比例不足50%，所以在考虑性能优化项目的时候，不要局限于仅优化PHP。 PHP的性能优化问题的解决方向（困难度从容易到简单） PHP语言级的性能优化
-PHP周边问题的性能优化（开发环境等 &hellip;">
+	<meta name="description" content="linux 做死的Centos-Atom 昨天晚上突然冒出一个念头在我的Centos6.5的虚拟机上装Atom并且装上那个炫酷的插件来装波大逼。然后很悲催，软件没装上不说，系统也被搞坏了。 兴高采烈的去下Atom 在github上找到了Atom的开源项目，根据指引下载好了rpm包。 然后sudo &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -98,6 +97,923 @@ PHP周边问题的性能优化（开发环境等 &hellip;">
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-10T20:37:45+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/linux/'>linux</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/10/linux-atom-error/" itemprop="url">做死的Centos-Atom</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>昨天晚上突然冒出一个念头在我的Centos6.5的虚拟机上装Atom并且装上那个炫酷的插件来装波大逼。然后很悲催，软件没装上不说，系统也被搞坏了。</p></blockquote>
+
+<h1>兴高采烈的去下Atom</h1>
+
+<p>在github上找到了Atom的<a href="https://github.com/atom/atom">开源项目</a>，根据指引下载好了rpm包。</p>
+
+<p>然后<code>sudo yum localinstall atom.x86_64.rpm</code></p>
+
+<p>不出意外出现了问题。</p>
+
+<p>当时忘了截图，不过我大概都还记得出了哪些问题。</p>
+
+<blockquote><p>这里有个极度懵逼的事情</p></blockquote>
+
+<pre><code>我最开始在Centos中下Atom由于网络不好，时断时续就没管，后来切过去看。
+咦~为什么这么快就下好了，开心的安装。恩，问题来了 libnode.so 找不到。
+恩，有问题嘛很正常。度娘之。
+
+度娘好像并不能告诉我什么，是时候翻墙了。翻出去过后的答案也是牛头不对马嘴。
+
+忧郁了好一会，突然发现尼玛，这个包只有20+MB啊！！！！
+</code></pre>
+
+<p><strong>这次包下好了完全没问题</strong></p>
+
+<p>安装中也出了一些问题。</p>
+
+<p>但是我记不太清楚了0。0</p>
+
+<pre><code>其实是因为出的问题太多了，本来想安装成功过后做一个总结，之前查得解决方案的网页也都存了书签。
+
+可是，后来软件没装好，系统被玩坏了。。书签和历史记录全部丢失了，，我就有点懵逼了。。。
+</code></pre>
+
+<p>解决了一些问题过后，安装完成了。</p>
+
+<p><strong>开心的atom想打开atom</strong></p>
+
+<p>恩，提莫的。</p>
+
+<p>error！ error！！</p>
+
+<p><strong>version GLIBCXX_3.4.9 not found</strong></p>
+
+<p>因为我解决问题的博文已经搞丢了，刚刚重新找了一篇大概差不多
+<a href="http://blog.csdn.net/officercat/article/details/39520227">传送门</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ll</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">19</span> <span class="nx">Sep</span> <span class="mi">23</span> <span class="mi">08</span><span class="o">:</span><span class="mi">29</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>libc.so.6是一个软连接，当前的glibc是2.12版本,我遇到的事GLIBC_2.15找不到的问题，所以需至少升级到2.15
+首先，从网上下载glibc 2.15的rpm安装包，但这个不容易，因为.rpm针对的是centOS和redhat，高版本安装包很少见。也可以直接从其他系统上好一个编译好的文件
+libc.so.6（对应glibc 2.15或者更高的），不过最保险的方式就是下载源代码在本地编译一次（有的人实在编译不成功，那也只能从别的地方找一份了）
+各个版本的glibc可以从<a href="http://ftp.gnu.org/gnu/glibc/">下载地址</a>找，包括其插件glibc-port
+最新到2.20，我保守的选择2.15
+对于低版本glibc，还有glibc-linuxthreads-2.x需要编译，可参考很多网上文档，但2.15没有，所以不用了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">glibc</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">glibc</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="nx">ports</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">tar</span> <span class="o">-</span><span class="nx">xvf</span>  <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">tar</span> <span class="o">-</span><span class="nx">xvf</span>  <span class="nx">glibc</span><span class="o">-</span><span class="nx">ports</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">mv</span> <span class="nx">glibc</span><span class="o">-</span><span class="nx">ports</span><span class="o">-</span><span class="mf">2.15</span> <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">/</span><span class="nx">ports</span>
+</span><span class='line'><span class="nb">mkdir</span> <span class="nx">glibc</span><span class="o">-</span><span class="nx">build</span><span class="o">-</span><span class="mf">2.15</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">glibc</span><span class="o">-</span><span class="nx">build</span><span class="o">-</span><span class="mf">2.15</span>
+</span><span class='line'><span class="o">../</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">/</span><span class="nx">configure</span>  <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span> <span class="o">--</span><span class="nx">disable</span><span class="o">-</span><span class="nx">profile</span> <span class="o">--</span><span class="nx">enable</span><span class="o">-</span><span class="nx">add</span><span class="o">-</span><span class="nx">ons</span> <span class="o">--</span><span class="nx">with</span><span class="o">-</span><span class="nx">headers</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="k">include</span> <span class="o">--</span><span class="nx">with</span><span class="o">-</span><span class="nx">binutils</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">bin</span>
+</span><span class='line'><span class="nx">make</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果提示install成功，去看glibc所在的共享库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ll</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">*</span>
+</span><span class='line'> <span class="sb">``</span><span class="err">`</span>
+</span><span class='line'><span class="nx">可以看到2</span><span class="o">.</span><span class="mi">12</span><span class="nx">的旧库文件还在，多了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本的库文件，而且软链接文件全部指向了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本。</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">1921096</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">9801632</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">18</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">0</span> <span class="o">-&gt;</span> <span class="na">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">18672</span> <span class="nx">Jun</span> <span class="mi">25</span>  <span class="mi">2011</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">14</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">2</span> <span class="o">-&gt;</span> <span class="na">libcap</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.16</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">19016</span> <span class="nx">Dec</span>  <span class="mi">8</span>  <span class="mi">2011</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.16</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">19</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">57</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcgroup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcgroup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">40</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">97016</span> <span class="nx">Dec</span>  <span class="mi">9</span>  <span class="mi">2013</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcgroup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">40</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>  <span class="mi">197064</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcidn</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>  <span class="mi">267972</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcidn</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">15</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">52</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcidn</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcidn</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">17</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcom_err</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">2</span> <span class="o">-&gt;</span> <span class="na">libcom_err</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.1</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">17256</span> <span class="nx">Nov</span> <span class="mi">22</span>  <span class="mi">2013</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcom_err</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">2.1</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">40400</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcrypt</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>  <span class="mi">142947</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcrypt</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">22</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">57</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcryptsetup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcryptsetup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>   <span class="mi">97072</span> <span class="nx">Jun</span> <span class="mi">22</span>  <span class="mi">2012</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcryptsetup</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span><span class="mi">0</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">16</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">52</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcrypt</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">1</span> <span class="o">-&gt;</span> <span class="na">libcrypt</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="nx">lrwxrwxrwx</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">12</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">52</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span> <span class="o">-&gt;</span> <span class="na">libc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">有些人会在make</span> <span class="nx">install后出现error。这儿error我没去细究</span><span class="p">,</span><span class="nx">经过网友提醒，可能是因为没有sudo造成的，因为make</span> <span class="nx">install就是把文件拷贝到几个受保护的系统目录下。</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">如果还是不行，可以查看一下系统此时的GLIBC版本，参考一开始的做法。如果版本未升级，我们只能手动安装一下：</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">首先make是成功了，那么我们会发现build目录下编译出了一个新的libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span> <span class="nx">（</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="nx">build</span><span class="o">-</span><span class="mf">2.15</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="nx">，</span> <span class="nx">我们会发现这实际上也是一个软连接，真实的lib文件时libc</span><span class="o">.</span><span class="nx">so，</span> <span class="nx">输出</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>php</p>
+
+<p>$ ll  libc.so.6<br/>
+lrwxrwxrwx 1 root root 7 Sep 23 07:41 libc.so.6 -> libc.so<br/>
+$ strings libc.so | grep GLIBC<br/>
+GLIBC_2.2.5<br/>
+GLIBC_2.2.6<br/>
+GLIBC_2.3<br/>
+GLIBC_2.3.2<br/>
+GLIBC_2.3.3<br/>
+GLIBC_2.3.4<br/>
+GLIBC_2.4<br/>
+GLIBC_2.5<br/>
+GLIBC_2.6<br/>
+GLIBC_2.7<br/>
+GLIBC_2.8<br/>
+GLIBC_2.9<br/>
+GLIBC_2.10<br/>
+GLIBC_2.11<br/>
+GLIBC_2.12<br/>
+GLIBC_2.13<br/>
+GLIBC_2.14<br/>
+GLIBC_2.15<br/>
+GLIBC_PRIVATE</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">这是我们需要的lib了，然后去更新系统的库。</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">这里要注意，更新系统里的链接（我的是</span><span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="p">)</span> <span class="nx">很容易出错，我不清楚有没有更好的办法，一般都是删除旧链接，建立新链接</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">但删除旧链接后，很多命令直接不能用了，因为此时中不到glibc的库了。这个时候就需要临时指定一个glibc库，方法如下（libc</span><span class="o">.</span><span class="nx">so改个名以便好以后更新的其他版本区分）</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>php
+ cp /****/glibc-build-2.15/libc.so /lib64/libc-2.15.so</p>
+
+<p>rm -rf /lib64/libc.so.6<br/>
+LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">连接更新成功，再编译的话，GLIBC_2</span><span class="o">.</span><span class="mi">15</span><span class="nx">及以下版本的依赖问题就不会出现了。</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span><span class="nx">恩，到这里我也有话要说，我当时也是耿直，在这一步我重复了两三次！！！我耿直到从低版本一个一个往高版本安装啊。我真傻，真的。。。</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">***</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">**</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">libstdc</span><span class="o">++.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="o">:</span> <span class="nx">version</span> <span class="sb">`GLIBCXX_3.4.14&#39; not found**</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">[传送门](http://blog.csdn.net/xiaolong2w/article/details/23915171)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">出现这种问题就是因为编译库的编译器和编译当前程序的编译器版本是不一样的，在具体一点就是因为，当前程序的编译器的版本是比较低的，只要升级一下就可以了。可以用如下命令查看一下当前GCC版本：</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.1  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.2  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.3  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.5  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.6  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.7  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.8  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.9  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.10  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.11  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.12  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.13  </span>
+</span><span class='line'><span class="sb">GLIBCXX_FORCE_NEW  </span>
+</span><span class='line'><span class="sb">GLIBCXX_DEBUG_MESSAGE_LENGTH  </span>
+</span><span class='line'><span class="sb">&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">并没有动态库中要求的GCC版本 “GLIBCXX_3.4.14”，所以需要进行升级一下我们的GCC版本，升级过程如下：</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">下载新版本的GCC，地址为[点击打开链接](http://ftp.de.debian.org/debian/pool/main/g/gcc-4.7/libstdc++6_4.7.2-5_i386.deb) （这里也有一个坑，今天真的是傻！！！）</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">下载下来之后，用如下命令开始解压</span>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">ar -x libstdc++6_4.7.2-5_i386.deb &amp;&amp; tar xvf data.tar.gz  </span>
+</span><span class='line'><span class="sb">如果你的文件目录为GCC（如果不是，把GCC改为相应的目录即可），依次执行下面命令：</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">cd GCC/usr/lib/i380-linux-gun </span>
+</span><span class='line'><span class="sb">su root  </span>
+</span><span class='line'><span class="sb">cp libstdc++.so.6.0.17 /usr/lib </span>
+</span><span class='line'><span class="sb">cd /usr/lib   </span>
+</span><span class='line'><span class="sb">rm libstdc++.so.6  </span>
+</span><span class='line'><span class="sb">ln -s libstdc++.so.6.0.17 libstdc++.so.6 </span>
+</span><span class='line'><span class="sb">strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  </span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">GLIBCXX_3.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.1  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.2  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.3  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.4  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.5  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.6  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.7  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.8  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.9  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.10  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.11  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.12  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.13  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.14  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.15  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.16  </span>
+</span><span class='line'><span class="sb">GLIBCXX_3.4.17  </span>
+</span><span class='line'><span class="sb">GLIBCXX_DEBUG_MESSAGE_LENGTH  </span>
+</span><span class='line'><span class="sb">&lt;/pre&gt;</span>
+</span><span class='line'><span class="sb">到这里其实就改结束了。可是回去atom </span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">恩。不错，不是原来的错误了，重新报了一个错误。（具体的错误我忘了）</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">后来在解决的时候才发现这个错误是因为我之前下载安装的libstdc是32位的，但是我的Atom是64位的就出错了。然后再这个过程中，我之前以为是我创建软链接的时候创建错误，我把lib和lib64里面的```</span><span class="nx">libstdc</span><span class="o">++.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="sb">``` 都删了重新创建了一次。然后就GG了，这个时候连firefox浏览器都跟着崩溃了。后来意识到这个问题过后重新安装了64位的```</span><span class="nx">libstdc</span><span class="o">++.</span><span class="nx">so</span><span class="o">.</span><span class="mi">6</span><span class="sb">``</span><span class="err">`</span><span class="nx">解决了这个问题。</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">**</span><span class="nx">undefined</span> <span class="nx">symbol</span> <span class="nx">g_bytes_unref</span><span class="o">**</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">这是遇到的最后的问题，也是彻底解决我的问题。。</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">在国内的网站上很少有这个问题的解决方法，后来找到一个论坛说是因为</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>GBytes is relatively new, only since glib-2.32``` 准备更新glib库</p>
+
+<p><a href="http://blog.chinaunix.net/uid-26000296-id-5159364.html">博文</a></p>
+
+<p>检查系统当前的版本</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="nx">rpm</span> <span class="o">-</span><span class="nx">qi</span> <span class="nx">glibc</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在CentOS中用更新命令到2.5已经是最新版本了，只好手动下载 glibc的源码包编译安装更新。
+可以在 <a href="http://ftp.gnu.org/pub/gnu/glibc/%E7%9C%8B%E5%88%B0%E5%BD%93%E5%89%8D%E7%9A%84%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC%EF%BC%8C">http://ftp.gnu.org/pub/gnu/glibc/%E7%9C%8B%E5%88%B0%E5%BD%93%E5%89%8D%E7%9A%84%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC%EF%BC%8C</a>
+我看到的最新版本是glibc-2.22。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span>
+</span><span class='line'> <span class="nb">mkdir</span> <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span>
+</span><span class='line'> <span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">pub</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">glibc</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">tar</span> <span class="nx">zxvf</span> <span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span><span class="o">/</span>
+</span><span class='line'> <span class="nx">export</span> <span class="nx">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-g -O2 -march=i686&quot;</span>
+</span><span class='line'>  <span class="nx">网上有些地方加优化开关</span> <span class="o">-</span><span class="nx">O2</span>  <span class="nx">时（大写字母O），写的是</span> <span class="o">-</span><span class="mo">02</span> <span class="nx">（数字零），</span>
+</span><span class='line'>  <span class="nx">所以拷贝过来仍然出现3中的错误，所以请注意。</span>
+</span><span class='line'> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">/</span><span class="nx">configure</span> <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">glibc</span><span class="o">-</span><span class="mf">2.22</span><span class="o">-</span><span class="nx">build</span><span class="o">/</span> <span class="o">--</span><span class="nx">with</span><span class="o">-</span><span class="nx">headers</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="k">include</span>
+</span><span class='line'> <span class="nx">make</span>
+</span><span class='line'> <span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>报错</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">***</span> <span class="nx">These</span> <span class="nx">critical</span> <span class="nx">programs</span> <span class="nx">are</span> <span class="nx">missing</span> <span class="k">or</span> <span class="nx">too</span> <span class="nx">old</span><span class="o">:</span> <span class="k">as</span> <span class="nx">ld</span> <span class="nx">compiler</span>
+</span><span class='line'><span class="o">***</span> <span class="nx">Check</span> <span class="nx">the</span> <span class="nx">INSTALL</span> <span class="nb">file</span> <span class="k">for</span> <span class="nx">required</span> <span class="nx">versions</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">解决办法</span><span class="o">:</span>
+</span><span class='line'><span class="nx">问题原因：</span>
+</span><span class='line'><span class="nx">缺少autoconf或版本太低</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">下载安装新版本</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">wget</span> <span class="nx">ftp</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">autoconf</span><span class="o">/</span><span class="nx">autoconf</span><span class="o">-</span><span class="mf">2.68</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">tar</span> <span class="nx">zxvf</span> <span class="nx">autoconf</span><span class="o">-</span><span class="mf">2.68</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'> <span class="nx">cd</span> <span class="nx">autoconf</span><span class="o">-</span><span class="mf">2.68</span>
+</span><span class='line'> <span class="o">./</span><span class="nx">configure</span> <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span>
+</span><span class='line'> <span class="nx">make</span> <span class="o">&amp;&amp;</span> <span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我进行到了这一步，然后虚拟机卡住了，卡了好久。。</p>
+
+<p>然后我干出了今天干过最蠢的事<strong>我直接用VM重启了它</strong>（我的Windows卡住就是这样干的(尴尬脸)）</p>
+
+<p>然后再开机我就懵逼了，我firefox的书签没了，历史记录没有，系统还报错。运行几分钟就一直卡住。。</p>
+
+<p>然后我就决定果断弃坑！！！！！</p>
+
+<p>PS：</p>
+
+<p><strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
+
+<pre class="prettyprint">
+多么痛的领悟
+绝对不要随便强制重启！！！！
+用浏览器一定要登录，书签和历史记录才能同步啊！！！
+下次更新东西别再一个版本一个版本的往上装了，耿直过头啊！！！
+</pre>
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-09T23:25:34+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/linux/'>linux</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/09/linux-git/" itemprop="url">Linx下安装Git</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>考试季过去了，准备开始将日常使用迁移到Linux下，今天想在Linux下装Git，开始觉得这应该是个很简单的事，谁知道这个花了好多时间。</p></blockquote>
+
+<p>首先在网上找了一个博文作为参考，<a href="http://blog.csdn.net/naola2001/article/details/43228769">传送门</a></p>
+
+<p>服务器端：</p>
+
+<pre class="prettyprint text">
+yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-devel
+wget https://github.com/git/git/archive/v2.2.0.tar.gz
+tar zxvf git-2.2.0.tar.gz
+cd git-2.2.0
+make prefix=/usr/local all
+make prefix=/usr/local install  root用户运行
+</pre>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">如果编译时提示错误：</span>
+</span><span class='line'><span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">credential</span><span class="o">-</span><span class="nx">store</span>
+</span><span class='line'><span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span><span class="p">(</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span> <span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">reencode_string_iconv’</span><span class="o">:</span>
+</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">530</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="sb">`libiconv’</span>
+</span><span class='line'><span class="sb">libgit.a(utf8.o): In function `</span><span class="nx">reencode_string_len’</span><span class="o">:</span>
+</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">569</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="sb">`libiconv_open’</span>
+</span><span class='line'><span class="sb">/opt/git-master/utf8.c:588: undefined reference to `</span><span class="nx">libiconv_close’</span>
+</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">582</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="err">`</span><span class="nx">libiconv_open’</span>
+</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">返回</span> <span class="mi">1</span>
+</span><span class='line'><span class="nx">make</span><span class="o">:</span> <span class="o">***</span> <span class="p">[</span><span class="nx">git</span><span class="o">-</span><span class="nx">credential</span><span class="o">-</span><span class="nx">store</span><span class="p">]</span> <span class="nx">错误</span> <span class="mi">1</span>
+</span><span class='line'><span class="nx">解决办法：</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span>
+</span><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">pub</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libiconv</span><span class="o">/</span><span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">tar</span> <span class="o">-</span><span class="nx">zxvf</span> <span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span>
+</span><span class='line'><span class="o">./</span><span class="nx">configure</span> <span class="o">-</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">libiconv</span>  <span class="o">&amp;&amp;</span>  <span class="nx">make</span>  <span class="o">&amp;&amp;</span> <span class="nx">sudo</span>  <span class="nx">make</span> <span class="nx">install</span>
+</span><span class='line'><span class="nx">然后回到git继续编译：</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mi">5</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">configure</span>
+</span><span class='line'><span class="o">./</span><span class="nx">configure</span> <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span> <span class="o">-</span><span class="nx">with</span><span class="o">-</span><span class="nb">iconv</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">libiconv</span>
+</span><span class='line'><span class="nx">make</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># git --version</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">version</span> <span class="mf">2.2</span><span class="o">.</span><span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按照教程，到这里应该就成功了。
+但是在解决了lib的错误后在回来执行 make 时遇到了错误</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">init_gettext_charset</span><span class="s1">&#39;: </span>
+</span><span class='line'><span class="s1">/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset&#39;</span>
+</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">returned</span> <span class="mi">1</span> <span class="k">exit</span> <span class="nx">status</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解决方法：<a href="http://mono.1490590.n4.nabble.com/Can-t-compile-git-for-a-long-time-td3336232.html#a4312244">传送门</a>
+其中一个corey_yan的回答成功解决了问题</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">I</span> <span class="nx">encounter</span> <span class="nx">the</span> <span class="nx">same</span> <span class="nx">problem</span> <span class="nx">in</span> <span class="nx">centos</span> <span class="mf">5.2</span> <span class="k">and</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">solve</span> <span class="nx">it</span> <span class="k">for</span> <span class="nx">a</span> <span class="nx">long</span> <span class="nb">time</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span><span class="p">(</span><span class="nb">gettext</span><span class="o">.</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span> <span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">init_gettext_charset</span><span class="s1">&#39;: </span>
+</span><span class='line'><span class="s1">/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset&#39;</span>
+</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">returned</span> <span class="mi">1</span> <span class="k">exit</span> <span class="nx">status</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">After</span> <span class="nx">checking</span> <span class="nx">the</span> <span class="nx">detail</span> <span class="nx">Link</span> <span class="nx">command</span>
+</span><span class='line'><span class="nx">make</span> <span class="o">-</span><span class="nx">n</span> <span class="o">|</span> <span class="nx">grep</span> <span class="s2">&quot;git-daemon&quot;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;   &#39;</span> <span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span><span class="p">;</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">I</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">change</span> <span class="nx">to</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcharset</span> <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Link</span> <span class="nx">error</span> <span class="nx">is</span> <span class="nx">missing</span><span class="o">:</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">I</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">modify</span> <span class="nx">Makefile</span>
+</span><span class='line'>        <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span> <span class="o">-</span><span class="nx">lcharset</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">then</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">successfully</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Hope</span> <span class="nx">it</span> <span class="nx">can</span> <span class="nx">help</span> <span class="nx">you</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>步骤为:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">make</span> <span class="o">-</span><span class="nx">n</span> <span class="o">|</span> <span class="nx">grep</span> <span class="s2">&quot;git-daemon&quot;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;   &#39;</span> <span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span><span class="p">;</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'><span class="c1">//会报一个link错误</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcharset</span> <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'><span class="c1">//Link error is missing:) </span>
+</span><span class='line'><span class="nx">vim</span> <span class="nx">Makefile</span>
+</span><span class='line'><span class="nx">找到</span> <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span>
+</span><span class='line'><span class="nx">改为</span> <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span> <span class="o">-</span><span class="nx">lcharset</span>  <span class="c1">//保存退出</span>
+</span><span class='line'><span class="nx">重新make</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>成功解决问题。</p>
+
+<hr />
+
+<h1>在原博文下面还有一些功能的安装，现在还没设计到，不过也先贴出来</h1>
+
+<p><strong>下面来安装 gitosis</strong></p>
+
+<blockquote><p>gitosis为Git用户权限管理系统,通过管理服务端的authorized_key文件来执行对用户权限的管理，是一个Python模块包</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">yum</span> <span class="nx">install</span> <span class="nx">python</span> <span class="nx">python</span><span class="o">-</span><span class="nx">setuptools</span>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span>
+</span><span class='line'><span class="nx">git</span> <span class="k">clone</span> <span class="nx">git</span><span class="o">://</span><span class="nx">github</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">res0nat0r</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">gitosis</span>
+</span><span class='line'><span class="nx">python</span> <span class="nx">setup</span><span class="o">.</span><span class="nx">py</span> <span class="nx">install</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">OK</span> <span class="nx">gitosis</span> <span class="nx">安装成功！</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">配置服务器git：</span>
+</span><span class='line'><span class="mf">0.1</span> <span class="nx">输入以下两条命令</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user</span><span class="o">.</span><span class="nx">name</span> <span class="s2">&quot;Your Name Here&quot;</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user</span><span class="o">.</span><span class="nx">email</span> <span class="s2">&quot;your_email@example.com&quot;</span>
+</span><span class='line'><span class="nx">可以再输入git</span> <span class="nx">config</span> <span class="o">-</span><span class="nx">l查看上面两个是否设置</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>在开发机上生成密钥并上传到服务器上</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">rsa</span>   <span class="c1">#一路回车，不需要设置密码</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>   <span class="c1">#上传公钥到服务器(默认SSH端口22)</span>
+</span><span class='line'><span class="nx">或</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">-</span><span class="nx">P</span> <span class="mi">3600</span>  <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="mi">5</span><span class="nx">、服务器上生成git用户，使用git用户并初始化gitosis</span>
+</span><span class='line'><span class="nx">adduser</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&lt;</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="c1">#显示以下信息即表示成功</span>
+</span><span class='line'><span class="c1">#Initialized empty Git repository in /home/git/repositories/gitosis-admin.git/</span>
+</span><span class='line'><span class="c1">#Reinitialized existing Git repository in /home/git/repositories/gitosis-admin.git/</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#删除密钥</span>
+</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">root</span>
+</span><span class='line'><span class="nx">rm</span> <span class="o">-</span><span class="nx">rf</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">禁用shell登录</span>
+</span><span class='line'><span class="nx">注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑</span><span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">passwd文件完成。找到类似下面的一行：</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="nx">\</span><span class="p">]</span><span class="c1"># cat /etc/passwd | grep git</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">改为：</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="nx">\</span><span class="p">]</span><span class="c1"># vim /etc/passwd</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">shell</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git</span><span class="o">-</span><span class="nx">shell每次一登录就自动退出。</span>
+</span><span class='line'>
+</span><span class='line'><span class="mi">2</span><span class="nx">，在git用户下，生成私钥和公钥。</span>
+</span><span class='line'><span class="nv">$ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="nx">–t</span> <span class="nx">rsa</span>
+</span><span class='line'><span class="mi">3</span><span class="nx">，在git用户下，拷入id_rsa</span><span class="o">.</span><span class="nx">pub文件。</span>
+</span><span class='line'><span class="nv">$gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&lt;</span> <span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">这样在git用户目录下生成了一些目录，gitosis，repositories。</span>
+</span><span class='line'><span class="nx">至此，安装工作完成。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>添加开发者</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。</span>
+</span><span class='line'><span class="nv">$cat</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span><span class="o">.</span><span class="nx">ubuntu</span> <span class="o">&gt;&gt;</span> <span class="nx">authorized_keys</span>
+</span><span class='line'><span class="nx">创建项目仓库</span>
+</span><span class='line'><span class="nx">git管理人员操作：</span>
+</span><span class='line'><span class="nv">$mkdir</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$cd</span> <span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$git</span> <span class="o">--</span><span class="nx">bare</span> <span class="nx">init</span> <span class="nx">（创建一个空项目）</span>
+</span><span class='line'><span class="nx">开发者提交项目</span>
+</span><span class='line'><span class="nx">ubuntu开发者操作：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">gitserver</span><span class="o">:/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">project</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span><span class='line'><span class="nx">这样其他开发者的工作也比较简单了：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="k">clone</span> <span class="nx">…</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span>
+</span><span class='line'><span class="nx">vim</span> <span class="nx">gitosis</span><span class="o">.</span><span class="nx">conf</span>
+</span><span class='line'><span class="nx">在文件尾增加以下内容</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">group</span> <span class="nx">test\</span><span class="p">]</span>  <span class="nx">组名称</span>
+</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>  <span class="nx">项目名称</span>
+</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">密钥用户名</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#提交修改</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>初始，增加及使用项目test-git</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span>
+</span><span class='line'><span class="nb">mkdir</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">inti</span>
+</span><span class='line'><span class="nb">touch</span> <span class="nx">readme</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“init</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">xxx</span><span class="o">:</span><span class="nx">test</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>在 test 项目新增用户</strong>
+①在新增用户的本机输入ssh-keygen -t rsa生成私钥公钥；
+②把生成的公钥id_rsa.pub上传或复制到 gitosis-admin/keydir文件夹下，并重名，如：jankerli.pub；
+③vim gitosis.conf</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">在文件尾增加以下内容</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">group</span> <span class="nx">test\</span><span class="p">]</span>
+</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>
+</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">（此处增加新用户的名称，名称必须与上面重名的jankerli</span><span class="o">.</span><span class="nx">pub一致，去掉</span><span class="o">.</span><span class="nx">pub）</span>
+</span><span class='line'><span class="nx">④提交修改</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>⑤新用户便可通过 git clone git@xxx:test.git 克隆代码到本机了。</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -2991,453 +3907,6 @@ Query OK, 1 row affected (0.00 sec)
 mysql&gt; drop database if exists drop_database;//if exists 判断数据库是否存在，不存在也不产生错误
 Query OK, 0 rows affected (0.00 sec)
 </code></pre>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-04-28T01:01:35+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/nginx/'>nginx</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/28/qqyuncontos-huan-jing-da-jian/" itemprop="url">腾讯云服务器Centos6.5 LNMP环境搭建</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天开始搭建前几天买的腾讯云服务器的LNMP环境</p></blockquote>
-
-<h1>一、通过putty.exe连接到云服务器</h1>
-
-<pre><code>下载并打开这个软件后只需要输入云服务器的外网IP其他默认即可
-然后用你的用户名和密码登录云服务器。
-</code></pre>
-
-<h1>二、CentOS环境下通过YUM安装软件</h1>
-
-<pre><code>1. 切换到root权限
-2. yum install [nginx][php][php-fpm][mariadb][mariadb-server][mysql][mysql-server] 或者yum -y mysql mysql-server nginx php php-fpm
-3. 系统会自动搜索相关的软件包和依赖关系，并且在界面中提示用户确认搜索到的软件包是否合适，如下图所示：
-</code></pre>
-
-<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Yum_2.png" alt="sd" /></p>
-
-<pre><code>4. 输入“Y”确认后，开始安装软件，安装完成后会提示“Complete”.
-5. 软件安装完成后，可通过命令 rpm -ql 查看软件包具体的安装目录。以查看nginx的安装目录为例：
-#rpm -ql nginx
-6.可通过命令 rpm -q 查看软件包的版本信息。以查看nginx的版本为例：
-#rpm -q nginx
-</code></pre>
-
-<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/YaST_6.png" alt="sd" />
-<img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/YaST_5.png" alt="sd" /></p>
-
-<h1>三、CentOS环境下通过YUM安装软件</h1>
-
-<h2>1. 配置nginx</h2>
-
-<pre><code>1. 启动nginx服务。
-    命令如下：
-    [root@VM_185_51 /]# service nginx restart
-
-2. 测试nginx服务是否正常运行。
-如果最后显示：`index.html' saved ，说明nginx服务正常。
-[root@VM_185_51 /]# wget http://127.0.0.1
---2013-02-20 17:07:26-- http://127.0.0.1/
-Connecting to 127.0.0.1:80... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 151 [text/html]
-Saving to: `index.html'
-100%[==========================================================================================&gt;] 151 --.-K/s in 0s 
-2013-02-20 17:07:26 (37.9 MB/s) - `index.html' saved [151/151]
-
-3. 在浏览器中，通过CentOS云服务器公网IP查看nginx服务是否正常运行。
-如果显示如下，说明nginx安装配置成功。
-</code></pre>
-
-<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Q_lnmp_1.png" alt="sd" /></p>
-
-<h2>2. 配置PHP</h2>
-
-<pre><code>1. 启动php-fpm。
-    [root@VM_185_51 /]# service php-fpm start
-
-2. 修改php-fpm和nginx的配置，实现nginx和php联动。
-    （1）查看php-fpm默认配置。
-    [root@VM_185_51 /]# cat /etc/php-fpm.d/www.conf |grep -i 'listen ='
-    listen = 127.0.0.1:9000
-    （2）php-fpm的默认配置的监听端口为9000，现在只用修改配置，将php解析的请求转发到127.0.0.0:9000处理即可。
-    修改nginx配置，修改命令如下：
-[root@VM_185_51 /]# vim /etc/nginx/conf.d/default.conf
-修改完成后实际配置如下，红色文字为修改过的部分：
-server {
- listen       80;
- root   /usr/share/nginx/html;
- server_name  localhost;
- #charset koi8-r;
- #access_log  /var/log/nginx/log/host.access.log  main;
- location / {
-     index  index.html index.htm;
-  }
- #error_page  404              /404.html;
- # redirect server error pages to the static page /50x.html
- #
- error_page   500 502 503 504  /50x.html;
-  location = /50x.html {
-     root   /usr/share/nginx/html;
-  }
-# proxy the PHP scripts to Apache listening on 127.0.0.1:80
-#
-#location ~ \.php$ {
-#    proxy_pass   http://127.0.0.1;
-#}
-# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-#
-  location ~ \.php$ {
-  fastcgi_pass   127.0.0.1:9000;
-  fastcgi_index   index.php;
-  fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-  include        fastcgi_params;
- }
-# deny access to .htaccess files, if Apache's document root
-# concurs with nginx's one
-#
-#location ~ /\.ht {
-#    deny  all;
-#}
-}
-修改完成后，按“Esc”键，输入“:wq”，保存文件并返回。
-通过下面的命令，查看配置是否正确：
-[root@VM_185_51 /]# cat /etc/nginx/conf.d/default.conf
-3. 配置生效
-    重启nginx，使配置生效。
-    命令如下：
-    [root@VM_185_51 /]# service nginx restart
-    Stopping nginx: [ OK ]
-    Starting nginx: [ OK ]
-4. 环境配置验证
-    1. 在web目录下创建index.php。
-    命令如下：
-    [root@VM_185_51 /]# vim /usr/share/nginx/html/index.php
-    index.php文件的内容如下：
-    &lt;?php
-    echo "&lt;title&gt;Test Page&lt;/title&gt;";
-    echo "hello world";
-    ?&gt;
-2. 在浏览器中，通过CentOS云服务器公网IP查看环境配置是否成功。
-如果页面可以显示“hello world”，说明配置成功。
-</code></pre>
-
-<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Q_lnmp_2.png" alt="sd" /></p>
-
-<h1>四、Windows机器通过WinSCP上传文件</h1>
-
-<blockquote><p>WinSCP是一个Windows环境下使用SSH的开源图形化SFTP客户端，同时支持SCP协议。它的主要功能就是在本地与远程计算机间安全的复制文件。与使用FTP上传代码相比，通过WinSCP可以直接使用服务器账户密码访问服务器，无需在服务器端做任何配置。下载地址：<a href="http://winscp.net/eng/docs/lang:chs">官方下载</a> <a href="http://dl.pconline.com.cn/html_2/1/86/id=7244&amp;pn=0.html">太平洋下载中心下载</a></p></blockquote>
-
-<p>安装完成后启动WinSCP，界面如下。按图示填写信息并登录。
-<img src="http://mccdn.qcloud.com/img56b024e2768ad.png" alt="sd" /></p>
-
-<blockquote><p>字段填写说明：</p></blockquote>
-
-<ul>
-<li>协议：SFTP或者SCP均可</li>
-<li>主机名：云服务器的公网IP（登录云服务器控制台可查看云服务器的公网IP）</li>
-<li>用户名：云服务器的系统用户名（SUSE/CentOS/Debian：root，Windows：Administrator，Ubuntu：ubuntu）</li>
-<li>密码：云服务器的用户名对应的密码</li>
-<li>端口：默认22</li>
-</ul>
-
-
-<p> 信息填写完毕之后点击登录，界面如下:</p>
-
-<p><img src="http://mccdn.qcloud.com/img56b0272d4ed3a.png" alt="sd" /></p>
-
-<p>登录成功之后，鼠标选中本地文件，拖拽到右侧的远程站点，即可将文件上传到Linux云服务器
-<img src="http://mccdn.qcloud.com/img56b027728e1ec.png" alt="sd" /></p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-04-26T22:53:05+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/nginx/'>nginx</a>, <a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/26/nginx-php-huan-jing/" itemprop="url">Nginx下PHP环境搭建1</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
-
-<h1>一、需要准备的包</h1>
-
-<ul>
-<li>libiconv-1.7.tar.gz</li>
-<li>libmcrypt-2.5.7.tar.gz</li>
-<li>mcrypt-2.6.8.tar.gz</li>
-<li>mhash-0.9.3.tar.gz</li>
-<li>php-5.5.34.tar.bz2</li>
-</ul>
-
-
-<h1>二、具体安装</h1>
-
-<hr />
-
-<ol>
-<li><p>libiconv</p>
-
-<ol>
-<li>tar -zvxf libiconv-1.7.tar.gz</li>
-<li>cd libiconv-1.7</li>
-<li>./configure &ndash;prefix=/usr/local</li>
-<li>make</li>
-<li>make install</li>
-</ol>
-</li>
-<li><p>libmcrypt</p>
-
-<ol>
-<li>tar -zvxf libmcrypt-2.5.7.tar.gz</li>
-<li>cd libmcrypt-2.5.7</li>
-<li>./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>/sbin/ldconfig   //共享链接库</li>
-<li>./configure &ndash;enable-ltdl-install //内键指令</li>
-<li>make</li>
-<li>make install</li>
-</ol>
-</li>
-<li><p>mhash</p>
-
-<ol>
-<li>tar -zvxf mhash-0.9.3.tar.gz</li>
-<li>cd mhash-0.9.3</li>
-<li>./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>ln -s /usr/local/lib/libmcrypt.la /usr/lib/ibmcrypt.la</li>
-<li>ln -s /usr/local/lib/libmcrypt.la.so.4 /usr/lib/libmcrypt.la.so.4</li>
-<li>ln -s /usr/local/lib/libmcrypt.la.so.4.4.8 /usr/lib/libmcrypt.la.so.4.4.8</li>
-<li>ln -s /usr/local/lib/libmhash.a /usr/lib/libmhash.a</li>
-<li>ln -s /usr/local/lib/libmhash.la /usr/lib/libmhash.la</li>
-<li>ln -s /usr/local/lib/libmhash.so /usr/lib/libmhash.so</li>
-<li>ln -s /usr/local/lib/libmhash.so.2 /usr/lib/libmhash.so.2</li>
-<li>ln -s /usr/local/lib/libmhash.so.2.0.1 /usr/lib/libmhash.so.2.0.1</li>
-</ol>
-</li>
-<li><p>mcrypt</p>
-
-<ol>
-<li>tar -zxvf mcrypt-2.6.8.tar.gz</li>
-<li>cd mcrypt-2.6.8</li>
-<li>/sbin/ldconfig</li>
-<li>./configure</li>
-<li>若报错则找不到LIBMCRYPT则
-
-<ol>
-<li>export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH</li>
-<li>./configure -with-libmcryp-prefix=/usr/local</li>
-</ol>
-</li>
-<li>make
-
-<ol>
-<li>报错打开报错的文件 vi /usr/local/include/mutils.h</li>
-<li>找到报错的那行看是哪个文件引入失败(mhash_config.h)</li>
-<li>find / -name mhash_config.h 在系统中找到该文件</li>
-<li>cp /home/Ewan/下载/mhash-0.9.3/mhash_config.h /usr/local/include 拷贝到include文件下</li>
-<li>make</li>
-</ol>
-</li>
-<li>make install</li>
-</ol>
-</li>
-<li><p>php-5.5.34.tar.bz2</p>
-
-<ol>
-<li>tar -jxvf php-5.5.34.tar.bz2</li>
-<li>cd php-5.5.34</li>
-<li>./configure &ndash;prefix=/usr/local/php &ndash;enable-fastcgi &ndash;enable-fpm
-
-<ol>
-<li>报错 yum install libxml2 libxml2-devel</li>
-<li>./configure &ndash;prefix=/usr/local/php &ndash;enable-fastcgi &ndash;enable-fpm</li>
-</ol>
-</li>
-<li>make ZEND_EXTRA_LIBS=&lsquo;-liconv&rsquo;</li>
-<li>make install
-
-<ol>
-<li>报错 vi /etc/ld.so.conf</li>
-<li>输入 /usr/local/lib</li>
-<li>make install</li>
-<li>如果还是出错 /sbin/ldconfig -v</li>
-<li>make install</li>
-<li>cp php.ini-dist /usr/local/php/etc/php.ini</li>
-</ol>
-</li>
-</ol>
-</li>
-<li><p>mysql (5.5版本以下)</p>
-
-<ol>
-<li>groupadd mysql //添加组</li>
-<li>useradd mysql -g mysql //添加用户</li>
-<li>tar -zxvf mysql-x.x.x</li>
-<li>cd mysql-x.x.x</li>
-<li>./configure &ndash;prefix=/usr/local/mysql &ndash;with-mysqld-ldflags=-all-static &ndash;with-client-ldflags=-all-static &ndash;with-readline &ndash;with-ssl</li>
-<li>/usr/local/mysql/bin/mysql_install_db &ndash;user//初始化数据库</li>
-<li>cp ./support-files/mysql.server /etc/init.d/mysql //复制启动项到系统中</li>
-<li>cp ./support-files/my-medium.cnf /etc/my.cnf</li>
-<li>chmod 755 /etc/init.d/mysql(755 分别代表文件拥有者，同组者，其他人的权限 rwx 7为111 可读可写可执行)</li>
-<li>cd /usr/local/mysql</li>
-<li>chown -R mysql . //将拥有者更改为mysql用户</li>
-<li>chgrp -R mysql . //归到mysql组</li>
-<li>/usr/local/mysql/bin/mysqladmin -u root password &lsquo;abc123&rsquo; //设置数据库密码</li>
-<li>报错 不能连接到local mysql</li>
-<li>ps -ef|grep mysql //找到mysql对应的进程号</li>
-<li>kill -9 xxxx //杀死进程</li>
-<li>/usr/local/mysql/bin/mysql_install_db &ndash;user//初始化数据库</li>
-<li>service mysql start //启动MYSQL</li>
-<li>/usr/local/mysql/bin/mysqladmin -u root password &lsquo;abc123&rsquo; //设置数据库密码</li>
-<li>/usr/local/mysql/bin/mysql -u root -p //测试输入的密码</li>
-<li>进入到mysql 后可以\q退出</li>
-</ol>
-</li>
-<li>安装mysql（5.5版本）
-  <a href="http://www.mysql.com/">下载Mysql5.5.4</a></li>
-</ol>
-
-
-<p><img src="http://shp.qpic.cn/txdiscuz_pic/0/_bbs_qcloud_com_forum_201503_10_171832lw4gbxwhq9z9vmho.png/0" alt="1" /></p>
-
-<p><img src="http://shp.qpic.cn/txdiscuz_pic/0/_bbs_qcloud_com_forum_201503_10_171836mubv0eb5010ewbjv.png/0" alt="1" /></p>
-
-<pre><code>1. tar zxvf mysql-5.5.40.tar.gz
-2. cd mysql-5.5.4
-3. yum install ncurses-devel cmake bison-devel libaio-devel gcc-c++ bison -y 
-    *  mysql5.5 版本之后，预编译的 configure命令改为了 cmake, 需要手动安装一下 cmake命令
-5.  cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/usr/local/mysql/data -DSYSCONFDIR=/etc -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci-- Library mysqlclient depends on OSLIBS -lpthread;m;rt;dl-- Configuring done-- Generating done-- Build files have been written to: /root/mysql-5.5.40 ————预编译无报错，成功。
-*  make 
-    *  [100%] Building CXX object mysql-test/lib/My/SafeProcess/CMakeFiles/my_safe_process.dir/safe_process.cc.oLinking CXX executable my_safe_process[100%] Built target my_safe_process————无报错，make正常。
-*   make install -- Installing: /usr/local/mysql/man/man1/mysql_fix_extensions.1 -- Installing: /usr/local/mysql/man/man1/mysqldumpslow.1 -- Installing: /usr/local/mysql/man/man1/mysql_secure_installation.1 -- Installing: /usr/local/mysql/man/man8/mysqld.8 ————无报错，make install正常。
-*    groupadd mysql ————创建mysql组
-*     useradd -g mysql mysql ————在mysql组中创建mysql用户
-* cp /usr/local/mysql/support-files/my-medium.cnf /etc/my.cnf ————默认没有mysql的配置文件，将源码包中的配置文件拷贝到etc下的配置文件中。
-*  /usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data ————初始化数据库，指定用户为mysql，家目录为/usr/local/mysql，数据库目录为/usr/local/mysql/data
-* chown -R root /usr/local/mysql/ ————改变目录的所有者
-* chown -R mysql /usr/local/mysql/data ————改变目录的所有者
-* chgrp -R mysql /usr/local/mysql/ ————改变目录的所属组
-*  export PATH=$PATH:/usr/local/mysql/bin ————将/usr/local/mysql/bin下的命令放到环境变量中
-*   /usr/local/mysql/bin/mysqld_safe --user=mysql &amp; ————启动mysql
-* mysql 
-    *  Welcome to the MySQL monitor.  Commands end with ; or \g.
-         Your MySQL connection id is 1
-</code></pre>
-
-<blockquote><p>ps:在实际的操作过程中上面在10步初始化数据库时有可能会error这时可以考虑用</p></blockquote>
-
-<pre><code> ps -ef|grep mysql //找到mysql对应的进程号
- kill -9 xxxx //杀死进程
-</code></pre>
-
-<blockquote><p>然后执行</p></blockquote>
-
-<pre><code> chown -R root /usr/local/mysql/ ————改变目录的所有者
- chown -R mysql /usr/local/mysql/data ————改变目录的所有者
- chgrp -R mysql /usr/local/mysql/ ————改变目录的所属组
- export PATH=$PATH:/usr/local/mysql/bin ————将/usr/local/mysql/bin下的命令放到环境变量中
- /usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data ————初始化数据库，指定用户为mysql，家目录为/usr/local/mysql，数据库目录为/usr/local/mysql/data
- /usr/local/mysql/bin/mysqld_safe &amp; 启动Mysql 或者
- /usr/local/mysql/bin/mysqld_safe --user=mysql &amp; ————启动mysql
- 在执行以下操作
-</code></pre>
-
-<h2>Mysql启动、停止的方法</h2>
-
-<pre><code>/usr/local/mysql/bin/mysqld_safe --user=mysql &amp;      启动
-mysqladmin –uroot –pxxx  shutdown                  停止
-tail -f /var/log/mysqld.log                        查看mysql的错误日志
-</code></pre>
-
-<h3>修改 mysql监听地址为127.0.0.1</h3>
-
-<pre><code>netstat -ntulp
-tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN      28253/mysqld       
-tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      1889/sshd    
-</code></pre>
-
-<p>默认是监听的0.0.0.0</p>
-
-<pre><code>vi /etc/my.cnf
-添加一列
-[mysqld]
-port            = 3306
-socket          = /tmp/mysql.socK
-bind-address=127.0.0.1
-# mysqladmin -uroot -p shutdow
-# /usr/local/mysql/bin/mysqld_safe --user=mysql &amp;
-保存并退出
- netstat -ntulp
-tcp        0      0 127.0.0.1:3306              0.0.0.0:*                   LISTEN      29103/mysqld   
-</code></pre>
-
-<p>————修改成功</p>
-
-<h2>修改 mysql的root密码</h2>
-
-<pre><code>use mysql
-update user set Password=PASSWORD('新密码') where User='root' and Host='localhost';
-flush privileges;flush privileges;
-# mysql -uroot -p
-Enter password:
-mysql&gt;
-</code></pre>
-
-<p>————修改新密码成功</p>
 
 		
 		

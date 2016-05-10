@@ -9,14 +9,8 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="linux Linux常用命令 Linux 命令总结 一、常用目录作用 / 根目录
-/bin 命令保存目录（普通用户可以读取的命令）
-/boot 启动目录，启动相关文件
-/dev 设备文件保存目录
-/etc 配置文件目录
-/home 普通用户家目录
-/lib 系统库保存目录
-/mnt &hellip;">
+	<meta name="description" content="nginx 腾讯云服务器Centos6.5 LNMP环境搭建 今天开始搭建前几天买的腾讯云服务器的LNMP环境 一、通过putty.exe连接到云服务器 下载并打开这个软件后只需要输入云服务器的外网IP其他默认即可
+然后用你的用户名和密码登录云服务器。 二、CentOS环境下通过YUM安装软件 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -104,6 +98,453 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-28T01:01:35+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/nginx/'>nginx</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/04/28/qqyuncontos-huan-jing-da-jian/" itemprop="url">腾讯云服务器Centos6.5 LNMP环境搭建</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>今天开始搭建前几天买的腾讯云服务器的LNMP环境</p></blockquote>
+
+<h1>一、通过putty.exe连接到云服务器</h1>
+
+<pre><code>下载并打开这个软件后只需要输入云服务器的外网IP其他默认即可
+然后用你的用户名和密码登录云服务器。
+</code></pre>
+
+<h1>二、CentOS环境下通过YUM安装软件</h1>
+
+<pre><code>1. 切换到root权限
+2. yum install [nginx][php][php-fpm][mariadb][mariadb-server][mysql][mysql-server] 或者yum -y mysql mysql-server nginx php php-fpm
+3. 系统会自动搜索相关的软件包和依赖关系，并且在界面中提示用户确认搜索到的软件包是否合适，如下图所示：
+</code></pre>
+
+<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Yum_2.png" alt="sd" /></p>
+
+<pre><code>4. 输入“Y”确认后，开始安装软件，安装完成后会提示“Complete”.
+5. 软件安装完成后，可通过命令 rpm -ql 查看软件包具体的安装目录。以查看nginx的安装目录为例：
+#rpm -ql nginx
+6.可通过命令 rpm -q 查看软件包的版本信息。以查看nginx的版本为例：
+#rpm -q nginx
+</code></pre>
+
+<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/YaST_6.png" alt="sd" />
+<img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/YaST_5.png" alt="sd" /></p>
+
+<h1>三、CentOS环境下通过YUM安装软件</h1>
+
+<h2>1. 配置nginx</h2>
+
+<pre><code>1. 启动nginx服务。
+    命令如下：
+    [root@VM_185_51 /]# service nginx restart
+
+2. 测试nginx服务是否正常运行。
+如果最后显示：`index.html' saved ，说明nginx服务正常。
+[root@VM_185_51 /]# wget http://127.0.0.1
+--2013-02-20 17:07:26-- http://127.0.0.1/
+Connecting to 127.0.0.1:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 151 [text/html]
+Saving to: `index.html'
+100%[==========================================================================================&gt;] 151 --.-K/s in 0s 
+2013-02-20 17:07:26 (37.9 MB/s) - `index.html' saved [151/151]
+
+3. 在浏览器中，通过CentOS云服务器公网IP查看nginx服务是否正常运行。
+如果显示如下，说明nginx安装配置成功。
+</code></pre>
+
+<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Q_lnmp_1.png" alt="sd" /></p>
+
+<h2>2. 配置PHP</h2>
+
+<pre><code>1. 启动php-fpm。
+    [root@VM_185_51 /]# service php-fpm start
+
+2. 修改php-fpm和nginx的配置，实现nginx和php联动。
+    （1）查看php-fpm默认配置。
+    [root@VM_185_51 /]# cat /etc/php-fpm.d/www.conf |grep -i 'listen ='
+    listen = 127.0.0.1:9000
+    （2）php-fpm的默认配置的监听端口为9000，现在只用修改配置，将php解析的请求转发到127.0.0.0:9000处理即可。
+    修改nginx配置，修改命令如下：
+[root@VM_185_51 /]# vim /etc/nginx/conf.d/default.conf
+修改完成后实际配置如下，红色文字为修改过的部分：
+server {
+ listen       80;
+ root   /usr/share/nginx/html;
+ server_name  localhost;
+ #charset koi8-r;
+ #access_log  /var/log/nginx/log/host.access.log  main;
+ location / {
+     index  index.html index.htm;
+  }
+ #error_page  404              /404.html;
+ # redirect server error pages to the static page /50x.html
+ #
+ error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+     root   /usr/share/nginx/html;
+  }
+# proxy the PHP scripts to Apache listening on 127.0.0.1:80
+#
+#location ~ \.php$ {
+#    proxy_pass   http://127.0.0.1;
+#}
+# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+#
+  location ~ \.php$ {
+  fastcgi_pass   127.0.0.1:9000;
+  fastcgi_index   index.php;
+  fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+  include        fastcgi_params;
+ }
+# deny access to .htaccess files, if Apache's document root
+# concurs with nginx's one
+#
+#location ~ /\.ht {
+#    deny  all;
+#}
+}
+修改完成后，按“Esc”键，输入“:wq”，保存文件并返回。
+通过下面的命令，查看配置是否正确：
+[root@VM_185_51 /]# cat /etc/nginx/conf.d/default.conf
+3. 配置生效
+    重启nginx，使配置生效。
+    命令如下：
+    [root@VM_185_51 /]# service nginx restart
+    Stopping nginx: [ OK ]
+    Starting nginx: [ OK ]
+4. 环境配置验证
+    1. 在web目录下创建index.php。
+    命令如下：
+    [root@VM_185_51 /]# vim /usr/share/nginx/html/index.php
+    index.php文件的内容如下：
+    &lt;?php
+    echo "&lt;title&gt;Test Page&lt;/title&gt;";
+    echo "hello world";
+    ?&gt;
+2. 在浏览器中，通过CentOS云服务器公网IP查看环境配置是否成功。
+如果页面可以显示“hello world”，说明配置成功。
+</code></pre>
+
+<p><img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Q_lnmp_2.png" alt="sd" /></p>
+
+<h1>四、Windows机器通过WinSCP上传文件</h1>
+
+<blockquote><p>WinSCP是一个Windows环境下使用SSH的开源图形化SFTP客户端，同时支持SCP协议。它的主要功能就是在本地与远程计算机间安全的复制文件。与使用FTP上传代码相比，通过WinSCP可以直接使用服务器账户密码访问服务器，无需在服务器端做任何配置。下载地址：<a href="http://winscp.net/eng/docs/lang:chs">官方下载</a> <a href="http://dl.pconline.com.cn/html_2/1/86/id=7244&amp;pn=0.html">太平洋下载中心下载</a></p></blockquote>
+
+<p>安装完成后启动WinSCP，界面如下。按图示填写信息并登录。
+<img src="http://mccdn.qcloud.com/img56b024e2768ad.png" alt="sd" /></p>
+
+<blockquote><p>字段填写说明：</p></blockquote>
+
+<ul>
+<li>协议：SFTP或者SCP均可</li>
+<li>主机名：云服务器的公网IP（登录云服务器控制台可查看云服务器的公网IP）</li>
+<li>用户名：云服务器的系统用户名（SUSE/CentOS/Debian：root，Windows：Administrator，Ubuntu：ubuntu）</li>
+<li>密码：云服务器的用户名对应的密码</li>
+<li>端口：默认22</li>
+</ul>
+
+
+<p> 信息填写完毕之后点击登录，界面如下:</p>
+
+<p><img src="http://mccdn.qcloud.com/img56b0272d4ed3a.png" alt="sd" /></p>
+
+<p>登录成功之后，鼠标选中本地文件，拖拽到右侧的远程站点，即可将文件上传到Linux云服务器
+<img src="http://mccdn.qcloud.com/img56b027728e1ec.png" alt="sd" /></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-26T22:53:05+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/nginx/'>nginx</a>, <a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/04/26/nginx-php-huan-jing/" itemprop="url">Nginx下PHP环境搭建1</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
+
+<h1>一、需要准备的包</h1>
+
+<ul>
+<li>libiconv-1.7.tar.gz</li>
+<li>libmcrypt-2.5.7.tar.gz</li>
+<li>mcrypt-2.6.8.tar.gz</li>
+<li>mhash-0.9.3.tar.gz</li>
+<li>php-5.5.34.tar.bz2</li>
+</ul>
+
+
+<h1>二、具体安装</h1>
+
+<hr />
+
+<ol>
+<li><p>libiconv</p>
+
+<ol>
+<li>tar -zvxf libiconv-1.7.tar.gz</li>
+<li>cd libiconv-1.7</li>
+<li>./configure &ndash;prefix=/usr/local</li>
+<li>make</li>
+<li>make install</li>
+</ol>
+</li>
+<li><p>libmcrypt</p>
+
+<ol>
+<li>tar -zvxf libmcrypt-2.5.7.tar.gz</li>
+<li>cd libmcrypt-2.5.7</li>
+<li>./configure</li>
+<li>make</li>
+<li>make install</li>
+<li>/sbin/ldconfig   //共享链接库</li>
+<li>./configure &ndash;enable-ltdl-install //内键指令</li>
+<li>make</li>
+<li>make install</li>
+</ol>
+</li>
+<li><p>mhash</p>
+
+<ol>
+<li>tar -zvxf mhash-0.9.3.tar.gz</li>
+<li>cd mhash-0.9.3</li>
+<li>./configure</li>
+<li>make</li>
+<li>make install</li>
+<li>ln -s /usr/local/lib/libmcrypt.la /usr/lib/ibmcrypt.la</li>
+<li>ln -s /usr/local/lib/libmcrypt.la.so.4 /usr/lib/libmcrypt.la.so.4</li>
+<li>ln -s /usr/local/lib/libmcrypt.la.so.4.4.8 /usr/lib/libmcrypt.la.so.4.4.8</li>
+<li>ln -s /usr/local/lib/libmhash.a /usr/lib/libmhash.a</li>
+<li>ln -s /usr/local/lib/libmhash.la /usr/lib/libmhash.la</li>
+<li>ln -s /usr/local/lib/libmhash.so /usr/lib/libmhash.so</li>
+<li>ln -s /usr/local/lib/libmhash.so.2 /usr/lib/libmhash.so.2</li>
+<li>ln -s /usr/local/lib/libmhash.so.2.0.1 /usr/lib/libmhash.so.2.0.1</li>
+</ol>
+</li>
+<li><p>mcrypt</p>
+
+<ol>
+<li>tar -zxvf mcrypt-2.6.8.tar.gz</li>
+<li>cd mcrypt-2.6.8</li>
+<li>/sbin/ldconfig</li>
+<li>./configure</li>
+<li>若报错则找不到LIBMCRYPT则
+
+<ol>
+<li>export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH</li>
+<li>./configure -with-libmcryp-prefix=/usr/local</li>
+</ol>
+</li>
+<li>make
+
+<ol>
+<li>报错打开报错的文件 vi /usr/local/include/mutils.h</li>
+<li>找到报错的那行看是哪个文件引入失败(mhash_config.h)</li>
+<li>find / -name mhash_config.h 在系统中找到该文件</li>
+<li>cp /home/Ewan/下载/mhash-0.9.3/mhash_config.h /usr/local/include 拷贝到include文件下</li>
+<li>make</li>
+</ol>
+</li>
+<li>make install</li>
+</ol>
+</li>
+<li><p>php-5.5.34.tar.bz2</p>
+
+<ol>
+<li>tar -jxvf php-5.5.34.tar.bz2</li>
+<li>cd php-5.5.34</li>
+<li>./configure &ndash;prefix=/usr/local/php &ndash;enable-fastcgi &ndash;enable-fpm
+
+<ol>
+<li>报错 yum install libxml2 libxml2-devel</li>
+<li>./configure &ndash;prefix=/usr/local/php &ndash;enable-fastcgi &ndash;enable-fpm</li>
+</ol>
+</li>
+<li>make ZEND_EXTRA_LIBS=&lsquo;-liconv&rsquo;</li>
+<li>make install
+
+<ol>
+<li>报错 vi /etc/ld.so.conf</li>
+<li>输入 /usr/local/lib</li>
+<li>make install</li>
+<li>如果还是出错 /sbin/ldconfig -v</li>
+<li>make install</li>
+<li>cp php.ini-dist /usr/local/php/etc/php.ini</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>mysql (5.5版本以下)</p>
+
+<ol>
+<li>groupadd mysql //添加组</li>
+<li>useradd mysql -g mysql //添加用户</li>
+<li>tar -zxvf mysql-x.x.x</li>
+<li>cd mysql-x.x.x</li>
+<li>./configure &ndash;prefix=/usr/local/mysql &ndash;with-mysqld-ldflags=-all-static &ndash;with-client-ldflags=-all-static &ndash;with-readline &ndash;with-ssl</li>
+<li>/usr/local/mysql/bin/mysql_install_db &ndash;user//初始化数据库</li>
+<li>cp ./support-files/mysql.server /etc/init.d/mysql //复制启动项到系统中</li>
+<li>cp ./support-files/my-medium.cnf /etc/my.cnf</li>
+<li>chmod 755 /etc/init.d/mysql(755 分别代表文件拥有者，同组者，其他人的权限 rwx 7为111 可读可写可执行)</li>
+<li>cd /usr/local/mysql</li>
+<li>chown -R mysql . //将拥有者更改为mysql用户</li>
+<li>chgrp -R mysql . //归到mysql组</li>
+<li>/usr/local/mysql/bin/mysqladmin -u root password &lsquo;abc123&rsquo; //设置数据库密码</li>
+<li>报错 不能连接到local mysql</li>
+<li>ps -ef|grep mysql //找到mysql对应的进程号</li>
+<li>kill -9 xxxx //杀死进程</li>
+<li>/usr/local/mysql/bin/mysql_install_db &ndash;user//初始化数据库</li>
+<li>service mysql start //启动MYSQL</li>
+<li>/usr/local/mysql/bin/mysqladmin -u root password &lsquo;abc123&rsquo; //设置数据库密码</li>
+<li>/usr/local/mysql/bin/mysql -u root -p //测试输入的密码</li>
+<li>进入到mysql 后可以\q退出</li>
+</ol>
+</li>
+<li>安装mysql（5.5版本）
+  <a href="http://www.mysql.com/">下载Mysql5.5.4</a></li>
+</ol>
+
+
+<p><img src="http://shp.qpic.cn/txdiscuz_pic/0/_bbs_qcloud_com_forum_201503_10_171832lw4gbxwhq9z9vmho.png/0" alt="1" /></p>
+
+<p><img src="http://shp.qpic.cn/txdiscuz_pic/0/_bbs_qcloud_com_forum_201503_10_171836mubv0eb5010ewbjv.png/0" alt="1" /></p>
+
+<pre><code>1. tar zxvf mysql-5.5.40.tar.gz
+2. cd mysql-5.5.4
+3. yum install ncurses-devel cmake bison-devel libaio-devel gcc-c++ bison -y 
+    *  mysql5.5 版本之后，预编译的 configure命令改为了 cmake, 需要手动安装一下 cmake命令
+5.  cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/usr/local/mysql/data -DSYSCONFDIR=/etc -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci-- Library mysqlclient depends on OSLIBS -lpthread;m;rt;dl-- Configuring done-- Generating done-- Build files have been written to: /root/mysql-5.5.40 ————预编译无报错，成功。
+*  make 
+    *  [100%] Building CXX object mysql-test/lib/My/SafeProcess/CMakeFiles/my_safe_process.dir/safe_process.cc.oLinking CXX executable my_safe_process[100%] Built target my_safe_process————无报错，make正常。
+*   make install -- Installing: /usr/local/mysql/man/man1/mysql_fix_extensions.1 -- Installing: /usr/local/mysql/man/man1/mysqldumpslow.1 -- Installing: /usr/local/mysql/man/man1/mysql_secure_installation.1 -- Installing: /usr/local/mysql/man/man8/mysqld.8 ————无报错，make install正常。
+*    groupadd mysql ————创建mysql组
+*     useradd -g mysql mysql ————在mysql组中创建mysql用户
+* cp /usr/local/mysql/support-files/my-medium.cnf /etc/my.cnf ————默认没有mysql的配置文件，将源码包中的配置文件拷贝到etc下的配置文件中。
+*  /usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data ————初始化数据库，指定用户为mysql，家目录为/usr/local/mysql，数据库目录为/usr/local/mysql/data
+* chown -R root /usr/local/mysql/ ————改变目录的所有者
+* chown -R mysql /usr/local/mysql/data ————改变目录的所有者
+* chgrp -R mysql /usr/local/mysql/ ————改变目录的所属组
+*  export PATH=$PATH:/usr/local/mysql/bin ————将/usr/local/mysql/bin下的命令放到环境变量中
+*   /usr/local/mysql/bin/mysqld_safe --user=mysql &amp; ————启动mysql
+* mysql 
+    *  Welcome to the MySQL monitor.  Commands end with ; or \g.
+         Your MySQL connection id is 1
+</code></pre>
+
+<blockquote><p>ps:在实际的操作过程中上面在10步初始化数据库时有可能会error这时可以考虑用</p></blockquote>
+
+<pre><code> ps -ef|grep mysql //找到mysql对应的进程号
+ kill -9 xxxx //杀死进程
+</code></pre>
+
+<blockquote><p>然后执行</p></blockquote>
+
+<pre><code> chown -R root /usr/local/mysql/ ————改变目录的所有者
+ chown -R mysql /usr/local/mysql/data ————改变目录的所有者
+ chgrp -R mysql /usr/local/mysql/ ————改变目录的所属组
+ export PATH=$PATH:/usr/local/mysql/bin ————将/usr/local/mysql/bin下的命令放到环境变量中
+ /usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data ————初始化数据库，指定用户为mysql，家目录为/usr/local/mysql，数据库目录为/usr/local/mysql/data
+ /usr/local/mysql/bin/mysqld_safe &amp; 启动Mysql 或者
+ /usr/local/mysql/bin/mysqld_safe --user=mysql &amp; ————启动mysql
+ 在执行以下操作
+</code></pre>
+
+<h2>Mysql启动、停止的方法</h2>
+
+<pre><code>/usr/local/mysql/bin/mysqld_safe --user=mysql &amp;      启动
+mysqladmin –uroot –pxxx  shutdown                  停止
+tail -f /var/log/mysqld.log                        查看mysql的错误日志
+</code></pre>
+
+<h3>修改 mysql监听地址为127.0.0.1</h3>
+
+<pre><code>netstat -ntulp
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN      28253/mysqld       
+tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      1889/sshd    
+</code></pre>
+
+<p>默认是监听的0.0.0.0</p>
+
+<pre><code>vi /etc/my.cnf
+添加一列
+[mysqld]
+port            = 3306
+socket          = /tmp/mysql.socK
+bind-address=127.0.0.1
+# mysqladmin -uroot -p shutdow
+# /usr/local/mysql/bin/mysqld_safe --user=mysql &amp;
+保存并退出
+ netstat -ntulp
+tcp        0      0 127.0.0.1:3306              0.0.0.0:*                   LISTEN      29103/mysqld   
+</code></pre>
+
+<p>————修改成功</p>
+
+<h2>修改 mysql的root密码</h2>
+
+<pre><code>use mysql
+update user set Password=PASSWORD('新密码') where User='root' and Host='localhost';
+flush privileges;flush privileges;
+# mysql -uroot -p
+Enter password:
+mysql&gt;
+</code></pre>
+
+<p>————修改新密码成功</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">

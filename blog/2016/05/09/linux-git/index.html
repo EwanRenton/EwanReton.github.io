@@ -1,0 +1,528 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Linx下安装Git - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="Linx下安装Git 考试季过去了，准备开始将日常使用迁移到Linux下，今天想在Linux下装Git，开始觉得这应该是个很简单的事，谁知道这个花了好多时间。 首先在网上找了一个博文作为参考，传送门 服务器端： yum install curl-devel expat-devel gettext &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/09/linux-git/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Linx下安装Git</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>考试季过去了，准备开始将日常使用迁移到Linux下，今天想在Linux下装Git，开始觉得这应该是个很简单的事，谁知道这个花了好多时间。</p></blockquote>
+
+<p>首先在网上找了一个博文作为参考，<a href="http://blog.csdn.net/naola2001/article/details/43228769">传送门</a></p>
+
+<p>服务器端：</p>
+
+<pre class="prettyprint text">
+yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-devel
+wget https://github.com/git/git/archive/v2.2.0.tar.gz
+tar zxvf git-2.2.0.tar.gz
+cd git-2.2.0
+make prefix=/usr/local all
+make prefix=/usr/local install  root用户运行
+</pre>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">如果编译时提示错误：</span>
+</span><span class='line'><span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">credential</span><span class="o">-</span><span class="nx">store</span>
+</span><span class='line'><span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span><span class="p">(</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span> <span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">reencode_string_iconv’</span><span class="o">:</span>
+</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">530</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="sb">`libiconv’</span>
+</span><span class='line'><span class="sb">libgit.a(utf8.o): In function `</span><span class="nx">reencode_string_len’</span><span class="o">:</span>
+</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">569</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="sb">`libiconv_open’</span>
+</span><span class='line'><span class="sb">/opt/git-master/utf8.c:588: undefined reference to `</span><span class="nx">libiconv_close’</span>
+</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">582</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="err">`</span><span class="nx">libiconv_open’</span>
+</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">返回</span> <span class="mi">1</span>
+</span><span class='line'><span class="nx">make</span><span class="o">:</span> <span class="o">***</span> <span class="p">[</span><span class="nx">git</span><span class="o">-</span><span class="nx">credential</span><span class="o">-</span><span class="nx">store</span><span class="p">]</span> <span class="nx">错误</span> <span class="mi">1</span>
+</span><span class='line'><span class="nx">解决办法：</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span>
+</span><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">pub</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libiconv</span><span class="o">/</span><span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">tar</span> <span class="o">-</span><span class="nx">zxvf</span> <span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span>
+</span><span class='line'><span class="o">./</span><span class="nx">configure</span> <span class="o">-</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">libiconv</span>  <span class="o">&amp;&amp;</span>  <span class="nx">make</span>  <span class="o">&amp;&amp;</span> <span class="nx">sudo</span>  <span class="nx">make</span> <span class="nx">install</span>
+</span><span class='line'><span class="nx">然后回到git继续编译：</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mi">5</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">configure</span>
+</span><span class='line'><span class="o">./</span><span class="nx">configure</span> <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span> <span class="o">-</span><span class="nx">with</span><span class="o">-</span><span class="nb">iconv</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">libiconv</span>
+</span><span class='line'><span class="nx">make</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># git --version</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">version</span> <span class="mf">2.2</span><span class="o">.</span><span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按照教程，到这里应该就成功了。
+但是在解决了lib的错误后在回来执行 make 时遇到了错误</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">init_gettext_charset</span><span class="s1">&#39;: </span>
+</span><span class='line'><span class="s1">/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset&#39;</span>
+</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">returned</span> <span class="mi">1</span> <span class="k">exit</span> <span class="nx">status</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解决方法：<a href="http://mono.1490590.n4.nabble.com/Can-t-compile-git-for-a-long-time-td3336232.html#a4312244">传送门</a>
+其中一个corey_yan的回答成功解决了问题</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">I</span> <span class="nx">encounter</span> <span class="nx">the</span> <span class="nx">same</span> <span class="nx">problem</span> <span class="nx">in</span> <span class="nx">centos</span> <span class="mf">5.2</span> <span class="k">and</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">solve</span> <span class="nx">it</span> <span class="k">for</span> <span class="nx">a</span> <span class="nx">long</span> <span class="nb">time</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span><span class="p">(</span><span class="nb">gettext</span><span class="o">.</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span> <span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">init_gettext_charset</span><span class="s1">&#39;: </span>
+</span><span class='line'><span class="s1">/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset&#39;</span>
+</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">returned</span> <span class="mi">1</span> <span class="k">exit</span> <span class="nx">status</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">After</span> <span class="nx">checking</span> <span class="nx">the</span> <span class="nx">detail</span> <span class="nx">Link</span> <span class="nx">command</span>
+</span><span class='line'><span class="nx">make</span> <span class="o">-</span><span class="nx">n</span> <span class="o">|</span> <span class="nx">grep</span> <span class="s2">&quot;git-daemon&quot;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;   &#39;</span> <span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span><span class="p">;</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">I</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">change</span> <span class="nx">to</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcharset</span> <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Link</span> <span class="nx">error</span> <span class="nx">is</span> <span class="nx">missing</span><span class="o">:</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">I</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">modify</span> <span class="nx">Makefile</span>
+</span><span class='line'>        <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span> <span class="o">-</span><span class="nx">lcharset</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">then</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">successfully</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Hope</span> <span class="nx">it</span> <span class="nx">can</span> <span class="nx">help</span> <span class="nx">you</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>步骤为:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">make</span> <span class="o">-</span><span class="nx">n</span> <span class="o">|</span> <span class="nx">grep</span> <span class="s2">&quot;git-daemon&quot;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;   &#39;</span> <span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span><span class="p">;</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'><span class="c1">//会报一个link错误</span>
+</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcharset</span> <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
+</span><span class='line'><span class="c1">//Link error is missing:) </span>
+</span><span class='line'><span class="nx">vim</span> <span class="nx">Makefile</span>
+</span><span class='line'><span class="nx">找到</span> <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span>
+</span><span class='line'><span class="nx">改为</span> <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span> <span class="o">-</span><span class="nx">lcharset</span>  <span class="c1">//保存退出</span>
+</span><span class='line'><span class="nx">重新make</span>
+</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>成功解决问题。</p>
+
+<hr />
+
+<h1>在原博文下面还有一些功能的安装，现在还没设计到，不过也先贴出来</h1>
+
+<p><strong>下面来安装 gitosis</strong></p>
+
+<blockquote><p>gitosis为Git用户权限管理系统,通过管理服务端的authorized_key文件来执行对用户权限的管理，是一个Python模块包</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">yum</span> <span class="nx">install</span> <span class="nx">python</span> <span class="nx">python</span><span class="o">-</span><span class="nx">setuptools</span>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span>
+</span><span class='line'><span class="nx">git</span> <span class="k">clone</span> <span class="nx">git</span><span class="o">://</span><span class="nx">github</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">res0nat0r</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">gitosis</span>
+</span><span class='line'><span class="nx">python</span> <span class="nx">setup</span><span class="o">.</span><span class="nx">py</span> <span class="nx">install</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">OK</span> <span class="nx">gitosis</span> <span class="nx">安装成功！</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nx">配置服务器git：</span>
+</span><span class='line'><span class="mf">0.1</span> <span class="nx">输入以下两条命令</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user</span><span class="o">.</span><span class="nx">name</span> <span class="s2">&quot;Your Name Here&quot;</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user</span><span class="o">.</span><span class="nx">email</span> <span class="s2">&quot;your_email@example.com&quot;</span>
+</span><span class='line'><span class="nx">可以再输入git</span> <span class="nx">config</span> <span class="o">-</span><span class="nx">l查看上面两个是否设置</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>在开发机上生成密钥并上传到服务器上</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">rsa</span>   <span class="c1">#一路回车，不需要设置密码</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>   <span class="c1">#上传公钥到服务器(默认SSH端口22)</span>
+</span><span class='line'><span class="nx">或</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">-</span><span class="nx">P</span> <span class="mi">3600</span>  <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="mi">5</span><span class="nx">、服务器上生成git用户，使用git用户并初始化gitosis</span>
+</span><span class='line'><span class="nx">adduser</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&lt;</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="c1">#显示以下信息即表示成功</span>
+</span><span class='line'><span class="c1">#Initialized empty Git repository in /home/git/repositories/gitosis-admin.git/</span>
+</span><span class='line'><span class="c1">#Reinitialized existing Git repository in /home/git/repositories/gitosis-admin.git/</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#删除密钥</span>
+</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">root</span>
+</span><span class='line'><span class="nx">rm</span> <span class="o">-</span><span class="nx">rf</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">禁用shell登录</span>
+</span><span class='line'><span class="nx">注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑</span><span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">passwd文件完成。找到类似下面的一行：</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="nx">\</span><span class="p">]</span><span class="c1"># cat /etc/passwd | grep git</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">改为：</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="nx">\</span><span class="p">]</span><span class="c1"># vim /etc/passwd</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">shell</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git</span><span class="o">-</span><span class="nx">shell每次一登录就自动退出。</span>
+</span><span class='line'>
+</span><span class='line'><span class="mi">2</span><span class="nx">，在git用户下，生成私钥和公钥。</span>
+</span><span class='line'><span class="nv">$ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="nx">–t</span> <span class="nx">rsa</span>
+</span><span class='line'><span class="mi">3</span><span class="nx">，在git用户下，拷入id_rsa</span><span class="o">.</span><span class="nx">pub文件。</span>
+</span><span class='line'><span class="nv">$gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&lt;</span> <span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">这样在git用户目录下生成了一些目录，gitosis，repositories。</span>
+</span><span class='line'><span class="nx">至此，安装工作完成。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>添加开发者</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。</span>
+</span><span class='line'><span class="nv">$cat</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span><span class="o">.</span><span class="nx">ubuntu</span> <span class="o">&gt;&gt;</span> <span class="nx">authorized_keys</span>
+</span><span class='line'><span class="nx">创建项目仓库</span>
+</span><span class='line'><span class="nx">git管理人员操作：</span>
+</span><span class='line'><span class="nv">$mkdir</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$cd</span> <span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$git</span> <span class="o">--</span><span class="nx">bare</span> <span class="nx">init</span> <span class="nx">（创建一个空项目）</span>
+</span><span class='line'><span class="nx">开发者提交项目</span>
+</span><span class='line'><span class="nx">ubuntu开发者操作：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">gitserver</span><span class="o">:/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">project</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span><span class='line'><span class="nx">这样其他开发者的工作也比较简单了：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="k">clone</span> <span class="nx">…</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span>
+</span><span class='line'><span class="nx">vim</span> <span class="nx">gitosis</span><span class="o">.</span><span class="nx">conf</span>
+</span><span class='line'><span class="nx">在文件尾增加以下内容</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">group</span> <span class="nx">test\</span><span class="p">]</span>  <span class="nx">组名称</span>
+</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>  <span class="nx">项目名称</span>
+</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">密钥用户名</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#提交修改</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>初始，增加及使用项目test-git</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span>
+</span><span class='line'><span class="nb">mkdir</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">cd</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">inti</span>
+</span><span class='line'><span class="nb">touch</span> <span class="nx">readme</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“init</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">xxx</span><span class="o">:</span><span class="nx">test</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>在 test 项目新增用户</strong>
+①在新增用户的本机输入ssh-keygen -t rsa生成私钥公钥；
+②把生成的公钥id_rsa.pub上传或复制到 gitosis-admin/keydir文件夹下，并重名，如：jankerli.pub；
+③vim gitosis.conf</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">在文件尾增加以下内容</span>
+</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">group</span> <span class="nx">test\</span><span class="p">]</span>
+</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>
+</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">（此处增加新用户的名称，名称必须与上面重名的jankerli</span><span class="o">.</span><span class="nx">pub一致，去掉</span><span class="o">.</span><span class="nx">pub）</span>
+</span><span class='line'><span class="nx">④提交修改</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>⑤新用户便可通过 git clone git@xxx:test.git 克隆代码到本机了。</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
