@@ -1,0 +1,377 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>ubuntu-huan-jing-da-jian - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="Ubuntu-huan-jing-da-jian 在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0. 重新下了一个Ubuntu 12.04.5 LTS 。 在虚拟机中装好了系统过后出现了一个问题，在登录界面输入密码登录过后一直黑屏。 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/12/ubuntu-huan-jing-da-jian/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Ubuntu-huan-jing-da-jian</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0.</p></blockquote>
+
+<p>重新下了一个Ubuntu 12.04.5 LTS 。</p>
+
+<p>在虚拟机中装好了系统过后出现了一个问题，在登录界面输入密码登录过后一直黑屏。当时人都懵逼了，用了这么久Ubuntu从来没出过这种问题啊，重装了很多次系统都不行。百度了很多过后发现他们的情况和我的都不太一样。到是看到有一个看起来很不靠谱的回答解决了问题。</p>
+
+<pre class="prettyprint text">
+    在登录时点击登录框右上角那个Ubuntu图标选择 ubuntu 2D
+</pre>
+
+
+<p>5/12/2016 7:18:20 PM
+找到了上述问题的原因<a href="http://tieba.baidu.com/p/2535671580">传送门</a></p>
+
+<pre class="prettyprint text">
+1.双显卡问题 
+双显卡的普遍组合为intel集成到其CPU上的显卡（称为核显）+Nvidia独立显卡或AMD显卡。在linux系统下，双显卡因驱动原因不能很好协调工作，N卡和A卡会一直处于高负荷运行状态，导致电脑发热严重,或是X-org罢工，开机无画面，等常见问题。
+linux下是以工具Bumlebee（大黄蜂）来调度显卡工作来解决，运行模式为：通常关闭非核卡，让核卡来负责图形工作，但可在终端输入命令“optirun xxx"用非核卡运行程序xxx。
+2.安装Bumblebee
+2.1 卸载N卡驱动
+如果有安装N卡驱动（不管是开源还是闭源），必须先卸载；没有则跳过此步。
+打开终端（ctrl+alt+t），输入下面的命令（复制也可）：
+————————————复制————————————————————————
+sudo apt-get remove --purge nvidia*
+————————————复制————————————————————————
+完成后，重启。
+2.2 安装Bumblebee
+打开终端（ctrl+alt+t），分次按序输入下面的命令（红字部分，复制也可）：
+————————————复制————————————————————————
+1. sudo add-apt-repository ppa:bumblebee/stable
+2. sudo apt-get update
+3. sudo apt-get install bumblebee virtualgl linux-headers-generic
+————————————复制————————————————————————
+每步的时间较长，请耐心等待；完成后，重启。
+2.3 验证效果
+打开终端（ctrl+alt+t），输入下面的的命令（红字部分，复制也可）：
+————————————复制————————————————————————
+lspci |grep VGA
+————————————复制————————————————————————
+终端返回类似如下两条信息：
+A、00:02.0 VGA compatible controller: Intel Corporation 3rd Gen Core processor Graphics Controller (rev 09)
+B、01:00.0 VGA compatible controller: NVIDIA Corporation GK104M [GeForce GTX 670MX] (rev ff)"
+其中，A条信息关于I卡，"rev 09“表示I卡运作；B条信息关于N卡，”rev ff“表示N卡被关闭，若未被关闭，显示为“rev a1”。
+
+3、调用N卡工作
+命令“optirun xxx"可用来调用N卡运作处理程序xxx（程序名）的图形计算 ，不过图形渲染仍由I卡负责。
+</pre>
+
+
+<p>抱着试一试的心态结果成功登录了。
+下面是Ubuntu的环境搭建，以前都是看别人的博客，现在既然自己有了博客就整理了一下。</p>
+
+<hr />
+
+<p>安装Gnome <code>apt-get install gnome-session-fallback</code></p>
+
+<h1>一、安装LAMP环境</h1>
+
+<p>两种方式</p>
+
+<ol>
+<li>分步安装</li>
+</ol>
+
+
+<pre class="prettyprint ">
+sudo apt-get update //获取最新列表
+Apache:
+sudo apt-get install apache2
+apache2 -v //查看是否安装好
+浏览器访问服务器IP
+php：
+sudo apt-get install php5
+php5 -v
+cat /etc/apache2/mod-enabled/php5.load //查看阿帕奇是否加载PHP
+mysql：
+sudo apt-get install mysql-server
+输入root密码 //注意这里的密码不是你root用户的密码，是设置mysql-root用户的密码
+cat /etc/php5/conf.d/mysql.ini
+提示没有文件 说明mysql还没有被php加载 需要安装mysql扩展
+sudo apt-get install php5-mysql
+cat /etc/php5/conf.d/mysql.ini
+extension=mysql.so //说明正确加载
+</pre>
+
+
+<p>2.tasksel</p>
+
+<pre class="prettyprint ">
+sudo tasksel install lamp-server
+tasksel 提供多种软件套装
+</pre>
+
+
+<hr />
+
+<p><strong>安装PHP常用扩展</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span>  <span class="nx">php5</span><span class="o">-</span><span class="nx">curl</span> <span class="nx">php5</span><span class="o">-</span><span class="nx">gd</span>  <span class="nx">libcurl3</span> <span class="nx">libcurl3</span><span class="o">-</span><span class="nx">dev</span> <span class="nx">php5</span><span class="o">-</span><span class="nx">curl</span>
+</span><span class='line'><span class="nx">可以先用sudo</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">cache</span> <span class="nx">search</span> <span class="nx">php5</span> <span class="nx">查看关于PHP5的组件</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>二、SSH配置</h1>
+
+<blockquote><p>习惯了用Xshell，今天直接用Xshell连接新安装的ubuntu连接失败，好一会才反应过来还没安装ssh</p></blockquote>
+
+<pre class="prettyprint ">
+sudo apt-get install openssh-server
+</pre>
+
+
+<p>其他配置就不多写了。可以参考<a href="http://jingyan.baidu.com/article/9c69d48fb9fd7b13c8024e6b.html">传送门</a></p>
+
+<h1>三、 ubuntu终端su认证失败：允许su到root</h1>
+
+<blockquote><p>Ubuntu 安装后，root用户默认被锁定，不允许登录，也不允许“su”到 root。对于桌面用户来说，这样安全性更高一些，但对于服务器可以设置成“允许 su 到root，但不允许root用户直接登录”。为了开发时的方便，我们常希望都采用这种方式。</p></blockquote>
+
+<p>1.允许 su 到 root</p>
+
+<pre class="prettyprint ">
+sudo passwd 
+Password: <--- 输入安装时那个用户的密码 
+Enter new UNIX password: <--- 新的Root用户密码 
+Retype new UNIX password: <--- 重复新的Root用户密码 
+passwd：已成功更新密码  
+</pre>
+
+
+<p>2.允许root登录</p>
+
+<pre class="prettyprint ">
+gksu /usr/sbin/gdmsetup  
+</pre>
+
+
+<p>（或者使用桌面菜单：系统＞系统管理＞登录窗口）
+点“安全”选项页，选择“允许本地管理员登录”。
+注：这一步依赖上一步</p>
+
+<p>3.不输入密码直接登录
+    在上一步的“安全”选项页中，勾选：“启用自动登录”，“用户”选择（如：“me”）</p>
+
+<p>参考<a href="http://blog.csdn.net/ccrong/article/details/8133736">传送门</a></p>
+
+<h1>四、Git</h1>
+
+<p>Git的安装就非常简单了。</p>
+
+<pre class="prettyprint ">
+sudo apt-get install git
+</pre>
+
+
+<p>配置请看<a href="http://blog.ewanreton.cn/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/">这里</a></p>
+
+<p>五、Atom</p>
+
+<blockquote><p>对的，还是它，这是一种信仰0 0</p></blockquote>
+
+<p><strong>Requirements</strong></p>
+
+<ul>
+<li>OS with 64-bit or 32-bit architecture</li>
+<li>C++ toolchain</li>
+<li>Git</li>
+<li>Node.js (0.10.x or above)</li>
+<li>npm v1.4.x or above (automatically bundled with Node.js)
+
+<ul>
+<li><code>npm -v</code> to check the version.</li>
+<li><code>npm config set python /usr/bin/python2 -g</code> to ensure that gyp uses python2.
+
+<ul>
+<li>You might need to run this command as <code>sudo</code>, depending on how you have set up npm.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>development headers for GNOME Keyring</li>
+</ul>
+
+
+<hr />
+
+<p><strong>Ubuntu / Debian</strong></p>
+
+<ul>
+<li><code>sudo apt-get install build-essential git libgnome-keyring-dev fakeroot</code></li>
+<li>Instructions for Node.js.
+
+<ul>
+<li>Make sure the command node is available after Node.js installation (some systems install it as nodejs).</li>
+<li>Use <code>which node</code> to check if it is available.</li>
+<li>Use <code>sudo update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10 to</code> update it.</li>
+</ul>
+</li>
+</ul>
+
+
+<p>这里我用了其他的方法更新我的node和npm</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">update</span>
+</span><span class='line'> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span> <span class="o">-</span><span class="nx">y</span> <span class="nx">python</span><span class="o">-</span><span class="nx">software</span><span class="o">-</span><span class="nx">properties</span> <span class="nx">software</span><span class="o">-</span><span class="nx">properties</span><span class="o">-</span><span class="nx">common</span>
+</span><span class='line'> <span class="nx">add</span><span class="o">-</span><span class="nx">apt</span><span class="o">-</span><span class="nx">repository</span> <span class="nx">ppa</span><span class="o">:</span><span class="nx">chris</span><span class="o">-</span><span class="nx">lea</span><span class="o">/</span><span class="nx">node</span><span class="o">.</span><span class="nx">js</span>
+</span><span class='line'> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">update</span>
+</span><span class='line'> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span> <span class="nx">nodejs</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样环境就好了，就可以开始安装了。</p>
+
+<p><strong>Debian Linux (Ubuntu)</strong></p>
+
+<p>Currently only a 64-bit version is available.</p>
+
+<ol>
+<li>Download <code>atom-amd64.deb</code> from the <a href="https://github.com/atom/atom/releases/latest">Atom releases page.</a></li>
+<li>Run <code>sudo dpkg --install atom-amd64.deb</code> on the downloaded package.</li>
+<li>Launch Atom using the installed <code>atom</code> command.</li>
+</ol>
+
+
+<p>The Linux version does not currently automatically update so you will need to repeat these steps to upgrade to future releases.</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
