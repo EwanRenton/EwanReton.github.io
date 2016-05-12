@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-12T19:20:55+08:00</updated>
+  <updated>2016-05-12T20:31:32+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[ubuntu-huan-jing-da-jian]]></title>
+    <title type="html"><![CDATA[Ubuntu环境搭建]]></title>
     <link href="http://ewanreton.github.io/blog/2016/05/12/ubuntu-huan-jing-da-jian/"/>
     <updated>2016-05-12T14:58:33+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/12/ubuntu-huan-jing-da-jian</id>
@@ -120,6 +120,30 @@ tasksel 提供多种软件套装
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span>  <span class="nx">php5</span><span class="o">-</span><span class="nx">curl</span> <span class="nx">php5</span><span class="o">-</span><span class="nx">gd</span>  <span class="nx">libcurl3</span> <span class="nx">libcurl3</span><span class="o">-</span><span class="nx">dev</span> <span class="nx">php5</span><span class="o">-</span><span class="nx">curl</span>
 </span><span class='line'><span class="nx">可以先用sudo</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">cache</span> <span class="nx">search</span> <span class="nx">php5</span> <span class="nx">查看关于PHP5的组件</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>安装mysqladmin</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">phpmyadmin</span>
+</span><span class='line'><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">phpmyadmin</span><span class="o">/</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">pma</span>
+</span><span class='line'><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">php5</span><span class="o">-</span><span class="n">mcrypt</span> <span class="n">libmcrypt</span><span class="o">-</span><span class="n">dev</span>
+</span><span class='line'><span class="n">service</span> <span class="n">apache2</span> <span class="n">restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>开启mysql remote access</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">my</span><span class="o">.</span><span class="na">cnf</span>
+</span><span class='line'><span class="n">找到bind</span><span class="o">-</span><span class="n">address</span>  <span class="n">将这行注释掉</span> <span class="n">这是允许访问的白名单</span>
+</span><span class='line'><span class="n">在mysqladmin中添加一个用户</span> <span class="n">主机选择任意主机</span> <span class="n">输入</span><span class="o">%</span><span class="n">其他的按个人设置即可</span><span class="err">。</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

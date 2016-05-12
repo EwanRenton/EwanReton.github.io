@@ -5,11 +5,11 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>ubuntu-huan-jing-da-jian - Ewan Reton</title>
+	<title>Ubuntu环境搭建 - Ewan Reton</title>
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="Ubuntu-huan-jing-da-jian 在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0. 重新下了一个Ubuntu 12.04.5 LTS 。 在虚拟机中装好了系统过后出现了一个问题，在登录界面输入密码登录过后一直黑屏。 &hellip;">
+	<meta name="description" content="Ubuntu环境搭建 在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0. 重新下了一个Ubuntu 12.04.5 LTS 。 在虚拟机中装好了系统过后出现了一个问题，在登录界面输入密码登录过后一直黑屏。当时人都懵逼了， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,7 +105,7 @@
 			
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-	<h1 class="title" itemprop="name">Ubuntu-huan-jing-da-jian</h1>
+	<h1 class="title" itemprop="name">Ubuntu环境搭建</h1>
 	<div class="entry-content" itemprop="articleBody"><blockquote><p>在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0.</p></blockquote>
 
 <p>重新下了一个Ubuntu 12.04.5 LTS 。</p>
@@ -208,6 +208,30 @@ tasksel 提供多种软件套装
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">install</span>  <span class="nx">php5</span><span class="o">-</span><span class="nx">curl</span> <span class="nx">php5</span><span class="o">-</span><span class="nx">gd</span>  <span class="nx">libcurl3</span> <span class="nx">libcurl3</span><span class="o">-</span><span class="nx">dev</span> <span class="nx">php5</span><span class="o">-</span><span class="nx">curl</span>
 </span><span class='line'><span class="nx">可以先用sudo</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">cache</span> <span class="nx">search</span> <span class="nx">php5</span> <span class="nx">查看关于PHP5的组件</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>安装mysqladmin</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">phpmyadmin</span>
+</span><span class='line'><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">phpmyadmin</span><span class="o">/</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">pma</span>
+</span><span class='line'><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">php5</span><span class="o">-</span><span class="n">mcrypt</span> <span class="n">libmcrypt</span><span class="o">-</span><span class="n">dev</span>
+</span><span class='line'><span class="n">service</span> <span class="n">apache2</span> <span class="n">restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>开启mysql remote access</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">my</span><span class="o">.</span><span class="na">cnf</span>
+</span><span class='line'><span class="n">找到bind</span><span class="o">-</span><span class="n">address</span>  <span class="n">将这行注释掉</span> <span class="n">这是允许访问的白名单</span>
+</span><span class='line'><span class="n">在mysqladmin中添加一个用户</span> <span class="n">主机选择任意主机</span> <span class="n">输入</span><span class="o">%</span><span class="n">其他的按个人设置即可</span><span class="err">。</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
