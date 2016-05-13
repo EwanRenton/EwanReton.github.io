@@ -1,0 +1,554 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>cURL - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="cURL cURl的概念 cURL（Client URL Library Functions）使用URL语法传输数据的命令行工具 使用场景 网页资源 网页爬虫 WebService数据接口资源 动态获取接口数据，如天气 号码归属地等 FTP服务器里面的文件资源 下载Ftp里面的文件 其他资源 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/12/php-curl/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">cURL</h1>
+	<div class="entry-content" itemprop="articleBody"><h1>cURl的概念</h1>
+
+<blockquote><p>cURL（Client URL Library Functions）使用URL语法传输数据的命令行工具</p></blockquote>
+
+<h1>使用场景</h1>
+
+<ul>
+<li>网页资源
+
+<ul>
+<li>网页爬虫</li>
+</ul>
+</li>
+<li><p>WebService数据接口资源</p>
+
+<ul>
+<li>动态获取接口数据，如天气 号码归属地等</li>
+</ul>
+</li>
+<li><p>FTP服务器里面的文件资源</p>
+
+<ul>
+<li>下载Ftp里面的文件</li>
+</ul>
+</li>
+<li><p>其他资源</p>
+
+<ul>
+<li>所有网络上的资源都可以用cURL访问和下载</li>
+</ul>
+</li>
+</ul>
+
+
+<p>确定是否支持cURL<code>php -i |grep cURL</code></p>
+
+<h1>cURL操作步骤</h1>
+
+<ul>
+<li>初始化
+
+<ul>
+<li>curl_init()</li>
+</ul>
+</li>
+<li>执行
+
+<ul>
+<li>curl_exec()</li>
+</ul>
+</li>
+<li><p>关闭</p>
+
+<ul>
+<li>curl_close()
+
+<h1>实例</h1></li>
+</ul>
+</li>
+<li><p>简单的网页爬虫</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$curl</span><span class="o">=</span><span class="nb">curl_init</span><span class="p">(</span><span class="s1">&#39;http://www.baidu.com&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>抓取网页并替换部分内容</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 在网络上下载一个网页并把内容中的“百度”替换为“GOOD”之后输出</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>         <span class="c1">// 初始化</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.baidu.com&quot;</span><span class="p">);</span>     <span class="c1">// 设置访问网页的URL</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>           <span class="c1">// 执行之后不直接打印出来</span>
+</span><span class='line'><span class="nv">$output</span><span class="o">=</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span> <span class="c1">// 执行</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>           <span class="c1">// 关闭cURL</span>
+</span><span class='line'><span class="k">echo</span> <span class="nb">str_replace</span><span class="p">(</span><span class="s2">&quot;百度&quot;</span><span class="p">,</span><span class="s2">&quot;GOOD&quot;</span><span class="p">,</span><span class="nv">$output</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>调用WebService获取天气信息
+代码需要修改</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="s1">&lt;soap:Envelope </span>
+</span><span class='line'><span class="s1">xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; </span>
+</span><span class='line'><span class="s1">xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; </span>
+</span><span class='line'><span class="s1">xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;</span>
+</span><span class='line'><span class="s1">  &lt;soap:Body&gt;</span>
+</span><span class='line'><span class="s1">    &lt;getWeatherbyCityName xmlns=&quot;http://WebXml.com.cn/&quot;&gt;</span>
+</span><span class='line'><span class="s1">      &lt;theCityName&gt;%s&lt;/theCityName&gt;</span>
+</span><span class='line'><span class="s1">    &lt;/getWeatherbyCityName&gt;</span>
+</span><span class='line'><span class="s1">  &lt;/soap:Body&gt;</span>
+</span><span class='line'><span class="s1">&lt;/soap:Envelope&gt;&#39;</span><span class="p">,</span><span class="s1">&#39;北京&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span> 
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.webxml.com.cn/WebServices/WeatherWebService.asmx&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPHEADER</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;Content-Type: application/soap+xml; charset=utf-8&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;Content-length: &quot;</span><span class="o">.</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$data</span><span class="p">),</span>
+</span><span class='line'>  <span class="s2">&quot;SOAPAction:</span><span class="se">\&quot;</span><span class="s2">http://WebXml.com.cn/getWeatherbyCityName</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="nv">$rtn</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">)){</span>
+</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$info</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;RETURN: &quot;</span> <span class="o">.</span> <span class="nv">$rtn</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;Curl error: &#39;</span> <span class="o">.</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>登录网站并下载个人空间页面</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 登录慕课网并下载个人空间页面</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="nv">$data</span><span class="o">=</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;promonkey&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;password&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;1q2w3e&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;remember&#39;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span><span class="o">=</span><span class="s1">&#39;username=xxx&amp;password=xxx&amp;remember=1&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>         <span class="c1">// 初始化</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.imooc.com/user/login&quot;</span><span class="p">);</span>      <span class="c1">// 设置访问网页的URL</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>           <span class="c1">// 执行之后不直接打印出来</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Cookie相关设置，这部分设置需要在所有会话开始之前设置</span>
+</span><span class='line'><span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s1">&#39;PRC&#39;</span><span class="p">);</span> <span class="c1">// 使用Cookie时，必须先设置时区</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_COOKIESESSION</span><span class="p">,</span> <span class="k">TRUE</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// 这样能够让cURL支持页面链接跳转</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPHEADER</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;application/x-www-form-urlencoded; charset=utf-8&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;Content-length: &quot;</span><span class="o">.</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$data</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">));</span>
+</span><span class='line'><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>    <span class="c1">// 执行</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.imooc.com/space/index&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPHEADER</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;Content-type: text/xml&quot;</span>
+</span><span class='line'>  <span class="p">));</span>
+</span><span class='line'><span class="nv">$output</span><span class="o">=</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span> <span class="c1">// 执行</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>           <span class="c1">// 关闭cURL</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$output</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>FTP服务器下载文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 从FTP服务器下载一个文件到本地</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span> 
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;ftp://xxx(ip)/downloaddemo.txt&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">300</span><span class="p">);</span> <span class="c1">// times out after 300s</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_USERPWD</span><span class="p">,</span> <span class="s2">&quot;xxx:xxx&quot;</span><span class="p">);</span><span class="c1">//FTP用户名：密码</span>
+</span><span class='line'><span class="c1">// Sets up the output file</span>
+</span><span class='line'><span class="nv">$outfile</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;dest.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">);</span><span class="c1">//保存到本地的文件名</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_FILE</span><span class="p">,</span> <span class="nv">$outfile</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$rtn</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="nb">fclose</span><span class="p">(</span><span class="nv">$outfile</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">)){</span>
+</span><span class='line'>  <span class="c1">// $info = curl_getinfo($curlobj); </span>
+</span><span class='line'>  <span class="c1">// print_r($info);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;RETURN: &quot;</span> <span class="o">.</span> <span class="nv">$rtn</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;Curl error: &#39;</span> <span class="o">.</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>上传文件到FTP</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 把本地文件上传到FTP服务器上</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span> 
+</span><span class='line'><span class="nv">$localfile</span> <span class="o">=</span> <span class="s1">&#39;ftp01.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="nv">$localfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;ftp://xxx/ftp01_uploaded.php&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">300</span><span class="p">);</span> <span class="c1">// times out after 300s</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_USERPWD</span><span class="p">,</span> <span class="s2">&quot;xxx:xxx&quot;</span><span class="p">);</span><span class="c1">//FTP用户名：密码</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_UPLOAD</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_INFILE</span><span class="p">,</span> <span class="nv">$fp</span><span class="p">);</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_INFILESIZE</span><span class="p">,</span> <span class="nb">filesize</span><span class="p">(</span><span class="nv">$localfile</span><span class="p">));</span>
+</span><span class='line'><span class="nv">$rtn</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">)){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;Uploaded successfully.&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;Curl error: &#39;</span> <span class="o">.</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>访问HTTPS资源</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 下载网络上面的一个HTTPS的资源</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>         <span class="c1">// 初始化</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;https://ajax.aspnetcdn.com/ajax/jquery.validate/1.12.0/jquery.validate.js&quot;</span><span class="p">);</span>        <span class="c1">// 设置访问网页的URL</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>           <span class="c1">// 执行之后不直接打印出来</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 设置HTTPS支持</span>
+</span><span class='line'><span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s1">&#39;PRC&#39;</span><span class="p">);</span> <span class="c1">// 使用Cookie时，必须先设置时区</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// 对认证证书来源的检查从证书中检查SSL加密算法是否存在</span>
+</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYHOST</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// </span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$output</span><span class="o">=</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span> <span class="c1">// 执行</span>
+</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>           <span class="c1">// 关闭cURL</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$output</span><span class="p">;</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

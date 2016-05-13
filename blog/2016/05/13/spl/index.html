@@ -1,0 +1,622 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>spl初识 - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="Spl初识 什么是SPL SPL是Standard PHP Library（PHP标准库）的缩写。
+根据官方定义，它是"a collection of interfaces and classes that are meant to solve standard problems"。但是， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/13/spl/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Spl初识</h1>
+	<div class="entry-content" itemprop="articleBody"><h1>什么是SPL</h1>
+
+<blockquote><p>SPL是Standard PHP Library（PHP标准库）的缩写。
+根据官方定义，它是"a collection of interfaces and classes that are meant to solve standard problems"。但是，目前在使用中，SPL更多地被看作是一种使object（物体）模仿array（数组）行为的interfaces和classes。</p></blockquote>
+
+<h1>SPL的常用数据结构</h1>
+
+<h2>双向链表</h2>
+
+<ul>
+<li>SplDoublyLinkedList类</li>
+<li>操作
+
+<ul>
+<li>当前节点操作：
+
+<ul>
+<li>rewind:使当前节点指向Buttom（头部）</li>
+<li>next：指向下一个节点</li>
+<li>prev：指向上一个节点</li>
+<li>current：指向链表当前节点的指针，调用前需调用rewind，指向的节点被删除后会指向一个空节点</li>
+</ul>
+</li>
+<li>增加节点操作：
+
+<ul>
+<li>push：向链表的顶部（尾部）插入一个节点</li>
+<li>unshift：向链表的底部插入一个节点（头部）</li>
+</ul>
+</li>
+<li>删除节点操作：
+
+<ul>
+<li>pop：获取链表中顶部（尾部）的节点并删除，不改变当前指针的位置</li>
+<li>shift：删除连边底部（头部）的节点</li>
+</ul>
+</li>
+<li>定位操作
+
+<ul>
+<li>bottom：获得链表底部（头部）的元素，指针位置不变</li>
+<li>top：获得链表顶部（尾部）的元素，指针位置不变</li>
+</ul>
+</li>
+<li>特定节点操作
+
+<ul>
+<li>offsetExists</li>
+<li>offsetGet</li>
+<li>offsetSet</li>
+<li>offsetUnset</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">=</span><span class="k">new</span> <span class="nx">SplDoublyLinkedList</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="c1">//把节点添加到顶部</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">unshift</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="c1">//将新的节点添加到底部（bottom）</span>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span><span class="c1">//rewind操作用于把节点指针指向bottom所在的节点</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;current:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span> <span class="c1">//获取节点指针指向的节点（当前）</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">prev</span><span class="p">();</span><span class="c1">//指向上一节点</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;next:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()){</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Current node valid</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Current node invalid</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span><span class="c1">//如果当前节点有效，valid返回true</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;valid list&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;invalid list&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;pop value&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">pop</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span><span class="c1">//把TOP位置的节点从链表中弹出。pop不影响指针指向的节点。如果pop指向的是top，调用POP后会指向NULL</span>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;current:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">shift</span><span class="p">();</span><span class="c1">//把bottom位置的节点从链表中删除。并返回</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>堆栈</h2>
+
+<ul>
+<li>继承自SplDoublyLinkedList类的SplStack类</li>
+<li>先进后出</li>
+<li>操作
+
+<ul>
+<li>push：压入堆栈</li>
+<li>pop：弹出堆栈</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>    <span class="nv">$stack</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SplStack</span><span class="p">();</span>
+</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$stack</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Bottom:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">bottom</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Top:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">top</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">offsetSet</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;C&quot;</span><span class="p">);</span><span class="c1">//在Stack里面offset=0是TOP所在的位置，offset=1是top位置节点靠近bottom位置的相邻节点</span>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$stack</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Current:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span><span class="c1">//双向链表的rewind和堆栈的rewind相反，堆栈的rewind使得当前指针指向TOP所在的位置，而双向链表的rewind指向bottom所在的位置</span>
+</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Current:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//遍历堆栈</span>
+</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">while</span><span class="p">(</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;=&gt;&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//删除堆栈</span>
+</span><span class='line'>    <span class="nv">$popObj</span> <span class="o">=</span> <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">pop</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;PopED object:&quot;</span><span class="o">.</span><span class="nv">$popObj</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$stack</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>队列</h2>
+
+<ul>
+<li>继承自SplDoublyLinkedList类的SplQueue类</li>
+<li>先进先出</li>
+<li>操作
+
+<ul>
+<li>enqueue：进入队里</li>
+<li>duqueue：退出对列</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SplQueue</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">enqueue</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span><span class="c1">//插入一个节点到TOP位置</span>
+</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">enqueue</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">enqueue</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;bottom:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">bottom</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;top:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">top</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">offsetSet</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;A&quot;</span><span class="p">);</span><span class="c1">//队列里面的offset=0是bottom所在的位置</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span><span class="c1">//队列的rewind指向bottom所在的位置</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;current:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;=&gt;&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;dequeue obj:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">dequeue</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span><span class="c1">//从队列中提取bottom位置的节点并删除</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>迭代器</h1>
+
+<h2>什么是迭代器</h2>
+
+<blockquote><p>通过某种同意的方式遍历链表或数组中的元素的过程叫做迭代遍历，而这种统一的遍历工具我们叫做迭代器</p></blockquote>
+
+<p>在PHP中迭代器是通过Iterator接口定义的。</p>
+
+<h2>常用的迭代器 ArrayIterator</h2>
+
+<ul>
+<li>熟悉使用foreach和while语句通过ArrayIterator遍历数组的方法</li>
+<li>熟悉使用seek跳过某些元素的方法</li>
+<li>熟悉使用ArrayIerator进行排序的方法</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>    <span class="nv">$fruits</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s2">&quot;apple&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;appale value&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;orange&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;orange value&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;grape&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;grape value&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;plum&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;plum value&quot;</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$fruits</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use fruits directly </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$fruits</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//使用ArrayIterator 遍历数组</span>
+</span><span class='line'>    <span class="nv">$obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayObject</span><span class="p">(</span><span class="nv">$fruits</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$it</span> <span class="o">=</span> <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">getIterator</span><span class="p">();</span><span class="c1">//获取迭代器</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use ArrayIterator in foreach </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use ArrayIterator in while </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span><span class="c1">//ccurretn前需要rewind</span>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="nv">$it</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">();</span>
+</span><span class='line'>      <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//跳过某些元素进行打印</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;use seek befor while </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$it</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span>
+</span><span class='line'>      <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">seek</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">while</span> <span class="p">(</span><span class="nv">$it</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">();</span>
+</span><span class='line'>        <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//实现排序</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use ksort </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">ksort</span><span class="p">();</span><span class="c1">//对key字典序排序</span>
+</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use asort </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">ksort</span><span class="p">();</span><span class="c1">//对value字典序排序</span>
+</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>常用的迭代器 AppendIterator</h2>
+
+<ul>
+<li>AppendIterator能陆续遍历几个迭代器
+
+<ul>
+<li>按顺序迭代访问几个不同的迭代器。 例如，希望在一些循环中迭代访问两个或多个组合。</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$array_a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">));</span>
+</span><span class='line'>  <span class="nv">$array_b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;f&quot;</span><span class="p">,</span><span class="s2">&quot;g&quot;</span><span class="p">,</span><span class="s2">&quot;h&quot;</span><span class="p">));</span>
+</span><span class='line'>  <span class="nv">$it</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AppendIterator</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">append</span><span class="p">(</span><span class="nv">$array_a</span><span class="p">);</span><span class="c1">//通过append方法把迭代器对象添加到AppendIterator对象中</span>
+</span><span class='line'>  <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">append</span><span class="p">(</span><span class="nv">$array_b</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>常用的迭代器 MultipleIterator</h2>
+
+<ul>
+<li>MultipleIterator用于把多个Iterator里面的数据组合为一个整体来访问</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$idIter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;01&quot;</span><span class="p">,</span><span class="s2">&quot;02&quot;</span><span class="p">,</span><span class="s2">&quot;03&quot;</span><span class="p">));</span>
+</span><span class='line'>  <span class="nv">$nameIter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;张三&quot;</span><span class="p">,</span><span class="s2">&quot;李四&quot;</span><span class="p">,</span><span class="s2">&quot;王五&quot;</span><span class="p">));</span>
+</span><span class='line'>  <span class="nv">$ageIter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;22&quot;</span><span class="p">,</span><span class="s2">&quot;23&quot;</span><span class="p">,</span><span class="s2">&quot;24&quot;</span><span class="p">));</span>
+</span><span class='line'>  <span class="nv">$mit</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MultipleIterator</span><span class="p">(</span><span class="nx">MultipleIterator</span><span class="o">::</span><span class="na">MIT_KEYS_ASSOC</span><span class="p">);</span><span class="c1">//知明当你拼凑起来过后Key也是一个Array</span>
+</span><span class='line'>  <span class="nv">$mit</span><span class="o">-&gt;</span><span class="na">attachIterator</span><span class="p">(</span><span class="nv">$idIter</span><span class="p">,</span><span class="s2">&quot;ID&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$mit</span><span class="o">-&gt;</span><span class="na">attachIterator</span><span class="p">(</span><span class="nv">$nameIter</span><span class="p">,</span><span class="s2">&quot;NAME&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$mit</span><span class="o">-&gt;</span><span class="na">attachIterator</span><span class="p">(</span><span class="nv">$ageIter</span><span class="p">,</span><span class="s2">&quot;AGE&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">foreach</span> <span class="p">(</span><span class="nv">$mit</span> <span class="k">as</span>  <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>常用的迭代器 FilesystemIterator</h2>
+
+<ul>
+<li>FilesystemIterator能遍历文件系统</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>    <span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s2">&quot;PRC&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$it</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FilesystemIterator</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span>  <span class="nv">$finfo</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;%s</span><span class="se">\t</span><span class="s2">%s</span><span class="se">\t</span><span class="s2">%8s</span><span class="se">\t</span><span class="s2">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nb">date</span><span class="p">(</span><span class="s2">&quot;Y-m-d H:i:s&quot;</span><span class="p">,</span><span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">getMTime</span><span class="p">()),</span>
+</span><span class='line'>      <span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">isDir</span><span class="p">()</span><span class="o">?</span><span class="s2">&quot;&lt;DIR&gt;&quot;</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nb">number_format</span><span class="p">(</span><span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">getSize</span><span class="p">()),</span>
+</span><span class='line'>      <span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">getFileName</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>    <span class="c1">// echo $finfo-&gt;isDir()?&quot;&lt;DIR&gt;&quot;:&quot;&quot;,</span>
+</span><span class='line'>      <span class="c1">// echo date(&quot;Y-m-d H:i:s&quot;,$finfo-&gt;getMTime()).&quot;\n&quot;;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
