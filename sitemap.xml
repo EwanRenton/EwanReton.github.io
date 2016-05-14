@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>http://ewanreton.github.io/blog/2016/05/14/memcache/</loc>
-<lastmod>2016-05-14T20:08:26+08:00</lastmod>
-</url>
-<url>
 <loc>http://ewanreton.github.io/blog/2016/05/13/spl/</loc>
 <lastmod>2016-05-13T20:26:58+08:00</lastmod>
 </url>
@@ -89,13 +85,16 @@
 <lastmod>2016-04-18T15:18:17+08:00</lastmod>
 </url>
 <url>
+<loc>http://ewanreton.github.io/2016-05-14-memcache.html</loc>
+</url>
+<url>
 <loc>http://ewanreton.github.io/404.html</loc>
 </url>
 <url>
-<loc>http://ewanreton.github.io/blog/archives/</loc>
+<loc>http://ewanreton.github.io/</loc>
 </url>
 <url>
-<loc>http://ewanreton.github.io/</loc>
+<loc>http://ewanreton.github.io/blog/archives/</loc>
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/categories/</loc>
@@ -104,16 +103,13 @@
 <loc>http://ewanreton.github.io/aboutme/</loc>
 </url>
 <url>
-<loc>http://ewanreton.github.io/blog/categories/php/</loc>
-</url>
-<url>
-<loc>http://ewanreton.github.io/blog/categories/html/</loc>
-</url>
-<url>
 <loc>http://ewanreton.github.io/blog/categories/git/</loc>
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/categories/octopress/</loc>
+</url>
+<url>
+<loc>http://ewanreton.github.io/blog/categories/php/</loc>
 </url>
 <url>
 <loc>http://ewanreton.github.io/blog/categories/weixin/</loc>
@@ -122,12 +118,9 @@
 <loc>http://ewanreton.github.io/blog/categories/nginx/</loc>
 </url>
 <url>
-<loc>http://ewanreton.github.io/blog/categories/oauth/</loc>
-</url>
-<url>
 <loc>http://ewanreton.github.io/blog/categories/linux/</loc>
 </url>
 <url>
-<loc>http://ewanreton.github.io/blog/categories/linux,mysql/</loc>
+<loc>http://ewanreton.github.io/blog/categories/mysql/</loc>
 </url>
 </urlset>

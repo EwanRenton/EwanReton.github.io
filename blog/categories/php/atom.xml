@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-14T21:57:33+08:00</updated>
+  <updated>2016-05-14T22:48:50+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -19,6 +19,9 @@
     <updated>2016-05-04T22:46:21+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/04/php-xing-neng-you-hua</id>
     <content type="html"><![CDATA[<blockquote><p>PHP性能优化</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、PHP性能优化问题解析</h1>
 
@@ -354,6 +357,9 @@ vld -opcode 代码分析
 <h1>一、什么是SeasLog</h1>
 
 <p>SeasLog是一个C语言编写的PHP扩展，提供一组规范标准的功能函数，在PHP项目中方便、规范、高效地写日志，以及快速地读取和查询日志。</p>
+
+<!--more-->
+
 
 <h1>二、为什么需要日志系统</h1>
 
@@ -912,6 +918,9 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
     <id>http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei</id>
     <content type="html"><![CDATA[<blockquote><p>PHP无限级分类主要有两种实现方式，通过递归和全路径实现</p></blockquote>
 
+<!--more-->
+
+
 <h1>一、递归实现</h1>
 
 <pre><code>在数据库中存储如下格式的表：
@@ -1234,6 +1243,9 @@ Configuration file: /Users/Neo/Octopress/_config.yml
     <updated>2016-04-26T22:53:05+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing</id>
     <content type="html"><![CDATA[<blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、需要准备的包</h1>
 

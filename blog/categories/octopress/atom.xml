@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-14T21:57:33+08:00</updated>
+  <updated>2016-05-14T22:48:50+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -19,6 +19,9 @@
     <updated>2016-04-29T23:08:07+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested</id>
     <content type="html"><![CDATA[<blockquote><p>给Octopress换了主题过后重新generate会出警告Layout Nil Requested。</p></blockquote>
+
+<!--more-->
+
 
 <p>主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null 即可</p>
 
@@ -46,6 +49,9 @@
     <updated>2016-04-18T23:13:10+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke</id>
     <content type="html"><![CDATA[<h1>GIT+Octopress搭建个人博客</h1>
+
+<!--more-->
+
 
 <blockquote><p>新博客的第一篇博客</p></blockquote>
 

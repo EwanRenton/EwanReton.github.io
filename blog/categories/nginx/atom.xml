@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nginx | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-14T21:57:33+08:00</updated>
+  <updated>2016-05-14T22:48:50+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -19,6 +19,9 @@
     <updated>2016-04-28T01:01:35+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/28/qqyuncontos-huan-jing-da-jian</id>
     <content type="html"><![CDATA[<blockquote><p>今天开始搭建前几天买的腾讯云服务器的LNMP环境</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、通过putty.exe连接到云服务器</h1>
 
@@ -176,6 +179,9 @@ server {
     <updated>2016-04-26T22:53:05+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing</id>
     <content type="html"><![CDATA[<blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、需要准备的包</h1>
 
@@ -414,6 +420,9 @@ mysql&gt;
     <updated>2016-04-25T21:11:48+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/25/nginx</id>
     <content type="html"><![CDATA[<blockquote><p>今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、常用的服务器软件</h1>
 

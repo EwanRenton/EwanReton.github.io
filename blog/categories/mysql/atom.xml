@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: linux，mysql | Ewan Reton]]></title>
-  <link href="http://ewanreton.github.io/blog/categories/linux,mysql/atom.xml" rel="self"/>
+  <title><![CDATA[Category: mysql | Ewan Reton]]></title>
+  <link href="http://ewanreton.github.io/blog/categories/mysql/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-14T21:57:33+08:00</updated>
+  <updated>2016-05-14T22:48:50+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -19,6 +19,9 @@
     <updated>2016-04-28T01:24:16+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/28/linux-mysql-code</id>
     <content type="html"><![CDATA[<blockquote><p>Linux 下Mysql 常用命令总结</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、linux下mysql的基本命令：</h1>
 

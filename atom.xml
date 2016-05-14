@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-14T21:57:33+08:00</updated>
+  <updated>2016-05-14T22:48:50+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,31 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Memcache]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/14/memcache/"/>
-    <updated>2016-05-14T20:08:26+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/14/memcache</id>
-    <content type="html"><![CDATA[<h1>什么是Memcache</h1>
-
-<h1>Memcache使用场景</h1>
-
-<h1>Memcache的安装</h1>
-
-<ul>
-<li>编译安装 Libevent Memcache</li>
-<li>依赖管理工具 yum apt-get</li>
-<li>Memcache 和Memcached
-
-<ul>
-<li>Memcached 是Memcache的升级版本 推荐使用</li>
-</ul>
-</li>
-</ul>
-
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[spl初识]]></title>
@@ -47,6 +22,9 @@
 
 <blockquote><p>SPL是Standard PHP Library（PHP标准库）的缩写。
 根据官方定义，它是"a collection of interfaces and classes that are meant to solve standard problems"。但是，目前在使用中，SPL更多地被看作是一种使object（物体）模仿array（数组）行为的interfaces和classes。</p></blockquote>
+
+<!--more-->
+
 
 <h1>SPL的常用数据结构</h1>
 
@@ -855,6 +833,9 @@
 
 <blockquote><p>cURL（Client URL Library Functions）使用URL语法传输数据的命令行工具</p></blockquote>
 
+<!--more-->
+
+
 <h1>使用场景</h1>
 
 <ul>
@@ -1269,6 +1250,9 @@
     <id>http://ewanreton.github.io/blog/2016/05/12/ubuntu-huan-jing-da-jian</id>
     <content type="html"><![CDATA[<blockquote><p>在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0.</p></blockquote>
 
+<!--more-->
+
+
 <p>重新下了一个Ubuntu 12.04.5 LTS 。</p>
 
 <p>在虚拟机中装好了系统过后出现了一个问题，在登录界面输入密码登录过后一直黑屏。当时人都懵逼了，用了这么久Ubuntu从来没出过这种问题啊，重装了很多次系统都不行。百度了很多过后发现他们的情况和我的都不太一样。到是看到有一个看起来很不靠谱的回答解决了问题。</p>
@@ -1531,6 +1515,9 @@ sudo apt-get install git
     <updated>2016-05-10T20:37:45+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/10/linux-atom-error</id>
     <content type="html"><![CDATA[<blockquote><p>昨天晚上突然冒出一个念头在我的Centos6.5的虚拟机上装Atom并且装上那个炫酷的插件来装波大逼。然后很悲催，软件没装上不说，系统也被搞坏了。</p></blockquote>
+
+<!--more-->
+
 
 <h1>兴高采烈的去下Atom</h1>
 
@@ -1998,6 +1985,9 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
     <id>http://ewanreton.github.io/blog/2016/05/09/linux-git</id>
     <content type="html"><![CDATA[<blockquote><p>考试季过去了，准备开始将日常使用迁移到Linux下，今天想在Linux下装Git，开始觉得这应该是个很简单的事，谁知道这个花了好多时间。</p></blockquote>
 
+<!--more-->
+
+
 <p>首先在网上找了一个博文作为参考，<a href="http://blog.csdn.net/naola2001/article/details/43228769">传送门</a></p>
 
 <p>服务器端：</p>
@@ -2396,6 +2386,9 @@ make prefix=/usr/local install  root用户运行
     <updated>2016-05-04T22:46:21+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/04/php-xing-neng-you-hua</id>
     <content type="html"><![CDATA[<blockquote><p>PHP性能优化</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、PHP性能优化问题解析</h1>
 
@@ -2802,6 +2795,9 @@ vld -opcode 代码分析
     <id>http://ewanreton.github.io/blog/2016/04/30/config-themes-octpress</id>
     <content type="html"><![CDATA[<blockquote><p>Octpress 基本配置</p></blockquote>
 
+<!--more-->
+
+
 <p>在_config.yml文件中。可以直接修改title，author等基本信息。</p>
 
 <pre class="prettyprint text">
@@ -3104,6 +3100,9 @@ email: liukedi001@gmail.com
     <id>http://ewanreton.github.io/blog/2016/04/30/octopress-code-highlight</id>
     <content type="html"><![CDATA[<blockquote><p>首先我要用祭出一段代码。。</p></blockquote>
 
+<!--more-->
+
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -3329,6 +3328,9 @@ main(){
     <id>http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested</id>
     <content type="html"><![CDATA[<blockquote><p>给Octopress换了主题过后重新generate会出警告Layout Nil Requested。</p></blockquote>
 
+<!--more-->
+
+
 <p>主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null 即可</p>
 
 <p>Fix this error by replacing from file:</p>
@@ -3359,6 +3361,9 @@ main(){
 <h1>一、什么是SeasLog</h1>
 
 <p>SeasLog是一个C语言编写的PHP扩展，提供一组规范标准的功能函数，在PHP项目中方便、规范、高效地写日志，以及快速地读取和查询日志。</p>
+
+<!--more-->
+
 
 <h1>二、为什么需要日志系统</h1>
 
@@ -4199,6 +4204,9 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
     <id>http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei</id>
     <content type="html"><![CDATA[<blockquote><p>PHP无限级分类主要有两种实现方式，通过递归和全路径实现</p></blockquote>
 
+<!--more-->
+
+
 <h1>一、递归实现</h1>
 
 <pre><code>在数据库中存储如下格式的表：
@@ -4697,6 +4705,9 @@ Configuration file: /Users/Neo/Octopress/_config.yml
     <id>http://ewanreton.github.io/blog/2016/04/28/linux-mysql-code</id>
     <content type="html"><![CDATA[<blockquote><p>Linux 下Mysql 常用命令总结</p></blockquote>
 
+<!--more-->
+
+
 <h1>一、linux下mysql的基本命令：</h1>
 
 <pre><code>1. linux下启动mysql的命令：
@@ -5096,6 +5107,9 @@ Query OK, 0 rows affected (0.00 sec)
     <id>http://ewanreton.github.io/blog/2016/04/28/qqyuncontos-huan-jing-da-jian</id>
     <content type="html"><![CDATA[<blockquote><p>今天开始搭建前几天买的腾讯云服务器的LNMP环境</p></blockquote>
 
+<!--more-->
+
+
 <h1>一、通过putty.exe连接到云服务器</h1>
 
 <pre><code>下载并打开这个软件后只需要输入云服务器的外网IP其他默认即可
@@ -5252,6 +5266,9 @@ server {
     <updated>2016-04-26T22:53:05+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing</id>
     <content type="html"><![CDATA[<blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、需要准备的包</h1>
 
@@ -5490,6 +5507,9 @@ mysql&gt;
     <updated>2016-04-26T18:55:40+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/26/linux-chang-yong-min-ling</id>
     <content type="html"><![CDATA[<blockquote><p>Linux 命令总结</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、常用目录作用</h1>
 
@@ -5838,6 +5858,9 @@ mysql&gt;
 
 <p>OAUTH协议为用户资源的授权提供了一个安全的、开放而又简易的标准。与以往的授权方式不同之处是OAUTH的授权不会使第三方触及到用户的帐号信息（如用户名与密码），即第三方无需使用用户的用户名与密码就可以申请获得该用户资源的授权，因此OAUTH是安全的。oAuth是Open Authorization的简写。</p>
 
+<!--more-->
+
+
 <h1>二、OAuth协议简介</h1>
 
 <ul>
@@ -5896,6 +5919,9 @@ mysql&gt;
     <updated>2016-04-25T21:11:48+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/04/25/nginx</id>
     <content type="html"><![CDATA[<blockquote><p>今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、常用的服务器软件</h1>
 
@@ -5995,6 +6021,9 @@ mysql&gt;
     <content type="html"><![CDATA[<h1>微信公众号开发</h1>
 
 <blockquote><p>上星期突然突发奇想，想弄个微信公众号来玩。然后再网上找了一些教程过就开始了。</p></blockquote>
+
+<!--more-->
+
 
 <hr />
 
@@ -6266,6 +6295,161 @@ mysql&gt;
 </code></pre>
 
 <p>除了以上功能外，微信公众平台还有很多的API接口可以调用，用以实现不同的功能，但是基本常用的API在开发文档上都有详细的教程，或者到baidu API 去检索你需要的功能。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GIT+Octopress搭建个人博客]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/"/>
+    <updated>2016-04-18T23:13:10+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke</id>
+    <content type="html"><![CDATA[<h1>GIT+Octopress搭建个人博客</h1>
+
+<!--more-->
+
+
+<blockquote><p>新博客的第一篇博客</p></blockquote>
+
+<p>很久以前就想自己搭个博客，今天终于开工了。在网上找了很多的教程和各种各样的框架，wordpress，jekyll等，最后选择了Octopress+Git搭建。</p>
+
+<h2>一、环境搭建</h2>
+
+<h3><a href="https://git-scm.com/download/">GIT</a>:版本管理工具，将代码托管到GIT。</h3>
+
+<h3><a href="http://rubyinstaller.org/">Ruby+DevKit</a> ：生成静态页面</h3>
+
+<h3><a href="http://jingyan.baidu.com/article/ca41422fe209271eaf99ed7c.html">MarkDownPad</a>：Windows下MarkDown语法编辑器</h3>
+
+<h4>安装与配置</h4>
+
+<pre><code>GIT和Markdown安装直接点击下一步就可以了。
+在安装好git过后，桌面或其他位置点击右键GIT Bash 来配置Github账号（需要先注册GITHUB账号）
+</code></pre>
+
+<hr />
+
+<p>1.1配置GITHUB</p>
+
+<pre><code>```
+git config --global user_name "XXXX"//你的github账号
+git config --global user_email "XXXX"//你的邮箱
+ssh-keygen -t rsa -C "YOUR_EMAIL"
+```
+</code></pre>
+
+<p>下面回车默认为空即可</p>
+
+<p>然后在将你系统盘（大多为C盘）->用户->当前用户（就是你装系统的时候给电脑取的名字）->.ssh文件夹下有id_rsa和id_rsa.pub两个文件打开后者全选复制。
+添加到你的GITHUB的SSH KEYs （GITHUB登录后的setting里面）</p>
+
+<p>回到你的bash</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ssh -T git@github.com</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来测试SSH keYS,提示HI XXX! 则成功</p>
+
+<hr />
+
+<p>1.2配置RUBY</p>
+
+<pre><code>一直下一步在选择安装路径的时候记得勾选第二个选项添加到你的系统路径。  
+安装完成后继续安装DevKit，一直下一步即可，记得选择安装目录。
+</code></pre>
+
+<p>进到DevKit安装目录，打开Bash</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ruby dk.rb init
+</span><span class='line'>ruby dk.rb install</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>1.3安装Octopress</p>
+
+<pre><code>去到你要保存Octopress的位置打开Bash
+git clone git：//github.com/imathis/octopress.git octopress//获取Octopress
+cd octopress
+gem sources -a https://ruby.taobao.org//添加国内RUBY软件源。在WINDOWS系统下有可能会失败 提示SSL错误。
+</code></pre>
+
+<p>建议使用
+$ bundle config mirror.<a href="https://rubygems.org">https://rubygems.org</a> <a href="https://gems.ruby-china.org">https://gems.ruby-china.org</a>
+<a href="https://gems.ruby-china.org/">参考网址</a></p>
+
+<hr />
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem install bundler
+</span><span class='line'>bundler install
+</span><span class='line'>rake install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上步奏完成并无ERROR则环境搭建成功</p>
+
+<p>rake genreate //生成静态页面</p>
+
+<p>rake preview //这行代码会在本地打开4000端口作为测试</p>
+
+<p>你可以打开浏览器 输入 localhost：4000 来访问你的站点。</p>
+
+<h4>生成博客与单页面</h4>
+
+<hr />
+
+<p>1.新建博客</p>
+
+<pre><code>rake new_post["title"] //生成名为title的博客
+</code></pre>
+
+<hr />
+
+<p>2.新建单页面</p>
+
+<pre><code> rake new_page[test]//会生成source/test/index.markdown
+ rake new_page[test/page.html]//会生成source/test/page.html
+</code></pre>
+
+<p>需要使用markdown语法来书写博客</p>
+
+<hr />
+
+<p>3.生成并本地预览</p>
+
+<pre><code>rake generate
+rake preview //http://localhost:4000
+</code></pre>
+
+<h4>部署网站到GITHUB</h4>
+
+<hr />
+
+<p>1.新建仓库</p>
+
+<pre><code>username.github.io
+</code></pre>
+
+<hr />
+
+<p>2.与本地Octopress 目录绑定</p>
+
+<pre><code>rake setup_github_pages//这里会需要你输入你的GITHUB地址，请输入：git@github.com:yourname/yourname.github.com.git (将yourname替换成你的github登录名)
+</code></pre>
+
+<p>注意:这一步不要输入提示中提示的以io结束的地址。
+    rake deploy</p>
+
+<p>成功过后就可以通过访问
+username.github.io 来访问你的个人博客了</p>
+
+<hr />
+
+<p>PS： 第一次用自己搭的博客写博客，markdown语法用起来也不太熟悉。</p>
 ]]></content>
   </entry>
   
