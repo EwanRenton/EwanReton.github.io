@@ -163,6 +163,12 @@ email: liukedi001@gmail.com
 <li>增加社会化分享</li>
 <li>自定义404页面</li>
 <li>自定义导航</li>
+<li>安装使用主题</li>
+<li>设置链接在新窗口打开</li>
+<li>首页文章以摘要形式展示</li>
+<li>添加侧边栏文章分类（category）</li>
+<li>自动为图片添加url前缀</li>
+<li>添加访客统计</li>
 </ul>
 
 
@@ -417,6 +423,203 @@ email: liukedi001@gmail.com
 
 <p><strong>注意：</strong>
     在上面安装主题前记得备份，因为安装主题过后你之前配置的信息都会被重置（如评论和分享）</p>
+
+<hr />
+
+<blockquote><p>设置链接在新窗口打开</p></blockquote>
+
+<p>在博文中，如果点击链接直接在本窗口打开了，那么用户体验就不是很好。而markdown的标准语法是不支持链接在新窗口打开的，虽然可以通过在markdown中直接写html标签来解决这个问题，但是这与markdown的简洁书写特性不符。但是我们可以通过设置Octopress来达到这种效果，即在 \source_includes\custom\head.html 文件中添加如下一段代码</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">script</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="n">function</span> <span class="nf">addBlankTargetForLinks</span> <span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">$</span><span class="o">(</span><span class="err">&#39;</span><span class="n">a</span><span class="o">[</span><span class="n">href</span><span class="o">^=</span><span class="s">&quot;http&quot;</span><span class="o">]</span><span class="err">&#39;</span><span class="o">).</span><span class="na">each</span><span class="o">(</span><span class="n">function</span><span class="o">(){</span>
+</span><span class='line'>      <span class="n">$</span><span class="o">(</span><span class="k">this</span><span class="o">).</span><span class="na">attr</span><span class="o">(</span><span class="err">&#39;</span><span class="n">target</span><span class="err">&#39;</span><span class="o">,</span> <span class="err">&#39;</span><span class="n">_blank</span><span class="err">&#39;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">$</span><span class="o">(</span><span class="n">document</span><span class="o">).</span><span class="na">bind</span><span class="o">(</span><span class="err">&#39;</span><span class="n">DOMNodeInserted</span><span class="err">&#39;</span><span class="o">,</span> <span class="n">function</span><span class="o">(</span><span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">addBlankTargetForLinks</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">});</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>首页文章以摘要形式展示</p></blockquote>
+
+<ol>
+<li><p>在文章对应的markdown文件中，在需要显示在首页的文字后面添加 <!--more--> ，执行<code>rake generate</code>后在首页上会看到只显示&lt;!—more—>前面的文字，文字后面会显示 <code>Read on</code> 链接，点击后进入文字的详细页面;</p></li>
+<li><p>如果想将Read on修改为中文，可以修改_config.yml文件</p></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">excerpt_link</span><span class="o">:</span> <span class="s2">&quot;Read on →&quot;</span>  <span class="c1"># &quot;Continue reading&quot; link text at the bottom of excerpted articles</span>
+</span><span class='line'><span class="nx">修改为：</span>
+</span><span class='line'><span class="nx">excerpt_link</span><span class="o">:</span> <span class="s2">&quot;阅读全文→&quot;</span>  <span class="c1"># &quot;Continue reading&quot; link text at the bottom of excerpted articles</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>添加侧边栏文章分类（category）</p></blockquote>
+
+<ol>
+<li>在 plugins 目录下创建 category_list_tag.rb 文件，内容如下：</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">module</span> <span class="nx">Jekyll</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">CategoryListTag</span> <span class="o">&lt;</span> <span class="nx">Liquid</span><span class="o">::</span><span class="na">Tag</span>
+</span><span class='line'>    <span class="nx">def</span> <span class="nx">render</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span>
+</span><span class='line'>      <span class="nx">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>      <span class="nx">categories</span> <span class="o">=</span> <span class="nx">context</span><span class="o">.</span><span class="nx">registers</span><span class="p">[</span><span class="o">:</span><span class="nx">site</span><span class="p">]</span><span class="o">.</span><span class="nx">categories</span><span class="o">.</span><span class="nx">keys</span>
+</span><span class='line'>      <span class="nx">categories</span><span class="o">.</span><span class="nb">sort</span><span class="o">.</span><span class="nb">each</span> <span class="k">do</span> <span class="o">|</span><span class="nx">category</span><span class="o">|</span>
+</span><span class='line'>        <span class="nx">posts_in_category</span> <span class="o">=</span> <span class="nx">context</span><span class="o">.</span><span class="nx">registers</span><span class="p">[</span><span class="o">:</span><span class="nx">site</span><span class="p">]</span><span class="o">.</span><span class="nx">categories</span><span class="p">[</span><span class="nx">category</span><span class="p">]</span><span class="o">.</span><span class="nx">size</span>
+</span><span class='line'>        <span class="nx">category_dir</span> <span class="o">=</span> <span class="nx">context</span><span class="o">.</span><span class="nx">registers</span><span class="p">[</span><span class="o">:</span><span class="nx">site</span><span class="p">]</span><span class="o">.</span><span class="nx">config</span><span class="p">[</span><span class="s1">&#39;category_dir&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="nx">category_url</span> <span class="o">=</span> <span class="nx">File</span><span class="o">.</span><span class="nb">join</span><span class="p">(</span><span class="nx">category_dir</span><span class="p">,</span> <span class="nx">category</span><span class="o">.</span><span class="nx">gsub</span><span class="p">(</span><span class="o">/</span><span class="nx">_</span><span class="o">|</span><span class="nx">\P</span><span class="p">{</span><span class="nx">Word</span><span class="p">}</span><span class="o">/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="nx">gsub</span><span class="p">(</span><span class="o">/-</span><span class="p">{</span><span class="mi">2</span><span class="p">,}</span><span class="o">/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="nx">downcase</span><span class="p">)</span>
+</span><span class='line'>        <span class="nx">html</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;&lt;li class=&#39;category&#39;&gt;&lt;a href=&#39;/#{category_url}/&#39;&gt;#{category} (#{posts_in_category})&lt;/a&gt;&lt;/li&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">end</span>
+</span><span class='line'>      <span class="nx">html</span>
+</span><span class='line'>    <span class="nb">end</span>
+</span><span class='line'>  <span class="nb">end</span>
+</span><span class='line'><span class="nb">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Liquid</span><span class="o">::</span><span class="na">Template</span><span class="o">.</span><span class="nx">register_tag</span><span class="p">(</span><span class="s1">&#39;category_list&#39;</span><span class="p">,</span> <span class="nx">Jekyll</span><span class="o">::</span><span class="na">CategoryListTag</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>添加 source/_includes/asides/category_list.html 文件，内容如下：</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">section</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">文章分类</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="n">ul</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;categories&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="err">\</span><span class="o">{</span><span class="err">\</span><span class="o">%</span> <span class="n">category_list</span> <span class="err">\</span><span class="o">%</span><span class="err">\</span><span class="o">}</span> <span class="c1">//去掉\</span>
+</span><span class='line'>  <span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">section</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>修改 _config.yml 文件，在 default_asides 项中添加 asides/category_list.html ，值之间以逗号隔开，值的先后顺序代表了侧边栏展现的先后顺序。</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">default_asides:</span> <span class="o">[</span><span class="n">asides</span><span class="o">/</span><span class="n">category_list</span><span class="o">.</span><span class="na">html</span><span class="o">,</span> <span class="n">asides</span><span class="o">/</span><span class="n">recent_posts</span><span class="o">.</span><span class="na">html</span><span class="o">,</span> <span class="n">asides</span><span class="o">/</span><span class="n">github</span><span class="o">.</span><span class="na">html</span><span class="o">,</span> <span class="n">asides</span><span class="o">/</span><span class="n">delicious</span><span class="o">.</span><span class="na">html</span><span class="o">,</span> <span class="n">asides</span><span class="o">/</span><span class="n">pinboard</span><span class="o">.</span><span class="na">html</span><span class="o">,</span> <span class="n">asides</span><span class="o">/</span><span class="n">googleplus</span><span class="o">.</span><span class="na">html</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>自动为图片添加url前缀</p></blockquote>
+
+<p>我把图片资源都 放在了七牛云存储 上，写博客时候就是用七牛的外链。但是这样有几个问题：</p>
+
+<ul>
+<li>每次写博客插入图片外链地址时候都很麻烦，需要给每张图片都添加七牛外链地址url前缀；</li>
+<li>如果以后更换了存储，那就麻烦了，需要依次编辑替换每个图片的url前缀
+现在我们就使用一种灵活的方式来配置并自动生成图片的URL前缀：</li>
+</ul>
+
+
+<p>首先修改 /plugins/image_tag.rb 文件，在 @img[&lsquo;class&rsquo;].gsub!(/&ldquo;/, &lsquo;&rsquo;) if @img[&lsquo;class&rsquo;] 后添加下面一行代码：</p>
+
+<figure class='code'><figcaption><span>./plugins/image_tag.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">@</span><span class="nx">img</span><span class="p">[</span><span class="s1">&#39;src&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">Jekyll</span><span class="o">.</span><span class="nx">configuration</span><span class="p">({})[</span><span class="s1">&#39;static_file_prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="o">@</span><span class="nx">img</span><span class="p">[</span><span class="s1">&#39;src&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="o">@</span><span class="nx">img</span><span class="p">[</span><span class="s1">&#39;src&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后再修改根目录下的 <code>_config.yml</code> 文件，添加如下配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1"># Add url prefix for image automatically</span>
+</span><span class='line'><span class="nx">static_file_prefix</span><span class="o">:</span> <span class="nx">http</span><span class="o">://</span><span class="mi">7</span><span class="nx">u2i08</span><span class="o">.</span><span class="nx">com1</span><span class="o">.</span><span class="nx">z0</span><span class="o">.</span><span class="nx">glb</span><span class="o">.</span><span class="nx">clouddn</span><span class="o">.</span><span class="nx">com</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后我们在插入图片的时候要记住不能再使用Markdown语法来写了，要使用Ocotpress自定义的IMG标签来插入图片 。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="p">{</span><span class="o">%</span> <span class="nx">img</span> <span class="nx">http</span><span class="o">://</span><span class="nx">placekitten</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="mi">890</span><span class="o">/</span><span class="mi">280</span> <span class="o">%</span><span class="p">}</span>
+</span><span class='line'><span class="p">{</span><span class="o">%</span> <span class="nx">img</span> <span class="nx">left</span> <span class="nx">http</span><span class="o">://</span><span class="nx">placekitten</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="mi">320</span><span class="o">/</span><span class="mi">250</span> <span class="nx">Place</span> <span class="nx">Kitten</span> <span class="c1">#2 %}</span>
+</span><span class='line'><span class="p">{</span><span class="o">%</span> <span class="nx">img</span> <span class="nx">right</span> <span class="nx">http</span><span class="o">://</span><span class="nx">placekitten</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="mi">300</span><span class="o">/</span><span class="mi">500</span> <span class="mi">150</span> <span class="mi">250</span> <span class="nx">Place</span> <span class="nx">Kitten</span> <span class="c1">#3 %}</span>
+</span><span class='line'><span class="p">{</span><span class="o">%</span> <span class="nx">img</span> <span class="nx">right</span> <span class="nx">http</span><span class="o">://</span><span class="nx">placekitten</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="mi">300</span><span class="o">/</span><span class="mi">500</span> <span class="mi">150</span> <span class="mi">250</span> <span class="s1">&#39;Place Kitten #4&#39;</span> <span class="s1">&#39;An image of a very cute kitten&#39;</span> <span class="o">%</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>本地预览先generate后preview，这样一来插入图片就灵活方便多了。</p>
+
+<blockquote><p>添加访客统计</p></blockquote>
+
+<p>本博客的访客统计系统使用的是Flag Counter，所以要 先去Flag Counter获取代码 。</p>
+
+<p>拿到代码后添加<code>.\source\_includes\custom\asides\flag_counter.html</code> 文件：</p>
+
+<figure class='code'><figcaption><span>flag_counter.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">section</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">访客统计</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;http://s07.flagcounter.com/more/2SH&quot;</span><span class="o">&gt;&lt;</span><span class="n">img</span> <span class="n">src</span><span class="o">=</span><span class="s">&quot;http://s07.flagcounter.com/count/2SH/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_12/viewers_0/labels_0/pageviews_1/flags_0/&quot;</span> <span class="n">alt</span><span class="o">=</span><span class="s">&quot;Flag Counter&quot;</span> <span class="n">border</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="o">&gt;&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">section</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将页面添加到侧边栏，在 ./_config.yml 配置文件中添加下面一行配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">default_asides</span><span class="o">:</span> <span class="p">[</span><span class="nx">……</span><span class="p">,</span> <span class="nx">custom</span><span class="o">/</span><span class="nx">asides</span><span class="o">/</span><span class="nx">flag_counter</span><span class="o">.</span><span class="nx">html</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后添加控制开关，在 ./_config.yml 配置文件中添加下面一行配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1"># Flag Counter</span>
+</span><span class='line'><span class="nx">flag_counter</span><span class="o">:</span> <span class="k">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 </article>
