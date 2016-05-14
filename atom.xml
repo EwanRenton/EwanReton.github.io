@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-14T23:07:42+08:00</updated>
+  <updated>2016-05-14T23:28:32+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -25,6 +25,8 @@
 
 <!--more-->
 
+
+<p><a href="http://h.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=8e532f3a8d13632711edc236a1b4d1d1/a8ec8a13632762d0688f1759a7ec08fa503dc6a7.jpg?referer=ffd5a3fbd32a28341ab1023b227d&amp;x=.jpg">测试图片</a></p>
 
 <h1>SPL的常用数据结构</h1>
 
@@ -3219,7 +3221,7 @@ email: liukedi001@gmail.com
 
 <blockquote><p>自动为图片添加url前缀</p></blockquote>
 
-<p>我把图片资源都 放在了七牛云存储 上，写博客时候就是用七牛的外链。但是这样有几个问题：</p>
+<p>把图片资源放在了七牛云存储 上，写博客时候就是用七牛的外链。但是这样有几个问题：</p>
 
 <ul>
 <li>每次写博客插入图片外链地址时候都很麻烦，需要给每张图片都添加七牛外链地址url前缀；</li>
