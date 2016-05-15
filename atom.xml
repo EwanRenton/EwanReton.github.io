@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-15T16:53:14+08:00</updated>
+  <updated>2016-05-15T16:55:22+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[QQ-login]]></title>
+    <title type="html"><![CDATA[QQ登录Demo]]></title>
     <link href="http://ewanreton.github.io/blog/2016/05/15/qq-login/"/>
     <updated>2016-05-15T16:12:15+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/15/qq-login</id>
@@ -24,14 +24,16 @@
 
 <ul>
 <li>一个QQ号</li>
-<li>一台公网通过域名可访问的web服务器
-&lt;！&ndash;more&ndash;>
+<li>一台公网通过域名可访问的web服务器</li>
+</ul>
+
+
+<!--more-->
+
 
 <h1>申请AppID和AppKey</h1>
 
-<p><a href="http://connect.qq.com/">QQ开放平台</a></p></li>
-</ul>
-
+<p><a href="http://connect.qq.com/">QQ开放平台</a></p>
 
 <p>如果是第一次登录，会跳转到管理中心，应用开发者注册
 <img src="http://d.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b43ea01c0d46f21fcd345e56c61f1a5d/7acb0a46f21fbe0908972df36c600c338644ad08.jpg?referer=6f234af490dda144831e58820b06&amp;x=.jpg" alt="开发者注册" />
