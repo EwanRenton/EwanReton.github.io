@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-16T16:02:56+08:00</updated>
+  <updated>2016-05-16T16:17:28+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -447,75 +447,141 @@ git config --global user.email "your_email@example.com"
 </code></pre>
 
 <p><strong>在开发机上生成密钥并上传到服务器上</strong>
-```php
-ssh-keygen -t rsa   #一路回车，不需要设置密码
-scp ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp   #上传公钥到服务器(默认SSH端口22)
-或
-scp -P 3600  ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp</p>
-
-<p>5、服务器上生成git用户，使用git用户并初始化gitosis
-adduser -m git
-su – git
-gitosis-init &lt; /tmp/id_rsa.pub</p>
-
-<h1>显示以下信息即表示成功</h1>
-
-<h1>Initialized empty Git repository in /home/git/repositories/gitosis-admin.git/</h1>
-
-<h1>Reinitialized existing Git repository in /home/git/repositories/gitosis-admin.git/</h1>
-
-<h1>删除密钥</h1>
-
-<p>su – root
-rm -rf /tmp/id_rsa.pub
-禁用shell登录
-注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑/etc/passwd文件完成。找到类似下面的一行：
-[root@git ~]# cat /etc/passwd | grep git
-git:x:1001:1001:git version control:/home/git:/bin/bash</p>
-
-<p>改为：
-[root@git ~]# vim /etc/passwd
-git:x:1001:1001:git version control:/home/git:/usr/bin/git-shell</p>
-
-<p>这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git-shell每次一登录就自动退出。</p>
-
-<p>2，在git用户下，生成私钥和公钥。
-$ssh-keygen –t rsa
-3，在git用户下，拷入id_rsa.pub文件。
-$gitosis-init &lt; id_rsa.pub
-这样在git用户目录下生成了一些目录，gitosis，repositories。
-至此，安装工作完成。
-<code>
-**添加开发者**
-</code>php
-git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。
-$cat /tmp/id_rsa.pub.ubuntu >> authorized_keys
-创建项目仓库
-git管理人员操作：
-$mkdir /home/git/gitproject
-$cd gitproject
-$git &ndash;bare init （创建一个空项目）
-开发者提交项目
-ubuntu开发者操作：
-$git remote add origin git@gitserver:/opt/git/project.git
-$git push origin master
-这样其他开发者的工作也比较简单了：
-$git clone …
-$git push origin master</p>
-
-<p>cd /repo/gitosis-admin
-vim gitosis.conf
-在文件尾增加以下内容
-[group test]  组名称
-writable = test  项目名称
-members = jankerli 密钥用户名</p>
-
-<h1>提交修改</h1>
-
-<p>git add .
-git commit -a -m “add test repo”
-git push
-```
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">rsa</span>   <span class="c1">#一路回车，不需要设置密码</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>   <span class="c1">#上传公钥到服务器(默认SSH端口22)</span>
+</span><span class='line'><span class="nx">或</span>
+</span><span class='line'><span class="nx">scp</span> <span class="o">-</span><span class="nx">P</span> <span class="mi">3600</span>  <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="mi">5</span><span class="nx">、服务器上生成git用户，使用git用户并初始化gitosis</span>
+</span><span class='line'><span class="nx">adduser</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">git</span>
+</span><span class='line'><span class="nx">gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">显示以下信息即表示成功</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Initialized</span> <span class="k">empty</span> <span class="nx">Git</span> <span class="nx">repository</span> <span class="nx">in</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">repositories</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span><span class="o">.</span><span class="nx">git</span><span class="o">/&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Reinitialized</span> <span class="nx">existing</span> <span class="nx">Git</span> <span class="nx">repository</span> <span class="nx">in</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">repositories</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span><span class="o">.</span><span class="nx">git</span><span class="o">/&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">删除密钥</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">su</span> <span class="nx">–</span> <span class="nx">root</span>
+</span><span class='line'><span class="nx">rm</span> <span class="o">-</span><span class="nx">rf</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">禁用shell登录</span>
+</span><span class='line'><span class="nx">注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑</span><span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">passwd文件完成。找到类似下面的一行：</span>
+</span><span class='line'><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="p">]</span><span class="c1"># cat /etc/passwd | grep git</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">bash</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">改为：</span>
+</span><span class='line'><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="p">]</span><span class="c1"># vim /etc/passwd</span>
+</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">shell</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git</span><span class="o">-</span><span class="nx">shell每次一登录就自动退出。</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="mi">2</span><span class="nx">，在git用户下，生成私钥和公钥。</span>
+</span><span class='line'><span class="nv">$ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="nx">–t</span> <span class="nx">rsa</span>
+</span><span class='line'><span class="mi">3</span><span class="nx">，在git用户下，拷入id_rsa</span><span class="o">.</span><span class="nx">pub文件。</span>
+</span><span class='line'><span class="nv">$gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
+</span><span class='line'><span class="nx">这样在git用户目录下生成了一些目录，gitosis，repositories。</span>
+</span><span class='line'><span class="nx">至此，安装工作完成。</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">**</span><span class="nx">添加开发者</span><span class="o">**</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">php</span>
+</span><span class='line'><span class="nx">git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。</span>
+</span><span class='line'><span class="nv">$cat</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span><span class="o">.</span><span class="nx">ubuntu</span> <span class="o">&gt;&gt;</span> <span class="nx">authorized_keys</span>
+</span><span class='line'><span class="nx">创建项目仓库</span>
+</span><span class='line'><span class="nx">git管理人员操作：</span>
+</span><span class='line'><span class="nv">$mkdir</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$cd</span> <span class="nx">gitproject</span>
+</span><span class='line'><span class="nv">$git</span> <span class="o">&amp;</span><span class="nx">ndash</span><span class="p">;</span><span class="nx">bare</span> <span class="nx">init</span> <span class="nx">（创建一个空项目）</span>
+</span><span class='line'><span class="nx">开发者提交项目</span>
+</span><span class='line'><span class="nx">ubuntu开发者操作：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">gitserver</span><span class="o">:/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">project</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span><span class='line'><span class="nx">这样其他开发者的工作也比较简单了：</span>
+</span><span class='line'><span class="nv">$git</span> <span class="k">clone</span> <span class="nx">…</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span>
+</span><span class='line'><span class="nx">vim</span> <span class="nx">gitosis</span><span class="o">.</span><span class="nx">conf</span>
+</span><span class='line'><span class="nx">在文件尾增加以下内容</span>
+</span><span class='line'><span class="p">[</span><span class="nx">group</span> <span class="nx">test</span><span class="p">]</span>  <span class="nx">组名称</span>
+</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>  <span class="nx">项目名称</span>
+</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">密钥用户名</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">提交修改</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
+</span></code></pre></td></tr></table></div></figure>
 <strong>初始，增加及使用项目test-git</strong></p>
 
 <pre><code class="php">cd /repo

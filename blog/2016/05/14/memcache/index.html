@@ -1,0 +1,430 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>PHP-Memcache - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="PHP-Memcache 什么是Memcache Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/14/memcache/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="main-nav"><section>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>linux (4)</a></li>
+<li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
+<li class='category'><a href='/blog/categories/nginx/'>nginx (3)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (2)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (9)</a></li>
+<li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
+
+  </ul>
+</section></nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">PHP-Memcache</h1>
+	<div class="entry-content" itemprop="articleBody"><h1>什么是Memcache</h1>
+
+<p>Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中，所以这将会加速查询速度。</p>
+
+<!--more-->
+
+
+<h1>Memcache使用场景</h1>
+
+<ul>
+<li>非持久化存储：对数据存储要求不高</li>
+<li>分布式存储：不适合单机（对内存消耗很大）</li>
+<li>ke/value存储：格式简单，不支持List，Array数据格式
+
+<h1>Memcache服务端的安装</h1></li>
+<li>编译安装 Libevent Memcache</li>
+<li>依赖管理工具 yum apt-get</li>
+<li>Memcache 和Memcached
+
+<ul>
+<li>Memcached 是Memcache的升级版本 推荐使用</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sudo apt-get install memcached</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完Memcache服务端以后，我们需要启动该服务：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>memcached -d -m 128 -p 11211 -u root</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ps -ef |grep memcach</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查看是否启动
+这里需要说明一下memcached服务的启动参数：</p>
+
+<ul>
+<li>-p 监听的端口</li>
+<li>-l 连接的IP地址, 默认是本机</li>
+<li>-d start 启动memcached服务
+
+<ul>
+<li>-d restart 重起memcached服务</li>
+<li>-d stop|shutdown 关闭正在运行的memcached服务</li>
+<li>-d install 安装memcached服务</li>
+<li>-d uninstall 卸载memcached服务</li>
+</ul>
+</li>
+<li>-u 以的身份运行 (仅在以root运行的时候有效)</li>
+<li>-m 最大内存使用，单位MB。默认64MB</li>
+<li>-M 内存耗尽时返回错误，而不是删除项</li>
+<li>-c 最大同时连接数，默认是1024</li>
+<li>-f 块大小增长因子，默认是1.25-n 最小分配空间，key+value+flags默认是48</li>
+<li>-h 显示帮助
+
+<h1>Memcache客户端的安装</h1></li>
+<li>安装Libmemcached</li>
+<li>为PHP安装memcached扩展</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sudo apt-get install php5-memcache</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完以后我们需要在php.ini里进行简单的配置,打开/etc/php5/apache2/php.ini文件在末尾添加如下内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="p">[</span><span class="nx">Memcache</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">一个高性能的分布式的内存对象缓存系统，通过在内存里维护一个统一的巨大的hash表，</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">它能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">是否在遇到错误时透明地向其他服务器进行故障转移。</span>
+</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">allow_failover</span> <span class="o">=</span> <span class="nx">On</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">接受和发送数据时最多尝试多少个服务器，只在打开memcache</span><span class="o">.</span><span class="nx">allow_failover时有效。memcache</span><span class="o">.</span><span class="nx">max_failover_attempts</span> <span class="o">=</span> <span class="mi">20</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">数据将按照此值设定的块大小进行转移。此值越小所需的额外网络传输越多。</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">如果发现无法解释的速度降低，可以尝试将此值增加到32768。</span>
+</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">chunk_size</span> <span class="o">=</span> <span class="mi">8192</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">连接到memcached服务器时使用的默认TCP端口。</span>
+</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">default_port</span> <span class="o">=</span> <span class="mi">11211</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">控制将key映射到server的策略。默认值”standard”表示使用先前版本的老hash策略。</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">设为”consistent”可以允许在连接池中添加</span><span class="o">/</span><span class="nx">删除服务器时不必重新计算key与server之间的映射关系。</span>
+</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_strategy</span> <span class="o">=</span> <span class="nx">“standard”</span><span class="p">;</span> <span class="nx">控制将key映射到server的散列函数。默认值”crc32″使用CRC32算法，而”fnv”则表示使用FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a算法。</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a比CRC32速度稍低，但是散列效果更好。</span>
+</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_function</span> <span class="o">=</span> <span class="nx">“crc32″</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>保存<code>php.ini</code>,执行<code>service apache2 restart</code>重启Apache。使用<code>php -m |grep memchched</code>查看是否安装成功</p>
+
+<h1>Memcached 常见操作</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$m</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcached</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$array</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span><span class="mi">11211</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">addServers</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span> <span class="c1">//添加服务器 添加多条为addServers 一条为 addServer（“127.0.0.1”，11211）；</span>
+</span><span class='line'><span class="c1">// // echo &quot;11&quot;;</span>
+</span><span class='line'><span class="c1">// $info=$m-&gt;getStats();</span>
+</span><span class='line'><span class="c1">// print_r($info);</span>
+</span><span class='line'><span class="c1">//数据类操作</span>
+</span><span class='line'><span class="c1">//add</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//key value time</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue2&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//两次赋值不会改变它的值</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">replace</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue3&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//替换</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//常用，如果不存在mkey则创建，如果存在则覆盖</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">);</span><span class="c1">//删除</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span><span class="c1">//清空memcache中的所有缓存</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">increment</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span><span class="c1">//每次刷新num+5</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">decrement</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span><span class="c1">//每次刷新num-5</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$m</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcached</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$array</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="mi">11211</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">addServers</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$data</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s2">&quot;key&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;key2&quot;</span> <span class="o">=&gt;</span><span class="s2">&quot;value2&quot;</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">setMulti</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span> <span class="c1">//一次设置多个值</span>
+</span><span class='line'> <span class="nv">$result</span><span class="o">=</span>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getMulti</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span><span class="s2">&quot;key2&quot;</span><span class="p">));</span><span class="c1">//一次获取多个值</span>
+</span><span class='line'> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">deleteMulti</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span><span class="s2">&quot;key2&quot;</span><span class="p">));</span><span class="c1">//一次删除多个值</span>
+</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getResultCode</span><span class="p">();</span><span class="c1">//获取上次操作返回值</span>
+</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getResultMessage</span><span class="p">();</span><span class="c1">//获取上次操作的信息</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://php.net/manual/zh/book.memcached.php">官方说明文档</a></p>
+
+<h1>项目中使用Memcached</h1>
+
+<ul>
+<li>即时生成缓存　
+
+<ul>
+<li>类似于新闻详情页，第一个人来了生成缓存，第二个人再来直接读缓存</li>
+</ul>
+</li>
+<li>提前生成缓存
+
+<ul>
+<li>适合高访问量</li>
+</ul>
+</li>
+<li>永久缓存
+
+<ul>
+<li>关于我们 这种基本不变的网页</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>注意事项</h1>
+
+<ul>
+<li>不要在单机模式中使用Memcached</li>
+<li>不要在Memcached保存重要数据。掉电会丢失。</li>
+</ul>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="/blog/2016/05/14/memcache" data-title="PHP-Memcache" data-url="http://ewanreton.github.io/blog/2016/05/14/memcache/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"ewanreton"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end --></div>
+  </section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+<!--
+-->
+
+
+</body>
+</html>

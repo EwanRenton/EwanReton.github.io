@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-15T16:55:22+08:00</updated>
+  <updated>2016-05-16T16:17:28+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -190,6 +190,266 @@
 </span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s2">&quot;Location:index.php&quot;</span><span class="p">)</span>
 </span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP-Memcache]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/14/memcache/"/>
+    <updated>2016-05-14T20:08:26+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/14/memcache</id>
+    <content type="html"><![CDATA[<h1>什么是Memcache</h1>
+
+<p>Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中，所以这将会加速查询速度。</p>
+
+<!--more-->
+
+
+<h1>Memcache使用场景</h1>
+
+<ul>
+<li>非持久化存储：对数据存储要求不高</li>
+<li>分布式存储：不适合单机（对内存消耗很大）</li>
+<li>ke/value存储：格式简单，不支持List，Array数据格式
+
+<h1>Memcache服务端的安装</h1></li>
+<li>编译安装 Libevent Memcache</li>
+<li>依赖管理工具 yum apt-get</li>
+<li>Memcache 和Memcached
+
+<ul>
+<li>Memcached 是Memcache的升级版本 推荐使用</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sudo apt-get install memcached</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完Memcache服务端以后，我们需要启动该服务：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>memcached -d -m 128 -p 11211 -u root</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ps -ef |grep memcach</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查看是否启动
+这里需要说明一下memcached服务的启动参数：</p>
+
+<ul>
+<li>-p 监听的端口</li>
+<li>-l 连接的IP地址, 默认是本机</li>
+<li>-d start 启动memcached服务
+
+<ul>
+<li>-d restart 重起memcached服务</li>
+<li>-d stop|shutdown 关闭正在运行的memcached服务</li>
+<li>-d install 安装memcached服务</li>
+<li>-d uninstall 卸载memcached服务</li>
+</ul>
+</li>
+<li>-u 以的身份运行 (仅在以root运行的时候有效)</li>
+<li>-m 最大内存使用，单位MB。默认64MB</li>
+<li>-M 内存耗尽时返回错误，而不是删除项</li>
+<li>-c 最大同时连接数，默认是1024</li>
+<li>-f 块大小增长因子，默认是1.25-n 最小分配空间，key+value+flags默认是48</li>
+<li>-h 显示帮助
+
+<h1>Memcache客户端的安装</h1></li>
+<li>安装Libmemcached</li>
+<li>为PHP安装memcached扩展</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sudo apt-get install php5-memcache</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完以后我们需要在php.ini里进行简单的配置,打开/etc/php5/apache2/php.ini文件在末尾添加如下内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="p">[</span><span class="nx">Memcache</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">一个高性能的分布式的内存对象缓存系统，通过在内存里维护一个统一的巨大的hash表，</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">它能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">是否在遇到错误时透明地向其他服务器进行故障转移。</span>
+</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">allow_failover</span> <span class="o">=</span> <span class="nx">On</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">接受和发送数据时最多尝试多少个服务器，只在打开memcache</span><span class="o">.</span><span class="nx">allow_failover时有效。memcache</span><span class="o">.</span><span class="nx">max_failover_attempts</span> <span class="o">=</span> <span class="mi">20</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">数据将按照此值设定的块大小进行转移。此值越小所需的额外网络传输越多。</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">如果发现无法解释的速度降低，可以尝试将此值增加到32768。</span>
+</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">chunk_size</span> <span class="o">=</span> <span class="mi">8192</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">连接到memcached服务器时使用的默认TCP端口。</span>
+</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">default_port</span> <span class="o">=</span> <span class="mi">11211</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">;</span> <span class="nx">控制将key映射到server的策略。默认值”standard”表示使用先前版本的老hash策略。</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">设为”consistent”可以允许在连接池中添加</span><span class="o">/</span><span class="nx">删除服务器时不必重新计算key与server之间的映射关系。</span>
+</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_strategy</span> <span class="o">=</span> <span class="nx">“standard”</span><span class="p">;</span> <span class="nx">控制将key映射到server的散列函数。默认值”crc32″使用CRC32算法，而”fnv”则表示使用FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a算法。</span>
+</span><span class='line'><span class="p">;</span> <span class="nx">FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a比CRC32速度稍低，但是散列效果更好。</span>
+</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_function</span> <span class="o">=</span> <span class="nx">“crc32″</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>保存<code>php.ini</code>,执行<code>service apache2 restart</code>重启Apache。使用<code>php -m |grep memchched</code>查看是否安装成功</p>
+
+<h1>Memcached 常见操作</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$m</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcached</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$array</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>  <span class="k">array</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span><span class="mi">11211</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">addServers</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span> <span class="c1">//添加服务器 添加多条为addServers 一条为 addServer（“127.0.0.1”，11211）；</span>
+</span><span class='line'><span class="c1">// // echo &quot;11&quot;;</span>
+</span><span class='line'><span class="c1">// $info=$m-&gt;getStats();</span>
+</span><span class='line'><span class="c1">// print_r($info);</span>
+</span><span class='line'><span class="c1">//数据类操作</span>
+</span><span class='line'><span class="c1">//add</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//key value time</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue2&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//两次赋值不会改变它的值</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">replace</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue3&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//替换</span>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//常用，如果不存在mkey则创建，如果存在则覆盖</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">);</span><span class="c1">//删除</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span><span class="c1">//清空memcache中的所有缓存</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">increment</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span><span class="c1">//每次刷新num+5</span>
+</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">decrement</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span><span class="c1">//每次刷新num-5</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="nv">$m</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcached</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$array</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="k">array</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="mi">11211</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">addServers</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$data</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>    <span class="s2">&quot;key&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;key2&quot;</span> <span class="o">=&gt;</span><span class="s2">&quot;value2&quot;</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">setMulti</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span> <span class="c1">//一次设置多个值</span>
+</span><span class='line'> <span class="nv">$result</span><span class="o">=</span>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getMulti</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span><span class="s2">&quot;key2&quot;</span><span class="p">));</span><span class="c1">//一次获取多个值</span>
+</span><span class='line'> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">deleteMulti</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span><span class="s2">&quot;key2&quot;</span><span class="p">));</span><span class="c1">//一次删除多个值</span>
+</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getResultCode</span><span class="p">();</span><span class="c1">//获取上次操作返回值</span>
+</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getResultMessage</span><span class="p">();</span><span class="c1">//获取上次操作的信息</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://php.net/manual/zh/book.memcached.php">官方说明文档</a></p>
+
+<h1>项目中使用Memcached</h1>
+
+<ul>
+<li>即时生成缓存　
+
+<ul>
+<li>类似于新闻详情页，第一个人来了生成缓存，第二个人再来直接读缓存</li>
+</ul>
+</li>
+<li>提前生成缓存
+
+<ul>
+<li>适合高访问量</li>
+</ul>
+</li>
+<li>永久缓存
+
+<ul>
+<li>关于我们 这种基本不变的网页</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>注意事项</h1>
+
+<ul>
+<li>不要在单机模式中使用Memcached</li>
+<li>不要在Memcached保存重要数据。掉电会丢失。</li>
+</ul>
 
 ]]></content>
   </entry>
@@ -6396,291 +6656,6 @@ mysql&gt;
 <p>  打开浏览器访问Localhost，能访问则启动成功。</p></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[微信公众号开发]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/25/wei-xin-gong-zhong-hao-kai-fa/"/>
-    <updated>2016-04-25T14:19:37+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/25/wei-xin-gong-zhong-hao-kai-fa</id>
-    <content type="html"><![CDATA[<h1>微信公众号开发</h1>
-
-<blockquote><p>上星期突然突发奇想，想弄个微信公众号来玩。然后再网上找了一些教程过就开始了。</p></blockquote>
-
-<!--more-->
-
-
-<hr />
-
-<h2>一、前期准备</h2>
-
-<h3>1.1一个<a href="https://mp.weixin.qq.com/">微信公众号</a></h3>
-
-<h3>1.2<a href="http://sae.sina.com.cn">SAE</a> 用来放你的代码</h3>
-
-<hr />
-
-<h2>二、开始开发</h2>
-
-<h3>2.1公众号的分类</h3>
-
-<pre><code>公众号分为服务号，订阅号，和企业号三种
-简单的来说：
-订阅号：你关注了过后会放进订阅号那个分类里的一些列号，每天能推送消息但是不能主动给你发消息（除非你在某个时间段内给它发了消息）
-服务号：关注了过后和你的微信好友是在同级的，它可以给你发消息。
-企业号：微信的新儿子，主要客户是面向企业。
-我们这里主要说订阅号，订阅号又会分为几种，每种订阅号的API接口调用权限也是不同的。
-</code></pre>
-
-<h3>2.2SAE</h3>
-
-<pre><code>在申请好SAE后，进入到控制台，创建新应用输入二级域名等一些列信息过后，运行环境选择你对应的开发语言，我选择的是PHP5.3然后选择空应用，创建。
-回到控制台，你会看到你刚刚新建的应用，点进去过后选择代码管理，你可以看到你的GIT仓库地址，之后你把你的代码push到这个仓库就可以了。
-</code></pre>
-
-<h3>2.3下载官方接口程序文件</h3>
-
-<pre><code>在微信公众平台左侧找到开发-&gt;开发者工具-&gt;进入开发者文档-&gt;开始开发-&gt;接入指南-&gt;第二步最后有一个PHP实例代码下载。将它下载下来。
-</code></pre>
-
-<h3>2.4公众号的配置</h3>
-
-<pre><code>在申请完公众号后，登陆过后在管理页面的左边功能里有群发功能，自动回复等，这些操作是不需要涉及到代码的，我们不再多讲，我们主要讲的是开发者模式下的开发。
-首先，在左侧菜单最后找到开发-&gt;基本配置-&gt;启用服务器配置-&gt;分别填写URL，Token，EncodingAESKey。其中URL就是你在SAE控制台应用名字下面那个URL http://xxx.applinzi.com Token 在你下载的代码中去找（默认为weixin，你也可以自己修改，只要他们保持一致即可。）EncodingAESKey选择随机生成即可。消息加解密方式，默认就行。提交过后我们的公众号就配置好了。
-</code></pre>
-
-<h3>2.5 Hello World !程序测试</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
-</span><span class='line'>/**
-</span><span class='line'>  * wechat php test
-</span><span class='line'>  */
-</span><span class='line'>
-</span><span class='line'>//define your token
-</span><span class='line'>define("TOKEN", "weixin");
-</span><span class='line'>$wechatObj = new wechatCallbackapiTest();
-</span><span class='line'>if($_GET['echostr'])
-</span><span class='line'>{
-</span><span class='line'>    $wechatObj-&gt;valid();
-</span><span class='line'>}else
-</span><span class='line'>{
-</span><span class='line'>    $wechatObj-&gt;responseMsg();
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>class wechatCallbackapiTest
-</span><span class='line'>{
-</span><span class='line'>  public function valid()
-</span><span class='line'>    {
-</span><span class='line'>        $echoStr = $_GET["echostr"];
-</span><span class='line'>
-</span><span class='line'>        //valid signature , option
-</span><span class='line'>        if($this-&gt;checkSignature()){
-</span><span class='line'>          echo $echoStr;
-</span><span class='line'>          exit;
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    public function responseMsg()
-</span><span class='line'>    {
-</span><span class='line'>      //get post data, May be due to the different environments
-</span><span class='line'>      $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
-</span><span class='line'>
-</span><span class='line'>          //extract post data
-</span><span class='line'>      if (!empty($postStr)){
-</span><span class='line'>                /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
-</span><span class='line'>                   the best way is to check the validity of xml by yourself */
-</span><span class='line'>                libxml_disable_entity_loader(true);
-</span><span class='line'>                  $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-</span><span class='line'>                $fromUsername = $postObj-&gt;FromUserName;
-</span><span class='line'>                $toUsername = $postObj-&gt;ToUserName;
-</span><span class='line'>                $keyword = trim($postObj-&gt;Content);
-</span><span class='line'>                $time = time();
-</span><span class='line'>                $textTpl = "&lt;xml&gt;
-</span><span class='line'>                          &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;
-</span><span class='line'>                          &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;
-</span><span class='line'>                          &lt;CreateTime&gt;%s&lt;/CreateTime&gt;
-</span><span class='line'>                          &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;
-</span><span class='line'>                          &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;
-</span><span class='line'>                          &lt;FuncFlag&gt;0&lt;/FuncFlag&gt;
-</span><span class='line'>                          &lt;/xml&gt;";             
-</span><span class='line'>  if(!empty( $keyword ))//判断用户发送的信息不为空则回复Hello Wordld！
-</span><span class='line'>                {
-</span><span class='line'>                      $msgType = "text";
-</span><span class='line'>                  $contentStr = "Hello World!";
-</span><span class='line'>                  $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
-</span><span class='line'>                  echo $resultStr;
-</span><span class='line'>                }else{
-</span><span class='line'>                  echo "Input something...";
-</span><span class='line'>                }
-</span><span class='line'>
-</span><span class='line'>        }else {
-</span><span class='line'>          echo "";
-</span><span class='line'>          exit;
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>      
-</span><span class='line'>  private function checkSignature()
-</span><span class='line'>  {
-</span><span class='line'>        // you must define TOKEN by yourself
-</span><span class='line'>        if (!defined("TOKEN")) {
-</span><span class='line'>            throw new Exception('TOKEN is not defined!');
-</span><span class='line'>        }
-</span><span class='line'>        
-</span><span class='line'>        $signature = $_GET["signature"];
-</span><span class='line'>        $timestamp = $_GET["timestamp"];
-</span><span class='line'>        $nonce = $_GET["nonce"];
-</span><span class='line'>              
-</span><span class='line'>      $token = TOKEN;
-</span><span class='line'>      $tmpArr = array($token, $timestamp, $nonce);
-</span><span class='line'>        // use SORT_STRING rule
-</span><span class='line'>      sort($tmpArr, SORT_STRING);
-</span><span class='line'>      $tmpStr = implode( $tmpArr );
-</span><span class='line'>      $tmpStr = sha1( $tmpStr );
-</span><span class='line'>      
-</span><span class='line'>      if( $tmpStr == $signature ){
-</span><span class='line'>          return true;
-</span><span class='line'>      }else{
-</span><span class='line'>          return false;
-</span><span class='line'>      }
-</span><span class='line'>  }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>?&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>将代码push到SAE上过后，给公众号发任意消息就能收到HelloWorld！回复。
-
-实现了HelloWorld！实例，还有很多的回复图文，根据关键字实现多客服接入，以及一些其他的API功能调用，这些都可以参考官方的开发者文档。
-</code></pre>
-
-<h2>三、进阶知识</h2>
-
-<h3>3.1公众平台测试账号</h3>
-
-<pre><code>由于我们自己的订阅号很多API不能使用，就需要通过测试账号（可以调用所有的API）来调用其他API
-</code></pre>
-
-<h3>3.2access_token</h3>
-
-<pre><code>公众号的全局唯一票据，公众号调用各接口时都需要使用access_token
-</code></pre>
-
-<h3>3.3网页授权接口</h3>
-
-<pre><code>通过网页授权接口来获取用户的openID(用户关注某一个公众号的唯一标示，且关注不同的公众号openid是不同的)和基本信息。
-</code></pre>
-
-<h3>3.4JSSDK</h3>
-
-<pre><code>可在网页中调用手机拍照，语言，选图等系统功能。
-</code></pre>
-
-<h3>3.5模板消息</h3>
-
-<pre><code>模板消息可以主动给用户发送信息并且不受时间限制
-</code></pre>
-
-<p>除了以上功能外，微信公众平台还有很多的API接口可以调用，用以实现不同的功能，但是基本常用的API在开发文档上都有详细的教程，或者到baidu API 去检索你需要的功能。</p>
 ]]></content>
   </entry>
   
