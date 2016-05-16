@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-16T15:58:40+08:00</updated>
+  <updated>2016-05-16T16:02:56+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -140,6 +140,180 @@ setcookie("qq_openid",$openid,time()+86400);
 header("Location:index.php")
 ?&gt;
 </code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Memcache]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/14/memcache/"/>
+    <updated>2016-05-14T20:08:26+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/14/memcache</id>
+    <content type="html"><![CDATA[<h1>什么是Memcache</h1>
+
+<p>Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中，所以这将会加速查询速度。</p>
+
+<!--more-->
+
+
+<h1>Memcache使用场景</h1>
+
+<ul>
+<li>非持久化存储：对数据存储要求不高</li>
+<li>分布式存储：不适合单机（对内存消耗很大）</li>
+<li>ke/value存储：格式简单，不支持List，Array数据格式
+
+<h1>Memcache服务端的安装</h1></li>
+<li>编译安装 Libevent Memcache</li>
+<li>依赖管理工具 yum apt-get</li>
+<li>Memcache 和Memcached
+
+<ul>
+<li>Memcached 是Memcache的升级版本 推荐使用
+<code>sudo apt-get install memcached</code></li>
+</ul>
+</li>
+</ul>
+
+
+<p>安装完Memcache服务端以后，我们需要启动该服务：</p>
+
+<p><code>memcached -d -m 128 -p 11211 -u root</code>
+使用<code>ps -ef |grep memcach</code>查看是否启动
+这里需要说明一下memcached服务的启动参数：</p>
+
+<ul>
+<li>-p 监听的端口</li>
+<li>-l 连接的IP地址, 默认是本机</li>
+<li>-d start 启动memcached服务
+
+<ul>
+<li>-d restart 重起memcached服务</li>
+<li>-d stop|shutdown 关闭正在运行的memcached服务</li>
+<li>-d install 安装memcached服务</li>
+<li>-d uninstall 卸载memcached服务</li>
+</ul>
+</li>
+<li>-u 以的身份运行 (仅在以root运行的时候有效)</li>
+<li>-m 最大内存使用，单位MB。默认64MB</li>
+<li>-M 内存耗尽时返回错误，而不是删除项</li>
+<li>-c 最大同时连接数，默认是1024</li>
+<li>-f 块大小增长因子，默认是1.25-n 最小分配空间，key+value+flags默认是48</li>
+<li>-h 显示帮助
+
+<h1>Memcache客户端的安装</h1></li>
+<li>安装Libmemcached</li>
+<li>为PHP安装memcached扩展
+<code>sudo apt-get install php5-memcache</code>
+安装完以后我们需要在php.ini里进行简单的配置,打开/etc/php5/apache2/php.ini文件在末尾添加如下内容：
+```php
+[Memcache]</li>
+</ul>
+
+
+<p>; 一个高性能的分布式的内存对象缓存系统，通过在内存里维护一个统一的巨大的hash表，
+; 它能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。</p>
+
+<p>; 是否在遇到错误时透明地向其他服务器进行故障转移。
+memcache.allow_failover = On</p>
+
+<p>; 接受和发送数据时最多尝试多少个服务器，只在打开memcache.allow_failover时有效。memcache.max_failover_attempts = 20</p>
+
+<p>; 数据将按照此值设定的块大小进行转移。此值越小所需的额外网络传输越多。
+; 如果发现无法解释的速度降低，可以尝试将此值增加到32768。
+memcache.chunk_size = 8192</p>
+
+<p>; 连接到memcached服务器时使用的默认TCP端口。
+memcache.default_port = 11211</p>
+
+<p>; 控制将key映射到server的策略。默认值”standard”表示使用先前版本的老hash策略。
+; 设为”consistent”可以允许在连接池中添加/删除服务器时不必重新计算key与server之间的映射关系。
+;memcache.hash_strategy = “standard”; 控制将key映射到server的散列函数。默认值”crc32″使用CRC32算法，而”fnv”则表示使用FNV-1a算法。
+; FNV-1a比CRC32速度稍低，但是散列效果更好。
+;memcache.hash_function = “crc32″
+```</p>
+
+<p>保存<code>php.ini</code>,执行<code>service apache2 restart</code>重启Apache。使用<code>php -m |grep memchched</code>查看是否安装成功</p>
+
+<h1>Memcached 常见操作</h1>
+
+<pre><code class="php">&lt;?php
+$m = new Memcached();
+$array=array(
+  array('127.0.0.1',11211),
+
+);
+$m-&gt;addServers($array); //添加服务器 添加多条为addServers 一条为 addServer（“127.0.0.1”，11211）；
+// // echo "11";
+// $info=$m-&gt;getStats();
+// print_r($info);
+//数据类操作
+//add
+$m-&gt;add("mkey","mvalue",600);//key value time
+$m-&gt;add("mkey","mvalue2",600);//两次赋值不会改变它的值
+$m-&gt;replace("mkey","mvalue3",600);//替换
+echo $m-&gt;get("mkey");
+$m-&gt;set("mkey","mvalue",600);//常用，如果不存在mkey则创建，如果存在则覆盖
+$m-&gt;delete("mkey");//删除
+$m-&gt;flush();//清空memcache中的所有缓存
+$m-&gt;set("num",5,0);
+$m-&gt;increment("num",5);//每次刷新num+5
+$m-&gt;decrement("num",5);//每次刷新num-5
+?&gt;
+</code></pre>
+
+<pre><code class="php">&lt;?php
+  $m = new Memcached();
+  $array=array(
+    array("127.0.0.1",11211),
+  );
+  $m-&gt;addServers($array);
+  $data=array(
+    "key" =&gt; "value",
+    "key2" =&gt;"value2",
+
+  );
+  $m-&gt;setMulti($data,0); //一次设置多个值
+ $result=  $m-&gt;getMulti(array("key","key2"));//一次获取多个值
+ print_r($result);
+ $m-&gt;deleteMulti(array("key","key2"));//一次删除多个值
+ $m-&gt;getResultCode();//获取上次操作返回值
+ $m-&gt;getResultMessage();//获取上次操作的信息
+?&gt;
+</code></pre>
+
+<p><a href="http://php.net/manual/zh/book.memcached.php">官方说明文档</a></p>
+
+<h1>项目中使用Memcached</h1>
+
+<ul>
+<li>即时生成缓存　
+
+<ul>
+<li>类似于新闻详情页，第一个人来了生成缓存，第二个人再来直接读缓存</li>
+</ul>
+</li>
+<li>提前生成缓存
+
+<ul>
+<li>适合高访问量</li>
+</ul>
+</li>
+<li>永久缓存
+
+<ul>
+<li>关于我们 这种基本不变的网页</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>注意事项</h1>
+
+<ul>
+<li>不要在单机模式中使用Memcached</li>
+<li>不要在Memcached保存重要数据。掉电会丢失。</li>
+</ul>
+
 ]]></content>
   </entry>
   
@@ -1249,59 +1423,6 @@ function displayCatePath($cateid,$link='likecate.php?cid='){
 
 echo displayCatePath(4,'likecate.php?p=1&amp;cid=');
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我也是一个有颜色的代码了]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/29/test/"/>
-    <updated>2016-04-29T09:36:19+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/29/test</id>
-    <content type="html"><![CDATA[<pre><code class="php this is a php">&lt;?php
-    echo "11";
-?&gt;
-</code></pre>
-
-<pre class="prettyprint text">
-$ rake generate
-## Generating Site with Jekyll
-unchanged sass/screen.scss
-Configuration file: /Users/Neo/Octopress/_config.yml
-            Source: source
-       Destination: public
-      Generating...
-     Build Warning: Layout 'nil'
-       requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-                    done.
- Auto-regeneration: disabled. Use --watch to enable.
-</pre>
-
 ]]></content>
   </entry>
   
