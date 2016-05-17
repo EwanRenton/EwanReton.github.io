@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nginx | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-17T19:09:15+08:00</updated>
+  <updated>2016-05-17T19:18:58+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -65,6 +65,9 @@ location / {
     <updated>2016-05-16T23:36:00+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/16/nginx-virtualhost</id>
     <content type="html"><![CDATA[<blockquote><p>今天闲下来决定把腾讯云服务器上的网站弄成虚拟主机。毕竟通过 /xx/xx访问也不成样子 0.0</p></blockquote>
+
+<!--more-->
+
 
 <h1>增加虚拟主机</h1>
 
