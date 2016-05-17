@@ -24,9 +24,10 @@
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>	<link type="text/css" rel="stylesheet" href='/prettify/prettify.css' >
 	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
 	<script>
   function addBlankTargetForLinks () {
     $('a[href^="http"]').each(function(){
@@ -42,17 +43,18 @@
 </head>
 
 
-<body>
+<body onload="prettyPrint()">
 	<div class="container">
 		<div class="left-col">
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
 	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
 	<script type="text/javascript">
 		$(function(){
-			<!--$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
-			$('.profilepic').append("<img src='http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=a5b7287429dda3cc0fe4b82531d2483c/adaf2edda3cc7cd9639185323e01213fb90e9199.jpg?referer=b05e096acc1349542709dc54df77&x=.jpg' />");
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
 		});
 	</script>
 	
@@ -76,7 +78,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (2)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (9)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (8)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -311,89 +313,6 @@
   
 
 
-<time datetime="2016-04-29T09:36:19+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/29/test/" itemprop="url">我也是一个有颜色的代码了</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<figure class='code'><figcaption><span>this is a php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;11&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre class="prettyprint text">
-$ rake generate
-## Generating Site with Jekyll
-unchanged sass/screen.scss
-Configuration file: /Users/Neo/Octopress/_config.yml
-            Source: source
-       Destination: public
-      Generating...
-     Build Warning: Layout 'nil'
-       requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-                    done.
- Auto-regeneration: disabled. Use --watch to enable.
-</pre>
-
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
 <time datetime="2016-04-28T01:24:16+08:00" data-updated="true" itemprop="datePublished"></time></div>
 		<div class="tags">
 
@@ -519,6 +438,46 @@ Configuration file: /Users/Neo/Octopress/_config.yml
 
 		
 		<a href="/blog/2016/04/26/linux-chang-yong-min-ling/" class="more-link">阅读全文&rarr;</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-25T22:42:34+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/04/25/oauth/" itemprop="url">OAuth</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>开放式授权OAuth -Open Authorization</p></blockquote>
+
+<h1>一、什么是OAuth</h1>
+
+<p>OAUTH协议为用户资源的授权提供了一个安全的、开放而又简易的标准。与以往的授权方式不同之处是OAUTH的授权不会使第三方触及到用户的帐号信息（如用户名与密码），即第三方无需使用用户的用户名与密码就可以申请获得该用户资源的授权，因此OAUTH是安全的。oAuth是Open Authorization的简写。</p>
+
+
+		
+		<a href="/blog/2016/04/25/oauth/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

@@ -24,9 +24,10 @@
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>	<link type="text/css" rel="stylesheet" href='/prettify/prettify.css' >
 	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
 	<script>
   function addBlankTargetForLinks () {
     $('a[href^="http"]').each(function(){
@@ -42,17 +43,18 @@
 </head>
 
 
-<body>
+<body onload="prettyPrint()">
 	<div class="container">
 		<div class="left-col">
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
 	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
 	<script type="text/javascript">
 		$(function(){
-			<!--$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
-			$('.profilepic').append("<img src='http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=a5b7287429dda3cc0fe4b82531d2483c/adaf2edda3cc7cd9639185323e01213fb90e9199.jpg?referer=b05e096acc1349542709dc54df77&x=.jpg' />");
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
 		});
 	</script>
 	
@@ -76,7 +78,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (2)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (9)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (8)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -128,7 +130,7 @@
 
 <p>在虚拟机中装好了系统过后出现了一个问题，在登录界面输入密码登录过后一直黑屏。当时人都懵逼了，用了这么久Ubuntu从来没出过这种问题啊，重装了很多次系统都不行。百度了很多过后发现他们的情况和我的都不太一样。到是看到有一个看起来很不靠谱的回答解决了问题。</p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
     在登录时点击登录框右上角那个Ubuntu图标选择 ubuntu 2D
 </pre>
 
@@ -136,7 +138,7 @@
 <p>5/12/2016 7:18:20 PM
 找到了上述问题的原因<a href="http://tieba.baidu.com/p/2535671580">传送门</a></p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums>
 1.双显卡问题 
 双显卡的普遍组合为intel集成到其CPU上的显卡（称为核显）+Nvidia独立显卡或AMD显卡。在linux系统下，双显卡因驱动原因不能很好协调工作，N卡和A卡会一直处于高负荷运行状态，导致电脑发热严重,或是X-org罢工，开机无画面，等常见问题。
 linux下是以工具Bumlebee（大黄蜂）来调度显卡工作来解决，运行模式为：通常关闭非核卡，让核卡来负责图形工作，但可在终端输入命令“optirun xxx"用非核卡运行程序xxx。
@@ -187,7 +189,7 @@ B、01:00.0 VGA compatible controller: NVIDIA Corporation GK104M [GeForce GTX 67
 </ol>
 
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo apt-get update //获取最新列表
 Apache:
 sudo apt-get install apache2
@@ -210,7 +212,7 @@ extension=mysql.so //说明正确加载
 
 <p>2.tasksel</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo tasksel install lamp-server
 tasksel 提供多种软件套装
 </pre>
@@ -255,7 +257,7 @@ tasksel 提供多种软件套装
 
 <blockquote><p>习惯了用Xshell，今天直接用Xshell连接新安装的ubuntu连接失败，好一会才反应过来还没安装ssh</p></blockquote>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo apt-get install openssh-server
 </pre>
 
@@ -268,7 +270,7 @@ sudo apt-get install openssh-server
 
 <p>1.允许 su 到 root</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo passwd 
 Password: <--- 输入安装时那个用户的密码 
 Enter new UNIX password: <--- 新的Root用户密码 
@@ -279,7 +281,7 @@ passwd：已成功更新密码
 
 <p>2.允许root登录</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 gksu /usr/sbin/gdmsetup  
 </pre>
 
@@ -297,7 +299,7 @@ gksu /usr/sbin/gdmsetup
 
 <p>Git的安装就非常简单了。</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo apt-get install git
 </pre>
 
@@ -386,9 +388,20 @@ sudo apt-get install git
 	
 	
 	
-	<a class="addthis_counter addthis_pill_style"></a>
-	</div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+	 
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+  
 </div>
 
 

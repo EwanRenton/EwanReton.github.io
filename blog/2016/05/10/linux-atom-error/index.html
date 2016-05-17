@@ -24,9 +24,10 @@
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>	<link type="text/css" rel="stylesheet" href='/prettify/prettify.css' >
 	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
 	<script>
   function addBlankTargetForLinks () {
     $('a[href^="http"]').each(function(){
@@ -42,17 +43,18 @@
 </head>
 
 
-<body>
+<body onload="prettyPrint()">
 	<div class="container">
 		<div class="left-col">
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
 	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
 	<script type="text/javascript">
 		$(function(){
-			<!--$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
-			$('.profilepic').append("<img src='http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=a5b7287429dda3cc0fe4b82531d2483c/adaf2edda3cc7cd9639185323e01213fb90e9199.jpg?referer=b05e096acc1349542709dc54df77&x=.jpg' />");
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
 		});
 	</script>
 	
@@ -76,7 +78,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (2)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (9)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (8)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -241,7 +243,7 @@ libc.so.6（对应glibc 2.15或者更高的），不过最保险的方式就是�
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ll</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">*</span>
 </span><span class='line'> <span class="sb">``</span><span class="err">`</span>
 </span><span class='line'><span class="nx">可以看到2</span><span class="o">.</span><span class="mi">12</span><span class="nx">的旧库文件还在，多了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本的库文件，而且软链接文件全部指向了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本。</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span>
 </span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">1921096</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
 </span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">9801632</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
 </span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">18</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">0</span> <span class="o">-&gt;</span> <span class="na">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span>
@@ -411,7 +413,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 </span><span class='line'>
 </span><span class='line'><span class="sb">出现这种问题就是因为编译库的编译器和编译当前程序的编译器版本是不一样的，在具体一点就是因为，当前程序的编译器的版本是比较低的，只要升级一下就可以了。可以用如下命令查看一下当前GCC版本：</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint linenums&quot;&gt;</span>
 </span><span class='line'><span class="sb">strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  </span>
 </span><span class='line'><span class="sb">GLIBCXX_3.4  </span>
 </span><span class='line'><span class="sb">GLIBCXX_3.4.1  </span>
@@ -436,7 +438,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 </span><span class='line'><span class="sb">下载新版本的GCC，地址为[点击打开链接](http://ftp.de.debian.org/debian/pool/main/g/gcc-4.7/libstdc++6_4.7.2-5_i386.deb) （这里也有一个坑，今天真的是傻！！！）</span>
 </span><span class='line'>
 </span><span class='line'><span class="sb">下载下来之后，用如下命令开始解压</span>
-</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint linenums&quot;&gt;</span>
 </span><span class='line'><span class="sb">ar -x libstdc++6_4.7.2-5_i386.deb &amp;&amp; tar xvf data.tar.gz  </span>
 </span><span class='line'><span class="sb">如果你的文件目录为GCC（如果不是，把GCC改为相应的目录即可），依次执行下面命令：</span>
 </span><span class='line'>
@@ -573,7 +575,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 
 <p><strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 多么痛的领悟
 绝对不要随便强制重启！！！！
 用浏览器一定要登录，书签和历史记录才能同步啊！！！
@@ -589,9 +591,20 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 	
 	
 	
-	<a class="addthis_counter addthis_pill_style"></a>
-	</div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+	 
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+  
 </div>
 
 

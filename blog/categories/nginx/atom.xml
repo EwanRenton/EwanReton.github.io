@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nginx | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-17T19:18:58+08:00</updated>
+  <updated>2016-05-17T20:34:47+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -24,7 +24,7 @@
 
 <p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
  location / { // …..省略部分代码
    if (!-e $request_filename) {
    rewrite  ^(.*)$  /index.php?s=$1  last;
@@ -40,7 +40,7 @@
 
 <p>按照博文的方法在我的虚拟主机配置中（/etc/nginx/conf.d/shop.ewanreton.cn.conf）添加了如下代码：</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 location / {
  root /usr/share/nginx/html/shop;
  index index.html index.htm index.php;
@@ -77,7 +77,7 @@ location / {
 </ol>
 
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 server {
     listen       80;
     server_name demo.neoease.com;
@@ -109,7 +109,7 @@ include vhost/*.conf;
 
 <p>在前面第 2 步的虚拟主机服务对应的目录加入对 PHP 的支持, 这里使用的是 FastCGI, 修改如下.</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 server {
         listen       80;
         server_name class.ewanreton.cn;
@@ -137,7 +137,7 @@ server {
 
 <p>重启 Nginx 服务, 执行以下语句.</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 service nginx restart
 </pre>
 

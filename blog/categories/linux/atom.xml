@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-17T19:18:58+08:00</updated>
+  <updated>2016-05-17T20:34:47+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -97,7 +97,7 @@ make install
 
 <p>可以看到2.12的旧库文件还在，多了2.15版本的库文件，而且软链接文件全部指向了2.15版本。</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 -rwxr-xr-x  1 root root 1921096 Aug 30 02:16 /lib64/libc-2.12.so  
 -rwxr-xr-x  1 root root 9801632 Sep 25 13:46 /lib64/libc-2.15.so  
 lrwxrwxrwx. 1 root root      18 May 19 18:51 /lib64/libcap-ng.so.0 -> libcap-ng.so.0.0.0  
@@ -175,7 +175,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6
 
 <p>出现这种问题就是因为编译库的编译器和编译当前程序的编译器版本是不一样的，在具体一点就是因为，当前程序的编译器的版本是比较低的，只要升级一下就可以了。可以用如下命令查看一下当前GCC版本：</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  
 GLIBCXX_3.4  
 GLIBCXX_3.4.1  
@@ -202,7 +202,7 @@ GLIBCXX_DEBUG_MESSAGE_LENGTH
 
 <p>下载下来之后，用如下命令开始解压</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 ar -x libstdc++6_4.7.2-5_i386.deb && tar xvf data.tar.gz  
 如果你的文件目录为GCC（如果不是，把GCC改为相应的目录即可），依次执行下面命令：
 
@@ -306,7 +306,7 @@ GLIBCXX_DEBUG_MESSAGE_LENGTH
 
 <p><strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 多么痛的领悟
 绝对不要随便强制重启！！！！
 用浏览器一定要登录，书签和历史记录才能同步啊！！！
@@ -330,7 +330,7 @@ GLIBCXX_DEBUG_MESSAGE_LENGTH
 
 <p>服务器端：</p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
 yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-devel
 wget https://github.com/git/git/archive/v2.2.0.tar.gz
 tar zxvf git-2.2.0.tar.gz

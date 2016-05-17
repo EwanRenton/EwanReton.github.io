@@ -24,9 +24,10 @@
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>	<link type="text/css" rel="stylesheet" href='/prettify/prettify.css' >
 	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
-	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
 	<script>
   function addBlankTargetForLinks () {
     $('a[href^="http"]').each(function(){
@@ -42,17 +43,18 @@
 </head>
 
 
-<body>
+<body onload="prettyPrint()">
 	<div class="container">
 		<div class="left-col">
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
 	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
 	<script type="text/javascript">
 		$(function(){
-			<!--$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
-			$('.profilepic').append("<img src='http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=a5b7287429dda3cc0fe4b82531d2483c/adaf2edda3cc7cd9639185323e01213fb90e9199.jpg?referer=b05e096acc1349542709dc54df77&x=.jpg' />");
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
 		});
 	</script>
 	
@@ -76,7 +78,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (2)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (9)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (8)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>

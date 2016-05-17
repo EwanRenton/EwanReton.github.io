@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-17T19:18:58+08:00</updated>
+  <updated>2016-05-17T20:34:47+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -24,7 +24,7 @@
 
 <p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
  location / { // …..省略部分代码
    if (!-e $request_filename) {
    rewrite  ^(.*)$  /index.php?s=$1  last;
@@ -40,7 +40,7 @@
 
 <p>按照博文的方法在我的虚拟主机配置中（/etc/nginx/conf.d/shop.ewanreton.cn.conf）添加了如下代码：</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 location / {
  root /usr/share/nginx/html/shop;
  index index.html index.htm index.php;
@@ -77,7 +77,7 @@ location / {
 </ol>
 
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 server {
     listen       80;
     server_name demo.neoease.com;
@@ -109,7 +109,7 @@ include vhost/*.conf;
 
 <p>在前面第 2 步的虚拟主机服务对应的目录加入对 PHP 的支持, 这里使用的是 FastCGI, 修改如下.</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 server {
         listen       80;
         server_name class.ewanreton.cn;
@@ -137,7 +137,7 @@ server {
 
 <p>重启 Nginx 服务, 执行以下语句.</p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 service nginx restart
 </pre>
 
@@ -599,8 +599,6 @@ service nginx restart
 
 <!--more-->
 
-
-<p><img src="http://h.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=8e532f3a8d13632711edc236a1b4d1d1/a8ec8a13632762d0688f1759a7ec08fa503dc6a7.jpg?referer=ffd5a3fbd32a28341ab1023b227d&amp;x=.jpg" alt="测试图片" /></p>
 
 <h1>SPL的常用数据结构</h1>
 
@@ -1833,7 +1831,7 @@ service nginx restart
 
 <p>在虚拟机中装好了系统过后出现了一个问题，在登录界面输入密码登录过后一直黑屏。当时人都懵逼了，用了这么久Ubuntu从来没出过这种问题啊，重装了很多次系统都不行。百度了很多过后发现他们的情况和我的都不太一样。到是看到有一个看起来很不靠谱的回答解决了问题。</p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
     在登录时点击登录框右上角那个Ubuntu图标选择 ubuntu 2D
 </pre>
 
@@ -1841,7 +1839,7 @@ service nginx restart
 <p>5/12/2016 7:18:20 PM
 找到了上述问题的原因<a href="http://tieba.baidu.com/p/2535671580">传送门</a></p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums>
 1.双显卡问题 
 双显卡的普遍组合为intel集成到其CPU上的显卡（称为核显）+Nvidia独立显卡或AMD显卡。在linux系统下，双显卡因驱动原因不能很好协调工作，N卡和A卡会一直处于高负荷运行状态，导致电脑发热严重,或是X-org罢工，开机无画面，等常见问题。
 linux下是以工具Bumlebee（大黄蜂）来调度显卡工作来解决，运行模式为：通常关闭非核卡，让核卡来负责图形工作，但可在终端输入命令“optirun xxx"用非核卡运行程序xxx。
@@ -1892,7 +1890,7 @@ B、01:00.0 VGA compatible controller: NVIDIA Corporation GK104M [GeForce GTX 67
 </ol>
 
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo apt-get update //获取最新列表
 Apache:
 sudo apt-get install apache2
@@ -1915,7 +1913,7 @@ extension=mysql.so //说明正确加载
 
 <p>2.tasksel</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo tasksel install lamp-server
 tasksel 提供多种软件套装
 </pre>
@@ -1960,7 +1958,7 @@ tasksel 提供多种软件套装
 
 <blockquote><p>习惯了用Xshell，今天直接用Xshell连接新安装的ubuntu连接失败，好一会才反应过来还没安装ssh</p></blockquote>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo apt-get install openssh-server
 </pre>
 
@@ -1973,7 +1971,7 @@ sudo apt-get install openssh-server
 
 <p>1.允许 su 到 root</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo passwd 
 Password: <--- 输入安装时那个用户的密码 
 Enter new UNIX password: <--- 新的Root用户密码 
@@ -1984,7 +1982,7 @@ passwd：已成功更新密码
 
 <p>2.允许root登录</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 gksu /usr/sbin/gdmsetup  
 </pre>
 
@@ -2002,7 +2000,7 @@ gksu /usr/sbin/gdmsetup
 
 <p>Git的安装就非常简单了。</p>
 
-<pre class="prettyprint ">
+<pre class="prettyprint linenums">
 sudo apt-get install git
 </pre>
 
@@ -2212,7 +2210,7 @@ libc.so.6（对应glibc 2.15或者更高的），不过最保险的方式就是�
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ll</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">*</span>
 </span><span class='line'> <span class="sb">``</span><span class="err">`</span>
 </span><span class='line'><span class="nx">可以看到2</span><span class="o">.</span><span class="mi">12</span><span class="nx">的旧库文件还在，多了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本的库文件，而且软链接文件全部指向了2</span><span class="o">.</span><span class="mi">15</span><span class="nx">版本。</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span>
 </span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">1921096</span> <span class="nx">Aug</span> <span class="mi">30</span> <span class="mo">02</span><span class="o">:</span><span class="mi">16</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.12</span><span class="o">.</span><span class="nx">so</span>
 </span><span class='line'><span class="o">-</span><span class="nx">rwxr</span><span class="o">-</span><span class="nx">xr</span><span class="o">-</span><span class="nx">x</span>  <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span> <span class="mi">9801632</span> <span class="nx">Sep</span> <span class="mi">25</span> <span class="mi">13</span><span class="o">:</span><span class="mi">46</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libc</span><span class="o">-</span><span class="mf">2.15</span><span class="o">.</span><span class="nx">so</span>
 </span><span class='line'><span class="nx">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="nx">root</span> <span class="nx">root</span>      <span class="mi">18</span> <span class="nx">May</span> <span class="mi">19</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span> <span class="o">/</span><span class="nx">lib64</span><span class="o">/</span><span class="nx">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mi">0</span> <span class="o">-&gt;</span> <span class="na">libcap</span><span class="o">-</span><span class="nx">ng</span><span class="o">.</span><span class="nx">so</span><span class="o">.</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">0</span>
@@ -2382,7 +2380,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 </span><span class='line'>
 </span><span class='line'><span class="sb">出现这种问题就是因为编译库的编译器和编译当前程序的编译器版本是不一样的，在具体一点就是因为，当前程序的编译器的版本是比较低的，只要升级一下就可以了。可以用如下命令查看一下当前GCC版本：</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint linenums&quot;&gt;</span>
 </span><span class='line'><span class="sb">strings /usr/lib/libstdc++.so.6 | grep GLIBCXX  </span>
 </span><span class='line'><span class="sb">GLIBCXX_3.4  </span>
 </span><span class='line'><span class="sb">GLIBCXX_3.4.1  </span>
@@ -2407,7 +2405,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 </span><span class='line'><span class="sb">下载新版本的GCC，地址为[点击打开链接](http://ftp.de.debian.org/debian/pool/main/g/gcc-4.7/libstdc++6_4.7.2-5_i386.deb) （这里也有一个坑，今天真的是傻！！！）</span>
 </span><span class='line'>
 </span><span class='line'><span class="sb">下载下来之后，用如下命令开始解压</span>
-</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint&quot;&gt;</span>
+</span><span class='line'><span class="sb">&lt;pre class=&quot;prettyprint linenums&quot;&gt;</span>
 </span><span class='line'><span class="sb">ar -x libstdc++6_4.7.2-5_i386.deb &amp;&amp; tar xvf data.tar.gz  </span>
 </span><span class='line'><span class="sb">如果你的文件目录为GCC（如果不是，把GCC改为相应的目录即可），依次执行下面命令：</span>
 </span><span class='line'>
@@ -2544,7 +2542,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 
 <p><strong>这篇博文还很不完整，以后有机会再在Centos上装Atom成功的话在回来补充</strong></p>
 
-<pre class="prettyprint">
+<pre class="prettyprint linenums">
 多么痛的领悟
 绝对不要随便强制重启！！！！
 用浏览器一定要登录，书签和历史记录才能同步啊！！！
@@ -2568,7 +2566,7 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 
 <p>服务器端：</p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
 yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-devel
 wget https://github.com/git/git/archive/v2.2.0.tar.gz
 tar zxvf git-2.2.0.tar.gz
@@ -3376,7 +3374,7 @@ vld -opcode 代码分析
 
 <p>在_config.yml文件中。可以直接修改title，author等基本信息。</p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
 # ----------------------- #
 #      Main Configs       #
 # ----------------------- #
@@ -3432,7 +3430,7 @@ email: liukedi001@gmail.com
 </ol>
 
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
     #duoshuo
     duoshuo_comment = true //开启多说
     在sourse 中 找到_layout post.html
@@ -3942,7 +3940,7 @@ email: liukedi001@gmail.com
 
 <blockquote><p>按照下一篇博文的方法</p></blockquote>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
 安装Python
 安装Python,也是一路next就可以，博客的代码高亮用到了Python的Pygments模块，在Python中安装第三方库需要使用easy_install，在下面地址下载跟Python相对应的安装程序安装后就可以使用easy_install了。
 
@@ -3957,7 +3955,7 @@ easy_install pygments
 
 <p><a href="https://pypi.python.org/pypi/setuptools">https://pypi.python.org/pypi/setuptools</a>去找到Windows (simplified)又懵逼了。它给了一段代码需要自己编译运行<a href="https://bootstrap.pypa.io/ez_setup.py">ez_setup.py</a>新建文本文档将网页上的代码全部粘贴下来，保存重命名为ez_setup.py</p>
 
-<pre class="prettyprint text">
+<pre class="prettyprint linenums">
  Win+R
  cmd
  进到你刚刚保存的那文件的路径
@@ -4012,12 +4010,12 @@ easy_install pygments
 
 <p>(4) 将源代码用标签</p>
 
-<pre><code>&lt;pre class="prettyprint"&gt;这是你的代码&lt;/pre&gt;
+<pre><code>&lt;pre class="prettyprint linenums"&gt;这是你的代码&lt;/pre&gt;
 </code></pre>
 
 <p>包含起来,例如</p>
 
-<pre><code>&lt;pre class="prettyprint"&gt;
+<pre><code>&lt;pre class="prettyprint linenums"&gt;
 
 #include "x.h"
 
@@ -4073,6 +4071,43 @@ main(){
 <p><img src="http://hiphotos.baidu.com/exp/pic/item/72ccb7773912b31b40ea01058418367adbb4e1de.jpg" alt="4" /></p>
 
 <p>如果你有更高的使用要求，可以到<a href="https://code.google.com/p/google-code-prettify/wiki/GettingStarted">https://code.google.com/p/google-code-prettify/wiki/GettingStarted</a>这个网页中看更高级的使用方法</p>
+
+<hr />
+
+<p>5/17/2016 8:28:40 PM  更新</p>
+
+<blockquote><p>设置显示行号</p></blockquote>
+
+<p><pre class="prettyprint linenums">
+1、删掉prettify里的这两个样式。<br/>
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}</p>
+
+<p>2、替换以下内容，已经存在的替换，不存在的新增。<br/>
+pre.prettyprint {<br/>
+ padding: 8px;<br/>
+ background-color: #f7f7f9;<br/>
+ border: 1px solid #e1e1e8;<br/>
+}<br/>
+.prettyprint.linenums {<br/>
+ -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
+ -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
+ box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
+}</p>
+
+<p>/<em> Specify class=linenums on a pre to get line numbering </em>/<br/>
+ol.linenums {<br/>
+ margin: 0 0 0 33px; /<em> IE indents via margin-left </em>/<br/>
+} <br/>
+ol.linenums li {<br/>
+ padding-left: 12px;<br/>
+ color: #bebec5;<br/>
+ line-height: 18px;<br/>
+ text-shadow: 0 1px 0 #fff;<br/>
+}<br/>
+3、在<pre>标签里面一定不能有<br/>标签,要换行直接回车.<br/>
+</pre></p>
+
+<hr />
 
 <h1>但是</h1>
 
@@ -5421,63 +5456,6 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[我也是一个有颜色的代码了]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/29/test/"/>
-    <updated>2016-04-29T09:36:19+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/29/test</id>
-    <content type="html"><![CDATA[<figure class='code'><figcaption><span>this is a php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;11&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre class="prettyprint text">
-$ rake generate
-## Generating Site with Jekyll
-unchanged sass/screen.scss
-Configuration file: /Users/Neo/Octopress/_config.yml
-            Source: source
-       Destination: public
-      Generating...
-     Build Warning: Layout 'nil'
-       requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-       requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/ubuntu/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/octopress/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/java/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/environment/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/homebrew/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/android/atom.xml does not exist.
-     Build Warning: Layout 'nil'
-        requested in blog/categories/eclipse/atom.xml does not exist.
-                    done.
- Auto-regeneration: disabled. Use --watch to enable.
-</pre>
-
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[Linux-MYSQL-常用命令]]></title>
     <link href="http://ewanreton.github.io/blog/2016/04/28/linux-mysql-code/"/>
     <updated>2016-04-28T01:24:16+08:00</updated>
@@ -6621,6 +6599,72 @@ mysql&gt;
 <li>lastlog 查看每个用户的最后登录信息/var/log/lastlog</li>
 </ul>
 </li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[OAuth]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/25/oauth/"/>
+    <updated>2016-04-25T22:42:34+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/25/oauth</id>
+    <content type="html"><![CDATA[<blockquote><p>开放式授权OAuth -Open Authorization</p></blockquote>
+
+<h1>一、什么是OAuth</h1>
+
+<p>OAUTH协议为用户资源的授权提供了一个安全的、开放而又简易的标准。与以往的授权方式不同之处是OAUTH的授权不会使第三方触及到用户的帐号信息（如用户名与密码），即第三方无需使用用户的用户名与密码就可以申请获得该用户资源的授权，因此OAUTH是安全的。oAuth是Open Authorization的简写。</p>
+
+<!--more-->
+
+
+<h1>二、OAuth协议简介</h1>
+
+<ul>
+<li>OAuth 1.0 2007年年末 有漏洞</li>
+<li>OAuth 2.0 2010年年初</li>
+</ul>
+
+
+<h1>三、三个重要步骤</h1>
+
+<ol>
+<li><p>请求OAuth登录页面</p>
+
+<ul>
+<li>Request Token URL -未授权的令牌请求服务器 XX网请求QQ登录页面时使用的带有特定参数的URL</li>
+<li><a href="http://graph.qq.com/oauth/...?...&amp;client_id=*100490398&amp;...&amp;redirect_url=http://www.xxx.com/...">http://graph.qq.com/oauth/...?...&amp;client_id=*100490398&amp;...&amp;redirect_url=http://www.xxx.com/...</a></li>
+<li>client_id APPID</li>
+<li>client_secret APPKEY</li>
+</ul>
+</li>
+<li><p>用户使用QQ号登录并授权</p>
+
+<ul>
+<li>验证用户密码成功后重定向到指定的url，此时可以通过$_GET[&lsquo;code&rsquo;]来获取</li>
+</ul>
+</li>
+<li>返回登录结果
+
+<ul>
+<li>拿到加了密的code过后还需要请求 User Authorization URL -用户授权的令牌请求服务地址 用户QQ登录授权之后请求的一个带有特定参数的URL</li>
+<li>用来提高安全性。</li>
+<li>请求过后会得到一个响应数据，包含一些基本的账号信息。</li>
+<li>code有生命周期（一般为几秒钟）并且只能使用一次。</li>
+<li>请求成功过后可以拿到Access Token</li>
+</ul>
+</li>
+</ol>
+
+
+<h1>四、Access Token</h1>
+
+<p>Access Token -用户通过第三方应用访问OAuth接口的令牌</p>
+
+<ul>
+<li>在请求API时会动态生成URL 并且都离不开 Access Token</li>
+<li>Access Token具有较长生命周期（十天半个月）</li>
+<li>Access Token过期过后可以选择重新登录或者在请求API时使用need_refresh_token（各个平台不同）=true 来刷新Access Token</li>
 </ul>
 
 ]]></content>
