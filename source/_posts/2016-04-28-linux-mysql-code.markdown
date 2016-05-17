@@ -3,10 +3,10 @@ layout: post
 title: "Linux-MYSQL-常用命令"
 date: 2016-04-28 01:24:16 +0800
 comments: true
-categories: [Linux，Mysql]
+categories: [Linux,Mysql]
 ---
 >Linux 下Mysql 常用命令总结
-
+<!--more-->
 #一、linux下mysql的基本命令：
 	1. linux下启动mysql的命令：
 	mysqladmin start

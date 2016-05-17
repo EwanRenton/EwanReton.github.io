@@ -6,7 +6,7 @@ comments: true
 categories: [Nginx] 
 ---
 > 今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础
-
+<!--more-->
 # 一、常用的服务器软件
 * 1 IIS：只能在Windows下运行性能不如Linux一类服务器
 * 2 Tomcat： 面向Java的重量级服务器

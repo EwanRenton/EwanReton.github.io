@@ -1,0 +1,123 @@
+---
+layout: post
+title: "QQ登录Demo"
+date: 2016-05-15 16:12:15 +0800
+comments: true
+categories: [PHP]
+---
+>今天完成了一个QQ登录的小Deom
+
+#前置条件
+* 一个QQ号
+* 一台公网通过域名可访问的web服务器
+<!--more-->
+#申请AppID和AppKey
+[QQ开放平台](http://connect.qq.com/)
+
+如果是第一次登录，会跳转到管理中心，应用开发者注册
+![开发者注册](http://d.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b43ea01c0d46f21fcd345e56c61f1a5d/7acb0a46f21fbe0908972df36c600c338644ad08.jpg?referer=6f234af490dda144831e58820b06&x=.jpg)
+注册后悔跳转到管理中心，点击创建应用
+
+![创建应用](http://c.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=7ab420c84634970a4373102aa5f1a0f5/fc1f4134970a304ef778481dd6c8a786c8175cfb.jpg?referer=ebbc6b2a5566d016270eaa189c99&x=.jpg)
+回调地址，可以和上面一样，在开发的时候再修改。
+![验证](http://f.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=f47f75cf902bd40746c7d3f84bb2ef6c/aa18972bd40735fa1b96a55e99510fb30e2408f7.jpg?referer=8ed677a03e12b31b9e7bf91968ae&x=.jpg)
+将下面这段代码，复制到服务器首页```<head>```标签中。
+```html
+<meta property="qc:admins" content="43216566776571625476636" />
+```
+#添加测试回调地址
+
+在QQ开放平台应用详情中，选择信息管理，
+
+在回调地址中添加
+
+![添加回调地址](http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=2bafae5c4010b912bbc1f6fbf3c68d3e/738b4710b912c8fc25701f2afb039245d7882152.jpg?referer=37adaf2785025aaf8a254afb8f30&x=.jpg)
+其中的callback.php可以自定义。
+
+记得保存之前需要验证。
+
+#引入官方SDK
+[官方SDK](http://wiki.connect.qq.com/)
+
+找到PHP下载（有能力可以自己手工开发，造车轮。）
+
+放到站点根目录
+
+#SDK参数配置
+
+访问```http://localhost/Connect2.1/install.php```
+![参数配置](http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b155c91931d3d539c53d0fc60abc986d/14ce36d3d539b600424ce650ee50352ac75cb753.jpg?referer=0353883031d12f2e97129a50f131&x=.jpg)
+配置成功后,保留API下的文件，其他的都可删除。
+
+#SDK解读
+![](http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=440c3587322ac65c63056676cbc9c32c/e850352ac65c10382dc82725b5119313b17e89a7.jpg?referer=314909b58235e5ddc93b91eff77d&x=.jpg)
+![](http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=4c5e0d1fa086c9170c03523cf90601f2/d0c8a786c9177f3ebe9d15ea77cf3bc79e3d56a8.jpg?referer=4ebf08d032fae6cd55a39f519266&x=.jpg)
+![](http://h.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=327017c44e540923ae69637ba263a034/ca1349540923dd54e98f4e8fd609b3de9d82485d.jpg?referer=cd4a9bc7be12c8fcede4c2fda833&x=.jpg)
+![](http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=22750c750bf431adb8d2433c7b0ddd92/d1a20cf431adcbefe6cb97e1abaf2edda2cc9f5e.jpg?referer=bd373c299e25bc31724a35a8d934&x=.jpg)
+![](http://f.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=3ede9315d262853596e0d224a0d407fb/4ec2d5628535e5dd429f4c3871c6a7efcf1b62a2.jpg?referer=bc5660e9b63533faaca1a71ece60&x=.jpg)
+![](http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=9a446d86ff1986184547ef817ad65f4e/b151f8198618367af3eb973a29738bd4b21ce5f3.jpg?referer=7862fb405eee3d6d7bd1b3fb4391&x=.jpg)
+![](http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=f77b76cf902bd40746c7d3f84bb2ef6c/aa18972bd40735fa1892a65e99510fb30e2408f3.jpg?referer=8dd274a03e12b31b9e7bf9196892&x=.jpg)
+![](http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=4d470c1fa086c9170c03523cf90601f2/d0c8a786c9177f3ebf8414ea77cf3bc79e3d56a1.jpg?referer=4fa609d032fae6cd55a39f51927f&x=.jpg)
+
+#将SDK整合到web中
+
+Connect2.1
+放在同级目录下
+
+```php index.php
+<?php
+require_once "Connect2.1/qqConnectAPI.php";
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <title></title>
+  </heda>
+    <body>
+        <?php if(!isset($_COOKIE['qq_accesstokebn'])||!isset($_COOKIE['qq_openid'])){?>
+        <a href="qqlogin.php">登录QQ</a>
+        <?php }else{?>
+          <a href="qqlogout.php">退出QQ</a>
+          <?php
+            $qc = new QC($_COOKIE['qq_accesstokebn'],$_COOKIE['qq_openid']);
+            $userinfo =$qc->get_user_info();
+            print_r($userinfo);
+                }
+          ?>
+    </body>
+</html>
+
+```
+```php qqlogin.php
+<?php
+  require_once 'Connect2.1/qqConnectAPI.php';
+  //访问QQ页面
+  $oauth = new Oauth();
+  $oauth->qq_login();
+ ?>
+
+```
+```php qqlogout.php
+<?php
+  setcookie('qq_accesstokebn',null);
+  setcookie('qq_openid',null);
+  header("Location:index.php");
+?>
+
+```
+```php callback.php
+<?php
+require_once 'Connect2.1/qqConnectAPI.php';
+  //echo $_GET['code'];
+  //请求accesstoken
+
+$oauth = new Oauth();
+$accesstoken = $oauth->qq_callback();
+$openid = $oauth->get_openid();
+setcookie("qq_accesstokebn",$accesstoken,time()+86400);
+setcookie("qq_openid",$openid,time()+86400);
+header("Location:index.php")
+?>
+
+```

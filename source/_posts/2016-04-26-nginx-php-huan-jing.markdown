@@ -6,7 +6,7 @@ comments: true
 categories: [Nginx,PHP]
 ---
 >Nginx下PHP环境搭建1
-
+<!--more-->
 #一、需要准备的包
 * libiconv-1.7.tar.gz
 * libmcrypt-2.5.7.tar.gz

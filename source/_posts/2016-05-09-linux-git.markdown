@@ -1,0 +1,225 @@
+---
+layout: post
+title: "Linx下安装Git"
+date: 2016-05-09 23:25:34 +0800
+comments: true
+categories: [Linux]
+---
+
+>考试季过去了，准备开始将日常使用迁移到Linux下，今天想在Linux下装Git，开始觉得这应该是个很简单的事，谁知道这个花了好多时间。
+
+<!--more-->
+
+首先在网上找了一个博文作为参考，[传送门](http://blog.csdn.net/naola2001/article/details/43228769)
+
+服务器端：
+<pre class="prettyprint linenums">
+yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-devel
+wget https://github.com/git/git/archive/v2.2.0.tar.gz
+tar zxvf git-2.2.0.tar.gz
+cd git-2.2.0
+make prefix=/usr/local all
+make prefix=/usr/local install  root用户运行
+</pre>
+```php
+如果编译时提示错误：
+LINK git-credential-store
+libgit.a(utf8.o): In function `reencode_string_iconv’:
+/opt/git-master/utf8.c:530: undefined reference to `libiconv’
+libgit.a(utf8.o): In function `reencode_string_len’:
+/opt/git-master/utf8.c:569: undefined reference to `libiconv_open’
+/opt/git-master/utf8.c:588: undefined reference to `libiconv_close’
+/opt/git-master/utf8.c:582: undefined reference to `libiconv_open’
+collect2: ld 返回 1
+make: *** [git-credential-store] 错误 1
+解决办法：
+ 
+cd /usr/local/src/
+wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+tar -zxvf libiconv-1.14.tar.gz
+cd libiconv-1.14
+./configure -prefix=/usr/local/libiconv  &&  make  && sudo  make install
+然后回到git继续编译：
+ 
+cd /usr/local/src/git-1.8.5
+make configure
+./configure --prefix=/usr/local -with-iconv=/usr/local/libiconv
+make
+make install
+
+
+# git --version
+git version 2.2.0
+```
+按照教程，到这里应该就成功了。
+但是在解决了lib的错误后在回来执行 make 时遇到了错误
+```php
+In function `init_gettext_charset': 
+/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset' 
+collect2: ld returned 1 exit status 
+```
+
+解决方法：[传送门](http://mono.1490590.n4.nabble.com/Can-t-compile-git-for-a-long-time-td3336232.html#a4312244)
+其中一个corey_yan的回答成功解决了问题
+
+```
+I encounter the same problem in centos 5.2 and try to solve it for a long time 
+
+libgit.a(gettext.o): In function `init_gettext_charset': 
+/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset' 
+collect2: ld returned 1 exit status 
+
+
+After checking the detail Link command 
+make -n | grep "git-daemon" 
+echo '   ' LINK git-daemon; 
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='<openssl/sha.h>'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcrypto -pthread 
+
+I try to change to 
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='<openssl/sha.h>'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcharset -lcrypto -pthread 
+
+Link error is missing:) 
+
+I try to modify Makefile 
+        EXTLIBS += $(ICONV_LINK) -liconv -lcharset 
+
+then 
+make successfully. 
+
+Hope it can help you.
+```
+
+步骤为:
+```php
+make -n | grep "git-daemon" 
+echo '   ' LINK git-daemon; 
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='<openssl/sha.h>'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcrypto -pthread 
+//会报一个link错误
+cc  -g -O2 -I. -pthread -DHAVE_PATHS_H -DHAVE_LIBCHARSET_H -DHAVE_DEV_TTY -DSHA1_HEADER='<openssl/sha.h>'  -DNO_STRLCPY -DNO_MKSTEMPS -o git-daemon   daemon.o libgit.a xdiff/lib.a  -lz  -liconv  -lcharset -lcrypto -pthread 
+//Link error is missing:) 
+vim Makefile
+找到 EXTLIBS += $(ICONV_LINK) -liconv 
+改为 EXTLIBS += $(ICONV_LINK) -liconv -lcharset  //保存退出
+重新make
+make install 
+```
+成功解决问题。
+***
+#在原博文下面还有一些功能的安装，现在还没设计到，不过也先贴出来
+
+**下面来安装 gitosis**
+>gitosis为Git用户权限管理系统,通过管理服务端的authorized_key文件来执行对用户权限的管理，是一个Python模块包
+
+```php
+yum install python python-setuptools
+cd /usr/local/src
+git clone git://github.com/res0nat0r/gitosis.git
+cd gitosis
+python setup.py install
+
+OK gitosis 安装成功！
+
+ 配置服务器git：
+0.1 输入以下两条命令
+git config --global user.name "Your Name Here"          
+git config --global user.email "your_email@example.com"  
+可以再输入git config -l查看上面两个是否设置
+```
+
+**在开发机上生成密钥并上传到服务器上**
+```php
+ssh-keygen -t rsa   #一路回车，不需要设置密码
+scp ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp   #上传公钥到服务器(默认SSH端口22)
+或
+scp -P 3600  ~/.ssh/id_rsa.pub root@192.168.103.10:/tmp
+
+
+5、服务器上生成git用户，使用git用户并初始化gitosis
+adduser -m git
+su – git
+gitosis-init < /tmp/id_rsa.pub
+#显示以下信息即表示成功
+#Initialized empty Git repository in /home/git/repositories/gitosis-admin.git/
+#Reinitialized existing Git repository in /home/git/repositories/gitosis-admin.git/
+
+
+#删除密钥
+su – root
+rm -rf /tmp/id_rsa.pub
+禁用shell登录
+注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑/etc/passwd文件完成。找到类似下面的一行：
+\[root@git ~\]# cat /etc/passwd | grep git
+git:x:1001:1001:git version control:/home/git:/bin/bash
+
+改为：
+\[root@git ~\]# vim /etc/passwd
+git:x:1001:1001:git version control:/home/git:/usr/bin/git-shell
+
+
+这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git-shell每次一登录就自动退出。
+
+2，在git用户下，生成私钥和公钥。 
+$ssh-keygen –t rsa
+3，在git用户下，拷入id_rsa.pub文件。 
+$gitosis-init < id_rsa.pub 
+这样在git用户目录下生成了一些目录，gitosis，repositories。 
+至此，安装工作完成。
+```
+**添加开发者**
+```php
+git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。 
+$cat /tmp/id_rsa.pub.ubuntu >> authorized_keys
+创建项目仓库
+git管理人员操作： 
+$mkdir /home/git/gitproject 
+$cd gitproject 
+$git --bare init （创建一个空项目）
+开发者提交项目
+ubuntu开发者操作： 
+$git remote add origin git@gitserver:/opt/git/project.git 
+$git push origin master
+这样其他开发者的工作也比较简单了： 
+$git clone … 
+$git push origin master
+
+
+cd /repo/gitosis-admin
+vim gitosis.conf
+在文件尾增加以下内容
+\[group test\]  组名称
+writable = test  项目名称
+members = jankerli 密钥用户名
+
+#提交修改
+git add .
+git commit -a -m “add test repo”
+git push
+```
+**初始，增加及使用项目test-git**
+
+```php
+cd /repo
+mkdir test-git
+cd test-git
+git inti
+touch readme
+git add .
+git commit -a -m “init test-git”
+git remote add origin git@xxx:test.git
+git push origin master
+```
+**在 test 项目新增用户**
+①在新增用户的本机输入ssh-keygen -t rsa生成私钥公钥；
+②把生成的公钥id_rsa.pub上传或复制到 gitosis-admin/keydir文件夹下，并重名，如：jankerli.pub；
+③vim gitosis.conf
+```php
+在文件尾增加以下内容
+\[group test\]
+writable = test
+members = jankerli （此处增加新用户的名称，名称必须与上面重名的jankerli.pub一致，去掉.pub）
+④提交修改
+git add .
+git commit -a -m “add test repo”
+git push
+```
+⑤新用户便可通过 git clone git@xxx:test.git 克隆代码到本机了。

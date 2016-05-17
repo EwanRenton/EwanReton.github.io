@@ -1,0 +1,424 @@
+---
+layout: post
+title: "spl初识"
+date: 2016-05-13 20:26:58 +0800
+comments: true
+categories: 
+---
+#什么是SPL
+>SPL是Standard PHP Library（PHP标准库）的缩写。
+根据官方定义，它是"a collection of interfaces and classes that are meant to solve standard problems"。但是，目前在使用中，SPL更多地被看作是一种使object（物体）模仿array（数组）行为的interfaces和classes。
+<!--more-->
+#SPL的常用数据结构
+
+##双向链表
+
+* SplDoublyLinkedList类
+* 操作
+	* 当前节点操作：
+		* rewind:使当前节点指向Buttom（头部）
+		* next：指向下一个节点
+		* prev：指向上一个节点
+		* current：指向链表当前节点的指针，调用前需调用rewind，指向的节点被删除后会指向一个空节点
+	* 增加节点操作：
+		* push：向链表的顶部（尾部）插入一个节点
+		* unshift：向链表的底部插入一个节点（头部）
+	* 删除节点操作：
+		* pop：获取链表中顶部（尾部）的节点并删除，不改变当前指针的位置
+		* shift：删除连边底部（头部）的节点
+	* 定位操作
+		* bottom：获得链表底部（头部）的元素，指针位置不变
+		* top：获得链表顶部（尾部）的元素，指针位置不变
+	* 特定节点操作
+		* offsetExists
+		* offsetGet
+		* offsetSet
+		* offsetUnset
+```php
+<?php
+
+    $obj=new SplDoublyLinkedList();
+
+    $obj->push(1);//把节点添加到顶部
+    $obj->push(2);
+    $obj->push(3);
+    $obj->unshift(10);//将新的节点添加到底部（bottom）
+    print_r($obj);
+    $obj->rewind();//rewind操作用于把节点指针指向bottom所在的节点
+    echo "current:".$obj->current()."\n"; //获取节点指针指向的节点（当前）
+    $obj->next();//指向下一节点
+    $obj->prev();//指向上一节点
+    echo "next:".$obj->current()."\n";
+    $obj->next();//指向下一节点
+    $obj->next();//指向下一节点
+    $obj->next();//指向下一节点
+    $obj->next();//指向下一节点
+    if($obj->current()){
+      echo "Current node valid\n";
+    }else{
+      echo "Current node invalid\n";
+    }
+    if($obj->valid()){//如果当前节点有效，valid返回true
+      echo "valid list";
+    }else {
+      echo "invalid list";
+    }
+    echo "pop value".$obj->pop()."\n";//把TOP位置的节点从链表中弹出。pop不影响指针指向的节点。如果pop指向的是top，调用POP后会指向NULL
+    print_r($obj);
+    echo "current:".$obj->current()."\n";
+    $obj->shift();//把bottom位置的节点从链表中删除。并返回
+    
+?>
+
+```
+##堆栈
+* 继承自SplDoublyLinkedList类的SplStack类 
+* 先进后出
+* 操作
+	* push：压入堆栈
+	* pop：弹出堆栈
+
+```php
+<?php
+    $stack = new SplStack();
+    $stack->push("a");
+    $stack->push("b");
+    $stack->push("c");
+    print_r($stack);
+    echo "Bottom:".$stack->bottom()."\n";
+    echo "Top:".$stack->top()."\n";
+    $stack->offsetSet(0,"C");//在Stack里面offset=0是TOP所在的位置，offset=1是top位置节点靠近bottom位置的相邻节点
+    print_r($stack);
+    $stack->rewind();
+    echo "Current:".$stack->current()."\n";//双向链表的rewind和堆栈的rewind相反，堆栈的rewind使得当前指针指向TOP所在的位置，而双向链表的rewind指向bottom所在的位置
+    $stack->next();
+    echo "Current:".$stack->current()."\n";
+    //遍历堆栈
+    $stack->rewind();
+    while($stack->valid()){
+      echo $stack->key()."=>".$stack->current()."\n";
+      $stack->next();
+    }
+    //删除堆栈
+    $popObj = $stack->pop();
+    echo "PopED object:".$popObj."\n";
+    print_r($stack);
+?>
+
+```
+##队列
+* 继承自SplDoublyLinkedList类的SplQueue类 
+* 先进先出
+* 操作
+	* enqueue：进入队里
+	* duqueue：退出对列
+```php
+<?php
+  $obj = new SplQueue();
+  $obj->enqueue("a");//插入一个节点到TOP位置
+  $obj->enqueue("b");
+  $obj->enqueue("c");
+  print_r($obj);
+  echo "bottom:".$obj->bottom()."\n";
+  echo "top:".$obj->top()."\n";
+  $obj->offsetSet(0,"A");//队列里面的offset=0是bottom所在的位置
+  print_r($obj);
+  $obj->rewind();//队列的rewind指向bottom所在的位置
+  echo "current:".$obj->current()."\n";
+  while($obj->valid()){
+    echo $obj->key()."=>".$obj->current()."\n";
+    $obj->next();
+  }
+  echo "dequeue obj:".$obj->dequeue()."\n";//从队列中提取bottom位置的节点并删除
+  print_r($obj);
+?>
+
+```
+#迭代器
+##什么是迭代器
+>通过某种同意的方式遍历链表或数组中的元素的过程叫做迭代遍历，而这种统一的遍历工具我们叫做迭代器
+
+在PHP中迭代器是通过Iterator接口定义的。
+
+##常用的迭代器 ArrayIterator
+* 熟悉使用foreach和while语句通过ArrayIterator遍历数组的方法
+* 熟悉使用seek跳过某些元素的方法
+* 熟悉使用ArrayIerator进行排序的方法
+```php
+<?php
+    $fruits = array(
+      "apple" => "appale value",
+      "orange" => "orange value",
+      "grape" => "grape value",
+      "plum" => "plum value"
+    );
+    print_r($fruits);
+    echo "use fruits directly \n";
+    foreach ($fruits as $key => $value) {
+      echo $key.":".$value."\n";
+    }
+    //使用ArrayIterator 遍历数组
+    $obj = new ArrayObject($fruits);
+    $it = $obj->getIterator();//获取迭代器
+    echo "use ArrayIterator in foreach \n";
+    foreach ($it as $key => $value) {
+      echo $key.":".$value."\n";
+    }
+    echo "use ArrayIterator in while \n";
+    $it->rewind();//ccurretn前需要rewind
+    while ($it->valid()) {
+      echo $it->key().":".$obj->current();
+      $it->next();
+    }
+    //跳过某些元素进行打印
+      echo "use seek befor while \n";
+    $it->rewind();
+    if($it->valid()){
+      $it->seek(1);
+      while ($it->valid()) {
+        echo $it->key().":".$obj->current();
+        $it->next();
+      }
+    }
+    //实现排序
+    echo "use ksort \n";
+    $it->ksort();//对key字典序排序
+    foreach ($it as $key => $value) {
+      echo $key.":".$value."\n";
+    }
+    echo "use asort \n";
+    $it->ksort();//对value字典序排序
+    foreach ($it as $key => $value) {
+      echo $key.":".$value."\n";
+    }
+?>
+
+```
+##常用的迭代器 AppendIterator
+* AppendIterator能陆续遍历几个迭代器
+	* 按顺序迭代访问几个不同的迭代器。 例如，希望在一些循环中迭代访问两个或多个组合。
+
+```php
+<?php
+  $array_a = new ArrayIterator(array("a","b","c","d"));
+  $array_b = new ArrayIterator(array("e","f","g","h"));
+  $it = new AppendIterator();
+  $it->append($array_a);//通过append方法把迭代器对象添加到AppendIterator对象中
+  $it->append($array_b);
+  foreach ($it as $key => $value) {
+    echo $value."\n";
+  }
+?>
+
+```
+##常用的迭代器 MultipleIterator
+* MultipleIterator用于把多个Iterator里面的数据组合为一个整体来访问
+
+```php
+<?php
+  $idIter = new ArrayIterator(array("01","02","03"));
+  $nameIter = new ArrayIterator(array("张三","李四","王五"));
+  $ageIter = new ArrayIterator( array("22","23","24"));
+  $mit = new MultipleIterator(MultipleIterator::MIT_KEYS_ASSOC);//知明当你拼凑起来过后Key也是一个Array
+  $mit->attachIterator($idIter,"ID");
+  $mit->attachIterator($nameIter,"NAME");
+  $mit->attachIterator($ageIter,"AGE");
+  foreach ($mit as  $value) {
+    print_r($value);
+  }
+?>
+
+```
+##常用的迭代器 FilesystemIterator
+* FilesystemIterator能遍历文件系统
+```php
+<?php
+    date_default_timezone_set("PRC");
+    $it = new FilesystemIterator(".");
+    foreach ($it as  $finfo) {
+      printf("%s\t%s\t%8s\t%s\n",
+      date("Y-m-d H:i:s",$finfo->getMTime()),
+      $finfo->isDir()?"<DIR>":"",
+      number_format($finfo->getSize()),
+      $finfo->getFileName()
+    );
+    // echo $finfo->isDir()?"<DIR>":"",
+      // echo date("Y-m-d H:i:s",$finfo->getMTime())."\n";
+    }
+
+?>
+
+```
+
+#SPL基础接口
+
+##Countable
+* 继承了该接口的类可以直接调用count（）得到元素个数。
+```php
+<?php
+    
+    date_default_timezone_set("PRC");
+    $array = array(
+      array('name' => '张三','id'=>'5'),
+      array('name' => '李四','id'=>'6'),
+      array('name' => '王五','id'=>'7')
+    );
+    echo count($array)."\n";
+    echo count($array[1])."\n";
+?>
+
+```
+```php
+<?php
+  class CountMe implements Countable{ //实现Countable接口，
+    protected $_myCount=3;
+    public function count(){
+      return $this->_myCount;
+    }
+  }
+  $obj = new CountMe();
+  echo count($obj);//实现了Countable接口就能通过cout函数直接调用到之前定义好的Count方法
+ ?>
+
+```
+##OuterIterator
+* 如果想对迭代器进行一定的处理之后再返回，可以用这个接口
+* 继承自IteratorIterator这个类
+```php
+<?php
+    date_default_timezone_set("PRC");
+    $array = array("value1","value2","value3","value4");
+    print_r($array);
+    $outerObj = new OuterImpl( new ArrayIterator($array));
+    foreach ($outerObj as $key => $value) {
+      # code...
+      echo "++".$key."-".$value."\n";
+    }
+    class OuterImpl extends IteratorIterator{
+      public function current(){
+        return parent::current()."_tail";
+      }
+      public function key(){
+        return "pre_".parent::key();
+      }
+    }
+
+ ?>
+
+```
+##RecursiveTterator
+* 可以对多次结构的迭代器进行迭代，比如遍历一棵树
+* 所有具有层次结构特点的数据都可以用这个接口遍历
+	* 如文件夹
+* 关键方法
+	* hasChildren :用于判断当前节点是否存在子节点
+	* getChileren :用于得到当前节点子节点的迭代器
+* SPL中实现该接口的类
+	* RecursiveArrayIterator，RecursiveCachingIterator等以 Recursive开头的类都能进行多层次结构化的遍历
+##SeekableIterator
+* 可以通过seek方法定位到集合里面的某个元素
+* seek方法的参数是元素的位置，从0开始
+
+#SPL基础函数的使用
+
+##Autoload
+* 为了初始化PHP中的类对象，需要通过一定的方法寻找到类的定义。通常情况下，类会定义在一个单独的文件中。
+* Autoload就是PHP找到这些文件的方法。
+
+```php libs/test.class.php
+<?php
+  /**
+   *
+   */
+  class test
+  {
+
+    function __construct()
+    {
+      echo "Loading Class Libs/test.class.php\n";
+    }
+  }
+
+?>
+
+```
+```php libs/test.php
+<?php
+  class Test{
+    public function __construct(){
+      echo "Loading Class Libs/test.php\n";
+    }
+  }
+ ?>
+
+```
+```php Autoload01.php
+<?php
+  spl_autoload_extensions(".class.php,.php");//设置autoload寻找php定义的类文件的扩展名，多个扩展名用逗号分开,前面的扩招名优先匹配
+  set_include_path(get_include_path().PATH_SEPARATOR."libs/");//设置autoload寻找php定义的类文件的目录，多个目录用PATH_SEPARATOR分隔
+  spl_autoload_register();//提示PHP使用autoload机制查找类定义
+  new test();
+?>
+
+```
+```php Autoload02.php
+<?php
+  function __autoload($class_name){//定义__autoload函数，可以不调用spl_autoload_register函数的情况下完成类的装载
+    echo "__autoload class:".$class_name."\n";
+    require_once("libs/".$class_name.".php");//装载类
+  }
+  function classLoader($class_name){//定义一个替换__autoload函数的类文件装载函数
+    echo "classLoader() load class:".$class_name."\n";
+      require_once("libs/".$class_name.".php");//装载类
+  }
+  spl_autoload_register("classLoader");//传入定义好的装载类的函数的名称替换__autoload函数
+  new test();
+ ?>
+
+```
+```php Autoload03.php
+<?php
+function classLoader($class_name){//定义一个替换__autoload函数的类文件装载函数
+  echo "classLoader() load class:".$class_name."\n";
+    set_include_path("lib/");
+    spl_autoload($class_name);
+}
+spl_autoload_register("classLoader");//传入定义好的装载类的函数的名称替换__autoload函数
+new test();
+?>
+
+```
+#SPL其他函数
+
+* 迭代器相关
+	* iterator_apply :为迭代器中的每个元素调用一个用户自定义函数
+	* iterator_count ：计算迭代器元素个数
+	* iterator_to_array ：将迭代器的元素拷贝到数组
+
+* 类信息相关函数
+	* class_implements 返回指定类实现的所有接口
+		* 可以用instanceof判断某个对象时候实现某个接口或者某个类的实例
+	* class_parents 返回指定类的父类 
+		* 如果继承了多次，会把所有父类都打印出来
+
+
+#文件处理类库
+* SPLFileInfo 用于获得文件的基本信息，比如修改时间，大小，目录等
+* SplFileObject用于操作文件的内容，比如读写
+
+```php
+<?php
+  $file = new SplFileInfo("temp.txt");
+  echo "File is cerated at ".date("Y-m-d H:i:s",$file->getCTime())."\n";
+  echo "File is modified at ".date("Y-m-d H:i:s",$file->getMTime())."\n";
+  echo "File is size is".$file->getSize()."\n";
+  //读取文件里面的内容
+  $fileObj = $file->openFile("r");
+  while ($fileObj->valid()) {
+    echo $fileObj->fgets();//获取文件里慢的一行数据
+  }
+  $fileObj = NULL;
+  $file = NULL;
+?>
+
+```

@@ -6,6 +6,7 @@ comments: true
 categories: [Git,Octopress]
 ---
 #GIT+Octopress搭建个人博客
+<!--more-->
 >新博客的第一篇博客
 
 

@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Hllo"
+title: "Hello"
 date: 2016-04-18 15:18:17 +0800
 comments: true
-categories: [PHP,Html]
+categories: 
 ---
 # Hello World！
 ##So Nice To Meet You！

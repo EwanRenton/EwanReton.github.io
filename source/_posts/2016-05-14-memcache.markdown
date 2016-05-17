@@ -1,0 +1,141 @@
+---
+layout: post
+title: "PHP-Memcache"
+date: 2016-05-14 20:08:26 +0800
+comments: true
+categories: [PHP]
+---
+#什么是Memcache
+>Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中，所以这将会加速查询速度。
+<!--more-->
+#Memcache使用场景
+* 非持久化存储：对数据存储要求不高
+* 分布式存储：不适合单机（对内存消耗很大）
+* ke/value存储：格式简单，不支持List，Array数据格式
+#Memcache服务端的安装
+* 编译安装 Libevent Memcache
+* 依赖管理工具 yum apt-get
+* Memcache 和Memcached 
+	* Memcached 是Memcache的升级版本 推荐使用
+```
+$sudo apt-get install memcached
+```
+
+安装完Memcache服务端以后，我们需要启动该服务：
+
+```
+memcached -d -m 128 -p 11211 -u root
+```
+使用
+```
+ps -ef |grep memcach
+```查看是否启动
+这里需要说明一下memcached服务的启动参数：
+
+*	-p 监听的端口
+* -l 连接的IP地址, 默认是本机
+* -d start 启动memcached服务
+	* -d restart 重起memcached服务
+	* -d stop|shutdown 关闭正在运行的memcached服务
+	* -d install 安装memcached服务
+	* -d uninstall 卸载memcached服务
+* -u 以的身份运行 (仅在以root运行的时候有效)
+* -m 最大内存使用，单位MB。默认64MB
+* -M 内存耗尽时返回错误，而不是删除项
+* -c 最大同时连接数，默认是1024
+* -f 块大小增长因子，默认是1.25-n 最小分配空间，key+value+flags默认是48
+* -h 显示帮助
+#Memcache客户端的安装
+* 安装Libmemcached
+* 为PHP安装memcached扩展
+```
+$sudo apt-get install php5-memcache
+```
+安装完以后我们需要在php.ini里进行简单的配置,打开/etc/php5/apache2/php.ini文件在末尾添加如下内容：
+```php
+[Memcache]
+
+; 一个高性能的分布式的内存对象缓存系统，通过在内存里维护一个统一的巨大的hash表，
+; 它能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。
+
+
+
+; 是否在遇到错误时透明地向其他服务器进行故障转移。
+memcache.allow_failover = On
+
+; 接受和发送数据时最多尝试多少个服务器，只在打开memcache.allow_failover时有效。memcache.max_failover_attempts = 20
+
+; 数据将按照此值设定的块大小进行转移。此值越小所需的额外网络传输越多。
+; 如果发现无法解释的速度降低，可以尝试将此值增加到32768。
+memcache.chunk_size = 8192
+
+; 连接到memcached服务器时使用的默认TCP端口。
+memcache.default_port = 11211
+
+; 控制将key映射到server的策略。默认值”standard”表示使用先前版本的老hash策略。
+; 设为”consistent”可以允许在连接池中添加/删除服务器时不必重新计算key与server之间的映射关系。
+;memcache.hash_strategy = “standard”; 控制将key映射到server的散列函数。默认值”crc32″使用CRC32算法，而”fnv”则表示使用FNV-1a算法。
+; FNV-1a比CRC32速度稍低，但是散列效果更好。
+;memcache.hash_function = “crc32″
+```
+
+保存```php.ini```,执行```service apache2 restart```重启Apache。使用``` php -m |grep memchched```查看是否安装成功
+#Memcached 常见操作
+```php
+<?php
+$m = new Memcached();
+$array=array(
+  array('127.0.0.1',11211),
+
+);
+$m->addServers($array); //添加服务器 添加多条为addServers 一条为 addServer（“127.0.0.1”，11211）；
+// // echo "11";
+// $info=$m->getStats();
+// print_r($info);
+//数据类操作
+//add
+$m->add("mkey","mvalue",600);//key value time
+$m->add("mkey","mvalue2",600);//两次赋值不会改变它的值
+$m->replace("mkey","mvalue3",600);//替换
+echo $m->get("mkey");
+$m->set("mkey","mvalue",600);//常用，如果不存在mkey则创建，如果存在则覆盖
+$m->delete("mkey");//删除
+$m->flush();//清空memcache中的所有缓存
+$m->set("num",5,0);
+$m->increment("num",5);//每次刷新num+5
+$m->decrement("num",5);//每次刷新num-5
+?>
+```
+```php
+<?php
+  $m = new Memcached();
+  $array=array(
+    array("127.0.0.1",11211),
+  );
+  $m->addServers($array);
+  $data=array(
+    "key" => "value",
+    "key2" =>"value2",
+
+  );
+  $m->setMulti($data,0); //一次设置多个值
+ $result=  $m->getMulti(array("key","key2"));//一次获取多个值
+ print_r($result);
+ $m->deleteMulti(array("key","key2"));//一次删除多个值
+ $m->getResultCode();//获取上次操作返回值
+ $m->getResultMessage();//获取上次操作的信息
+?>
+```
+[官方说明文档](http://php.net/manual/zh/book.memcached.php)
+#项目中使用Memcached
+
+* 即时生成缓存　
+	* 类似于新闻详情页，第一个人来了生成缓存，第二个人再来直接读缓存
+* 提前生成缓存
+	* 适合高访问量
+* 永久缓存
+	* 关于我们 这种基本不变的网页
+
+#注意事项
+* 不要在单机模式中使用Memcached
+* 不要在Memcached保存重要数据。掉电会丢失。

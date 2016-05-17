@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "Linux-chang-yong-min-ling"
+title: "linux常用命令"
 date: 2016-04-26 18:55:40 +0800
 comments: true
 categories: [Linux]
 ---
 >Linux 命令总结
-
+<!--more-->
 
 #一、常用目录作用
 * / 根目录

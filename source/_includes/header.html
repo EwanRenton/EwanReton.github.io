@@ -3,9 +3,11 @@
 	<img src="http://www.gravatar.com/avatar/{{ site.email_md5 }}?s=160" alt="Profile Picture" style="width: 160px;" />
 	{% else %}
 	<script src="{{ root_url }}/javascripts/md5.js"></script>
+	<script type="text/javascript" src="{{ root_url }}/prettify/prettify.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("{{ site.email | downcase }}") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
 		});
 	</script>
 	{% endif %}
@@ -18,6 +20,7 @@
 	{% endif %}
 </div>
 <nav id="main-nav">{% include navigation.html %}</nav>
+<nav id="main-nav">{% include asides/category_list.html %}</nav> 
 <nav id="sub-nav">
 	<div class="social">
 		{% if site.email %}

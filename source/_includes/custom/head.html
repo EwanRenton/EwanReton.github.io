@@ -1,3 +1,10 @@
-<!-- For Syntax Highlighting -->
-<script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-<link href="{{ root_url }}/stylesheets/tomorrow-night.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
