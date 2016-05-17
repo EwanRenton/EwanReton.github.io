@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-16T16:19:56+08:00</updated>
+  <updated>2016-05-17T00:01:38+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,136 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Nginx下ThinkPHP应用Url重写]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/16/nginx-url-rewrite/"/>
+    <updated>2016-05-16T23:36:12+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/16/nginx-url-rewrite</id>
+    <content type="html"><![CDATA[<blockquote><p>在调Nginx的虚拟主机时发现，我之前的TP改写的商城没放过来（之前挂载BAE上），把BAE上的项目移植过来过后发现，只能访问主页其他页面全部都报404错误</p></blockquote>
+
+<p>到处查资料过后发现，是因为nginx下ThinkPHP应用的url重写和Apache有点不一样。</p>
+
+<p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
+
+<pre class="prettyprint">
+ location / { // …..省略部分代码
+   if (!-e $request_filename) {
+   rewrite  ^(.*)$  /index.php?s=$1  last;
+   break;
+    }
+ }
+</pre>
+
+
+<p>但是好像对我并不适用，在网上找到一篇博文成功解决了问题。</p>
+
+<p><a href="http://blog.jjonline.cn/linux/159.html">原文链接</a></p>
+
+<p>按照博文的方法在我的虚拟主机配置中（/etc/nginx/conf.d/shop.ewanreton.cn.conf）添加了如下代码：</p>
+
+<pre class="prettyprint">
+location / {
+ root /usr/share/nginx/html/shop;
+ index index.html index.htm index.php;
+ if (!-e $request_filename) {
+ rewrite ^/index.php(.*)$ /index.php?s=$1 last;
+ rewrite ^(.*)$ /index.php?s=$1 last;
+ break;
+ }
+}
+</pre>
+
+
+<p>这里我仅仅对我用ThinkPHP框架写的应用进行了配置，如果需要所有都配置的话，推荐直接写在Nginx的配置文件中。</p>
+
+<p>虽然解决了这个问题，但是对这个问题的核心还是没有搞太懂，以后深入学习过后再回来补充这篇文章。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Nginx虚拟主机配置]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/16/nginx-virtualhost/"/>
+    <updated>2016-05-16T23:36:00+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/16/nginx-virtualhost</id>
+    <content type="html"><![CDATA[<blockquote><p>今天闲下来决定把腾讯云服务器上的网站弄成虚拟主机。毕竟通过 /xx/xx访问也不成样子 0.0</p></blockquote>
+
+<h1>增加虚拟主机</h1>
+
+<ol>
+<li>进入 <code>/etc/nginx/conf.d</code> 目录, 创建虚拟主机配置文件 demo.neoease.com.conf ({域名}.conf) 这个目录每个人都是不同的，进到你的配置目录就好了</li>
+<li>打开配置文件, 添加服务如下:</li>
+</ol>
+
+
+<pre class="prettyprint">
+server {
+    listen       80;
+    server_name demo.neoease.com;
+    index index.html index.htm index.php;
+    root  /var/www/demo_neoease_com;
+ 
+    log_format demo.neoease.com '$remote_addr - $remote_user [$time_local] $request'
+    '$status $body_bytes_sent $http_referer '
+    '$http_user_agent $http_x_forwarded_for';
+    access_log  /var/log/demo.neoease.com.log demo.neoease.com;
+}
+</pre>
+
+
+<ol>
+<li>打开 Nginx 配置文件 /usr/local/nginx/conf/nginx.conf, 在 http 范围引入虚拟主机配置文件如下:</li>
+</ol>
+
+
+<pre class="prettyprint">
+include vhost/*.conf;
+这个一般来说都是有的。
+</pre>
+
+
+<p></p>
+
+<h1>让 Nginx 虚拟主机支持 PHP</h1>
+
+<p>在前面第 2 步的虚拟主机服务对应的目录加入对 PHP 的支持, 这里使用的是 FastCGI, 修改如下.</p>
+
+<pre class="prettyprint">
+server {
+        listen       80;
+        server_name class.ewanreton.cn;
+        index index.html index.htm index.php;
+        root  /usr/share/nginx/html/class;
+
+            location ~ \.php$ {
+        root           /usr/share/nginx/html/class;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+        log_format class.ewanreton.cn '$remote_addr - $remote_user [$time_local] $request'
+        '$status $body_bytes_sent $http_referer '
+        '$http_user_agent $http_x_forwarded_for';
+        access_log  /var/log/class.ewanreton.cn.log class.ewanreton.cn;
+}
+这个是我腾讯云服务器上的版本。中间配置PHP支持与原博文有所不一样。
+</pre>
+
+
+<p></p>
+
+<p>重启 Nginx 服务, 执行以下语句.</p>
+
+<pre class="prettyprint">
+service nginx restart
+</pre>
+
+
+<p><a href="http://www.neoease.com/nginx-virtual-host/">参考博客</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[QQ登录Demo]]></title>
@@ -6488,172 +6618,6 @@ mysql&gt;
 <li>lastlog 查看每个用户的最后登录信息/var/log/lastlog</li>
 </ul>
 </li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OAuth]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/25/oauth/"/>
-    <updated>2016-04-25T22:42:34+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/25/oauth</id>
-    <content type="html"><![CDATA[<blockquote><p>开放式授权OAuth -Open Authorization</p></blockquote>
-
-<h1>一、什么是OAuth</h1>
-
-<p>OAUTH协议为用户资源的授权提供了一个安全的、开放而又简易的标准。与以往的授权方式不同之处是OAUTH的授权不会使第三方触及到用户的帐号信息（如用户名与密码），即第三方无需使用用户的用户名与密码就可以申请获得该用户资源的授权，因此OAUTH是安全的。oAuth是Open Authorization的简写。</p>
-
-<!--more-->
-
-
-<h1>二、OAuth协议简介</h1>
-
-<ul>
-<li>OAuth 1.0 2007年年末 有漏洞</li>
-<li>OAuth 2.0 2010年年初</li>
-</ul>
-
-
-<h1>三、三个重要步骤</h1>
-
-<ol>
-<li><p>请求OAuth登录页面</p>
-
-<ul>
-<li>Request Token URL -未授权的令牌请求服务器 XX网请求QQ登录页面时使用的带有特定参数的URL</li>
-<li><a href="http://graph.qq.com/oauth/...?...&amp;client_id=*100490398&amp;...&amp;redirect_url=http://www.xxx.com/...">http://graph.qq.com/oauth/...?...&amp;client_id=*100490398&amp;...&amp;redirect_url=http://www.xxx.com/...</a></li>
-<li>client_id APPID</li>
-<li>client_secret APPKEY</li>
-</ul>
-</li>
-<li><p>用户使用QQ号登录并授权</p>
-
-<ul>
-<li>验证用户密码成功后重定向到指定的url，此时可以通过$_GET[&lsquo;code&rsquo;]来获取</li>
-</ul>
-</li>
-<li>返回登录结果
-
-<ul>
-<li>拿到加了密的code过后还需要请求 User Authorization URL -用户授权的令牌请求服务地址 用户QQ登录授权之后请求的一个带有特定参数的URL</li>
-<li>用来提高安全性。</li>
-<li>请求过后会得到一个响应数据，包含一些基本的账号信息。</li>
-<li>code有生命周期（一般为几秒钟）并且只能使用一次。</li>
-<li>请求成功过后可以拿到Access Token</li>
-</ul>
-</li>
-</ol>
-
-
-<h1>四、Access Token</h1>
-
-<p>Access Token -用户通过第三方应用访问OAuth接口的令牌</p>
-
-<ul>
-<li>在请求API时会动态生成URL 并且都离不开 Access Token</li>
-<li>Access Token具有较长生命周期（十天半个月）</li>
-<li>Access Token过期过后可以选择重新登录或者在请求API时使用need_refresh_token（各个平台不同）=true 来刷新Access Token</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[初识Nginx]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/25/nginx/"/>
-    <updated>2016-04-25T21:11:48+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/25/nginx</id>
-    <content type="html"><![CDATA[<blockquote><p>今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础</p></blockquote>
-
-<!--more-->
-
-
-<h1>一、常用的服务器软件</h1>
-
-<ul>
-<li>1 IIS：只能在Windows下运行性能不如Linux一类服务器</li>
-<li>2 Tomcat： 面向Java的重量级服务器</li>
-<li>3 Nginx：轻量级服务器，能支持较高的并发连接</li>
-<li>4 Apache：稳定，开源，跨平台，但是高并发支持较弱</li>
-</ul>
-
-
-<h1>二、Nginx的优缺点</h1>
-
-<ul>
-<li>优点：可以实现高并发，部署简单，内存消耗较少，成本低等</li>
-<li>缺点：rewrite功能不够强大，模块没有Apache多。</li>
-</ul>
-
-
-<h1>三、Nginx环境的搭建</h1>
-
-<ol>
-<li><p>Linux：</p>
-
-<ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载安装包</li>
-<li>tar -zxvf nginx-1.9.15.tar.gz 解压</li>
-<li>进入解压后的文件夹 ./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>cd /usr/local 在该文件下看到Nginx则安装成功</li>
-</ul>
-</li>
-<li><p>Windows：</p>
-
-<ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载Windows安装包</li>
-<li>解压即可</li>
-</ul>
-</li>
-<li><p>常见错误：</p>
-
-<ol>
-<li>C compiler not found
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install gcc gcc-c++ autoconf automake</li>
-</ul>
-</li>
-<li><p>requires the PCRE library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install pcre pcre-devel</li>
-</ul>
-</li>
-<li><p>requires the zlib library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install zlib zlib-devel</li>
-</ul>
-</li>
-</ol>
-</li>
-</ol>
-
-
-<h1>四、启动服务</h1>
-
-<ul>
-<li><p>Linux：</p>
-
-<ul>
-<li>/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</li>
-</ul>
-</li>
-<li><p>Windows:</p>
-
-<ul>
-<li>运行nginx.exe</li>
-</ul>
-
-
-<p>  打开浏览器访问Localhost，能访问则启动成功。</p></li>
 </ul>
 
 ]]></content>

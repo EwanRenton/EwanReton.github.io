@@ -9,8 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php QQ登录Demo 今天完成了一个QQ登录的小Deom 前置条件 一个QQ号
-一台公网通过域名可访问的web服务器 阅读全文&rarr; php PHP-Memcache 什么是Memcache Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。 &hellip;">
+	<meta name="description" content="nginx Nginx下ThinkPHP应用Url重写 在调Nginx的虚拟主机时发现，我之前的TP改写的商城没放过来（之前挂载BAE上），把BAE上的项目移植过来过后发现，只能访问主页其他页面全部都报404错误 到处查资料过后发现， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,7 +73,7 @@
     <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/linux/'>linux (4)</a></li>
 <li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
-<li class='category'><a href='/blog/categories/nginx/'>nginx (3)</a></li>
+<li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (2)</a></li>
 <li class='category'><a href='/blog/categories/php/'>php (9)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
@@ -119,6 +118,188 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-16T23:36:12+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/nginx/'>nginx</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/16/nginx-url-rewrite/" itemprop="url">Nginx下ThinkPHP应用Url重写</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>在调Nginx的虚拟主机时发现，我之前的TP改写的商城没放过来（之前挂载BAE上），把BAE上的项目移植过来过后发现，只能访问主页其他页面全部都报404错误</p></blockquote>
+
+<p>到处查资料过后发现，是因为nginx下ThinkPHP应用的url重写和Apache有点不一样。</p>
+
+<p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
+
+<pre class="prettyprint">
+ location / { // …..省略部分代码
+   if (!-e $request_filename) {
+   rewrite  ^(.*)$  /index.php?s=$1  last;
+   break;
+    }
+ }
+</pre>
+
+
+<p>但是好像对我并不适用，在网上找到一篇博文成功解决了问题。</p>
+
+<p><a href="http://blog.jjonline.cn/linux/159.html">原文链接</a></p>
+
+<p>按照博文的方法在我的虚拟主机配置中（/etc/nginx/conf.d/shop.ewanreton.cn.conf）添加了如下代码：</p>
+
+<pre class="prettyprint">
+location / {
+ root /usr/share/nginx/html/shop;
+ index index.html index.htm index.php;
+ if (!-e $request_filename) {
+ rewrite ^/index.php(.*)$ /index.php?s=$1 last;
+ rewrite ^(.*)$ /index.php?s=$1 last;
+ break;
+ }
+}
+</pre>
+
+
+<p>这里我仅仅对我用ThinkPHP框架写的应用进行了配置，如果需要所有都配置的话，推荐直接写在Nginx的配置文件中。</p>
+
+<p>虽然解决了这个问题，但是对这个问题的核心还是没有搞太懂，以后深入学习过后再回来补充这篇文章。</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-16T23:36:00+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/nginx/'>nginx</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/16/nginx-virtualhost/" itemprop="url">Nginx虚拟主机配置</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>今天闲下来决定把腾讯云服务器上的网站弄成虚拟主机。毕竟通过 /xx/xx访问也不成样子 0.0</p></blockquote>
+
+<h1>增加虚拟主机</h1>
+
+<ol>
+<li>进入 <code>/etc/nginx/conf.d</code> 目录, 创建虚拟主机配置文件 demo.neoease.com.conf ({域名}.conf) 这个目录每个人都是不同的，进到你的配置目录就好了</li>
+<li>打开配置文件, 添加服务如下:</li>
+</ol>
+
+
+<pre class="prettyprint">
+server {
+    listen       80;
+    server_name demo.neoease.com;
+    index index.html index.htm index.php;
+    root  /var/www/demo_neoease_com;
+ 
+    log_format demo.neoease.com '$remote_addr - $remote_user [$time_local] $request'
+    '$status $body_bytes_sent $http_referer '
+    '$http_user_agent $http_x_forwarded_for';
+    access_log  /var/log/demo.neoease.com.log demo.neoease.com;
+}
+</pre>
+
+
+<ol>
+<li>打开 Nginx 配置文件 /usr/local/nginx/conf/nginx.conf, 在 http 范围引入虚拟主机配置文件如下:</li>
+</ol>
+
+
+<pre class="prettyprint">
+include vhost/*.conf;
+这个一般来说都是有的。
+</pre>
+
+
+<p></p>
+
+<h1>让 Nginx 虚拟主机支持 PHP</h1>
+
+<p>在前面第 2 步的虚拟主机服务对应的目录加入对 PHP 的支持, 这里使用的是 FastCGI, 修改如下.</p>
+
+<pre class="prettyprint">
+server {
+        listen       80;
+        server_name class.ewanreton.cn;
+        index index.html index.htm index.php;
+        root  /usr/share/nginx/html/class;
+
+            location ~ \.php$ {
+        root           /usr/share/nginx/html/class;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+        log_format class.ewanreton.cn '$remote_addr - $remote_user [$time_local] $request'
+        '$status $body_bytes_sent $http_referer '
+        '$http_user_agent $http_x_forwarded_for';
+        access_log  /var/log/class.ewanreton.cn.log class.ewanreton.cn;
+}
+这个是我腾讯云服务器上的版本。中间配置PHP支持与原博文有所不一样。
+</pre>
+
+
+<p></p>
+
+<p>重启 Nginx 服务, 执行以下语句.</p>
+
+<pre class="prettyprint">
+service nginx restart
+</pre>
+
+
+<p><a href="http://www.neoease.com/nginx-virtual-host/">参考博客</a></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -407,70 +588,6 @@
 
 		
 		<a href="/blog/2016/05/04/php-xing-neng-you-hua/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-04-30T20:57:43+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/30/config-themes-octpress/" itemprop="url">Octpress自定义配置和主题安装</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>Octpress 基本配置</p></blockquote>
-
-
-		
-		<a href="/blog/2016/04/30/config-themes-octpress/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-04-30T00:57:01+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/04/30/octopress-code-highlight/" itemprop="url">Octopress代码高亮问题（Windows10）</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>首先我要用祭出一段代码。。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/04/30/octopress-code-highlight/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>
