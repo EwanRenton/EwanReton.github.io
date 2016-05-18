@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nginx | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T14:58:06+08:00</updated>
+  <updated>2016-05-18T15:03:06+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -21,6 +21,9 @@
     <content type="html"><![CDATA[<blockquote><p>在调Nginx的虚拟主机时发现，我之前的TP改写的商城没放过来（之前挂载BAE上），把BAE上的项目移植过来过后发现，只能访问主页其他页面全部都报404错误</p></blockquote>
 
 <p>到处查资料过后发现，是因为nginx下ThinkPHP应用的url重写和Apache有点不一样。</p>
+
+<!--more-->
+
 
 <p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
 

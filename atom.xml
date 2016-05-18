@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T14:58:06+08:00</updated>
+  <updated>2016-05-18T15:03:06+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -951,6 +951,9 @@ which php
     <content type="html"><![CDATA[<blockquote><p>在调Nginx的虚拟主机时发现，我之前的TP改写的商城没放过来（之前挂载BAE上），把BAE上的项目移植过来过后发现，只能访问主页其他页面全部都报404错误</p></blockquote>
 
 <p>到处查资料过后发现，是因为nginx下ThinkPHP应用的url重写和Apache有点不一样。</p>
+
+<!--more-->
+
 
 <p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
 
@@ -5008,34 +5011,35 @@ main(){
 
 <blockquote><p>设置显示行号</p></blockquote>
 
-<p><pre class="prettyprint linenums">
-1、删掉prettify里的这两个样式。<br/>
-li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}</p>
+<pre class="prettyprint linenums">
+1、删掉prettify里的这两个样式。  
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}  
+  
+2、替换以下内容，已经存在的替换，不存在的新增。  
+pre.prettyprint {  
+ padding: 8px;  
+ background-color: #f7f7f9;  
+ border: 1px solid #e1e1e8;  
+}  
+.prettyprint.linenums {  
+ -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
+ -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
+ box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
+}  
+  
+/* Specify class=linenums on a pre to get line numbering */  
+ol.linenums {  
+ margin: 0 0 0 33px; /* IE indents via margin-left */  
+}   
+ol.linenums li {  
+ padding-left: 12px;  
+ color: #bebec5;  
+ line-height: 18px;  
+ text-shadow: 0 1px 0 #fff;  
+}  
+3、在pre标签里面一定不能有br/标签,要换行直接回车.  
+</pre>
 
-<p>2、替换以下内容，已经存在的替换，不存在的新增。<br/>
-pre.prettyprint {<br/>
- padding: 8px;<br/>
- background-color: #f7f7f9;<br/>
- border: 1px solid #e1e1e8;<br/>
-}<br/>
-.prettyprint.linenums {<br/>
- -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
- -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
- box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
-}</p>
-
-<p>/<em> Specify class=linenums on a pre to get line numbering </em>/<br/>
-ol.linenums {<br/>
- margin: 0 0 0 33px; /<em> IE indents via margin-left </em>/<br/>
-} <br/>
-ol.linenums li {<br/>
- padding-left: 12px;<br/>
- color: #bebec5;<br/>
- line-height: 18px;<br/>
- text-shadow: 0 1px 0 #fff;<br/>
-}<br/>
-3、在<pre>标签里面一定不能有<br/>标签,要换行直接回车.<br/>
-</pre></p>
 
 <hr />
 
@@ -5043,23 +5047,35 @@ ol.linenums li {<br/>
 
 <p>这种方法在使用过程中，当是PHP代码时：如</p>
 
-<pre><code>&lt;pre class="prettyprint php"&gt;
-    &lt;?php
-        echo "test!";
-    ?&gt;
-&lt;/pre&gt;
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;test!&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</p>
 
 <p>改成如下格式就能正常实现代码高亮效果。</p>
 
-<pre><code>    &lt;pre class="prettyprint php"&gt;
-        //去掉了PHP的开始和结束符
-        echo "test!";
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'>  <span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint php&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="c1">//去掉了PHP的开始和结束符</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;test!&quot;</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    &lt;/pre&gt;
-</code></pre>
 
 <p>我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。</p>
 ]]></content>

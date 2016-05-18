@@ -781,43 +781,9 @@ curl &hellip;">
 
 <p>到处查资料过后发现，是因为nginx下ThinkPHP应用的url重写和Apache有点不一样。</p>
 
-<p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
-
-<pre class="prettyprint linenums">
- location / { // …..省略部分代码
-   if (!-e $request_filename) {
-   rewrite  ^(.*)$  /index.php?s=$1  last;
-   break;
-    }
- }
-</pre>
-
-
-<p>但是好像对我并不适用，在网上找到一篇博文成功解决了问题。</p>
-
-<p><a href="http://blog.jjonline.cn/linux/159.html">原文链接</a></p>
-
-<p>按照博文的方法在我的虚拟主机配置中（/etc/nginx/conf.d/shop.ewanreton.cn.conf）添加了如下代码：</p>
-
-<pre class="prettyprint linenums">
-location / {
- root /usr/share/nginx/html/shop;
- index index.html index.htm index.php;
- if (!-e $request_filename) {
- rewrite ^/index.php(.*)$ /index.php?s=$1 last;
- rewrite ^(.*)$ /index.php?s=$1 last;
- break;
- }
-}
-</pre>
-
-
-<p>这里我仅仅对我用ThinkPHP框架写的应用进行了配置，如果需要所有都配置的话，推荐直接写在Nginx的配置文件中。</p>
-
-<p>虽然解决了这个问题，但是对这个问题的核心还是没有搞太懂，以后深入学习过后再回来补充这篇文章。</p>
 
 		
-		
+		<a href="/blog/2016/05/16/nginx-url-rewrite/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

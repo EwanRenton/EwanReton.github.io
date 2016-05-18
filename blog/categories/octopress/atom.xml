@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T14:58:06+08:00</updated>
+  <updated>2016-05-18T15:03:06+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -209,130 +209,208 @@ main(){
 
 <blockquote><p>设置显示行号</p></blockquote>
 
-<p><pre class="prettyprint linenums">
-1、删掉prettify里的这两个样式。<br/>
-li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}</p>
+<pre class="prettyprint linenums">
+1、删掉prettify里的这两个样式。  
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}  
+  
+2、替换以下内容，已经存在的替换，不存在的新增。  
+pre.prettyprint {  
+ padding: 8px;  
+ background-color: #f7f7f9;  
+ border: 1px solid #e1e1e8;  
+}  
+.prettyprint.linenums {  
+ -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
+ -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
+ box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
+}  
+  
+/* Specify class=linenums on a pre to get line numbering */  
+ol.linenums {  
+ margin: 0 0 0 33px; /* IE indents via margin-left */  
+}   
+ol.linenums li {  
+ padding-left: 12px;  
+ color: #bebec5;  
+ line-height: 18px;  
+ text-shadow: 0 1px 0 #fff;  
+}  
+3、在pre标签里面一定不能有br/标签,要换行直接回车.  
+</pre>
 
-<p>2、替换以下内容，已经存在的替换，不存在的新增。<br/>
-pre.prettyprint {<br/>
- padding: 8px;<br/>
- background-color: #f7f7f9;<br/>
- border: 1px solid #e1e1e8;<br/>
-}<br/>
-.prettyprint.linenums {<br/>
- -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
- -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
- box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
-}</p>
-
-<p>/<em> Specify class=linenums on a pre to get line numbering </em>/<br/>
-ol.linenums {<br/>
- margin: 0 0 0 33px; /<em> IE indents via margin-left </em>/<br/>
-} <br/>
-ol.linenums li {<br/>
- padding-left: 12px;<br/>
- color: #bebec5;<br/>
- line-height: 18px;<br/>
- text-shadow: 0 1px 0 #fff;<br/>
-}<br/>
-3、在<pre>标签里面一定不能有<br/>标签,要换行直接回车.<br/>
-</pre></p>
 
 <hr />
 
 <h1>但是</h1>
 
-<p>这种方法在使用过程中，当是PHP代码时：如</p>
-
-<pre><code>&lt;pre class="prettyprint php"&gt;
-    &lt;?php
-        echo "test!";
-    ?&gt;
-&lt;/pre&gt;
-</code></pre>
-
-<p>这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</p>
-
-<p>改成如下格式就能正常实现代码高亮效果。</p>
-
-<pre><code>    &lt;pre class="prettyprint php"&gt;
-        //去掉了PHP的开始和结束符
-        echo "test!";
-
+<p>这种方法在使用过程中，当是PHP代码时：如
+<code>php
+    &lt;pre class="prettyprint linenums"&gt;
+        &lt;?php
+            echo "test!";
+        ?&gt;
     &lt;/pre&gt;
-</code></pre>
+</code>
+这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</p>
 
-<p>我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[解决 Octopress 警告 Layout Nil Requested]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested/"/>
-    <updated>2016-04-29T23:08:07+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested</id>
-    <content type="html"><![CDATA[<blockquote><p>给Octopress换了主题过后重新generate会出警告Layout Nil Requested。</p></blockquote>
-
-<!--more-->
-
-
-<p>主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null 即可</p>
-
-<p>Fix this error by replacing from file:</p>
-
-<blockquote><p>layout: nil</p></blockquote>
-
-<p>with:</p>
-
-<blockquote><p>layout: null</p></blockquote>
-
-<p>in files:</p>
-
-<ul>
-<li>source/atom.xml</li>
-<li>source/_includes/custom/category_feed.xml</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[GIT+Octopress搭建个人博客]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/"/>
-    <updated>2016-04-18T23:13:10+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke</id>
-    <content type="html"><![CDATA[<h1>GIT+Octopress搭建个人博客</h1>
-
-<!--more-->
-
-
-<blockquote><p>新博客的第一篇博客</p></blockquote>
-
-<p>很久以前就想自己搭个博客，今天终于开工了。在网上找了很多的教程和各种各样的框架，wordpress，jekyll等，最后选择了Octopress+Git搭建。</p>
-
-<h2>一、环境搭建</h2>
-
-<h3><a href="https://git-scm.com/download/">GIT</a>:版本管理工具，将代码托管到GIT。</h3>
-
-<h3><a href="http://rubyinstaller.org/">Ruby+DevKit</a> ：生成静态页面</h3>
-
-<h3><a href="http://jingyan.baidu.com/article/ca41422fe209271eaf99ed7c.html">MarkDownPad</a>：Windows下MarkDown语法编辑器</h3>
-
-<h4>安装与配置</h4>
-
-<pre><code>GIT和Markdown安装直接点击下一步就可以了。
-在安装好git过后，桌面或其他位置点击右键GIT Bash 来配置Github账号（需要先注册GITHUB账号）
-</code></pre>
-
-<hr />
-
-<p>1.1配置GITHUB</p>
-
-<pre><code>```
-git config --global user_name "XXXX"//你的github账号
-git config --global user_email "XXXX"//你的邮箱
-ssh-keygen -t rsa -C "YOUR_EMAIL"
-```
+<p>改成如下格式就能正常实现代码高亮效果。
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'>    <span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint php&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>        <span class="c1">//去掉了PHP的开始和结束符</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">test</span><span class="o">!&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>    <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">pre</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="sb">```</span>
+</span><span class='line'><span class="sb">我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &amp;lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。&lt;/p&gt;</span>
+</span><span class='line'><span class="sb">]]&gt;&lt;/content&gt;</span>
+</span><span class='line'><span class="sb">  &lt;/entry&gt;</span>
+</span><span class='line'><span class="sb">  </span>
+</span><span class='line'><span class="sb">  &lt;entry&gt;</span>
+</span><span class='line'><span class="sb">&lt;title type=&quot;html&quot;&gt;&lt;![CDATA[解决 Octopress 警告 Layout Nil Requested]]&gt;&lt;/title&gt;</span>
+</span><span class='line'><span class="sb">&lt;link href=&quot;http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested/&quot;/&gt;</span>
+</span><span class='line'><span class="sb">&lt;updated&gt;2016-04-29T23:08:07+08:00&lt;/updated&gt;</span>
+</span><span class='line'><span class="sb">&lt;id&gt;http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested&lt;/id&gt;</span>
+</span><span class='line'><span class="sb">&lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;blockquote&gt;&lt;p&gt;给Octopress换了主题过后重新generate会出警告Layout Nil Requested。&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;!--more--&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null 即可&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;Fix this error by replacing from file:&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;blockquote&gt;&lt;p&gt;layout: nil&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;with:&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;blockquote&gt;&lt;p&gt;layout: null&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;in files:&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;source/atom.xml&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;source/_includes/custom/category_feed.xml&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">]]&gt;&lt;/content&gt;</span>
+</span><span class='line'><span class="sb">  &lt;/entry&gt;</span>
+</span><span class='line'><span class="sb">  </span>
+</span><span class='line'><span class="sb">  &lt;entry&gt;</span>
+</span><span class='line'><span class="sb">&lt;title type=&quot;html&quot;&gt;&lt;![CDATA[GIT+Octopress搭建个人博客]]&gt;&lt;/title&gt;</span>
+</span><span class='line'><span class="sb">&lt;link href=&quot;http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/&quot;/&gt;</span>
+</span><span class='line'><span class="sb">&lt;updated&gt;2016-04-18T23:13:10+08:00&lt;/updated&gt;</span>
+</span><span class='line'><span class="sb">&lt;id&gt;http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke&lt;/id&gt;</span>
+</span><span class='line'><span class="sb">&lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;h1&gt;GIT+Octopress搭建个人博客&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;!--more--&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;blockquote&gt;&lt;p&gt;新博客的第一篇博客&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;很久以前就想自己搭个博客，今天终于开工了。在网上找了很多的教程和各种各样的框架，wordpress，jekyll等，最后选择了Octopress+Git搭建。&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h2&gt;一、环境搭建&lt;/h2&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h3&gt;&lt;a href=&quot;https://git-scm.com/download/&quot;&gt;GIT&lt;/a&gt;:版本管理工具，将代码托管到GIT。&lt;/h3&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h3&gt;&lt;a href=&quot;http://rubyinstaller.org/&quot;&gt;Ruby+DevKit&lt;/a&gt; ：生成静态页面&lt;/h3&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h3&gt;&lt;a href=&quot;http://jingyan.baidu.com/article/ca41422fe209271eaf99ed7c.html&quot;&gt;MarkDownPad&lt;/a&gt;：Windows下MarkDown语法编辑器&lt;/h3&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h4&gt;安装与配置&lt;/h4&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code&gt;GIT和Markdown安装直接点击下一步就可以了。</span>
+</span><span class='line'><span class="sb">在安装好git过后，桌面或其他位置点击右键GIT Bash 来配置Github账号（需要先注册GITHUB账号）</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;hr /&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;1.1配置GITHUB&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code&gt;```</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user_name</span> <span class="s2">&quot;XXXX&quot;</span><span class="c1">//你的github账号</span>
+</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user_email</span> <span class="s2">&quot;XXXX&quot;</span><span class="c1">//你的邮箱</span>
+</span><span class='line'><span class="nx">ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">rsa</span> <span class="o">-</span><span class="nx">C</span> <span class="s2">&quot;YOUR_EMAIL&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 </code></pre>
 
 <p>下面回车默认为空即可</p>
