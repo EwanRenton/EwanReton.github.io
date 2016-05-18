@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T14:55:10+08:00</updated>
+  <updated>2016-05-18T14:58:06+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[php-get-remote-file]]></title>
+    <title type="html"><![CDATA[PHP获取远程文件的几种方式]]></title>
     <link href="http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file/"/>
     <updated>2016-05-18T14:18:15+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file</id>
@@ -218,6 +218,83 @@
 ?&gt;
 </code></pre>
 
+<p>上面的文件引用的common.php
+`&ldquo;php common.php
+&lt;?php
+header(&ldquo;Content-type:text/html;charset:utf-8&rdquo;);
+/<em>获取当前访问用户IP</em>/
+function GetIP(){
+    if (getenv(&ldquo;HTTP_CLIENT_IP&rdquo;) &amp;&amp; strcasecmp(getenv(&ldquo;HTTP_CLIENT_IP&rdquo;), &ldquo;unknown&rdquo;)){
+        $ip = getenv(&ldquo;HTTP_CLIENT_IP&rdquo;);
+        }
+    else if (getenv(&ldquo;HTTP_X_FORWARDED_FOR&rdquo;) &amp;&amp; strcasecmp(getenv(&ldquo;HTTP_X_FORWARDED_FOR&rdquo;), &ldquo;unknown&rdquo;)) {
+        $ip = getenv(&ldquo;HTTP_X_FORWARDED_FOR&rdquo;);
+        }
+    else if (getenv(&ldquo;REMOTE_ADDR&rdquo;) &amp;&amp; strcasecmp(getenv(&ldquo;REMOTE_ADDR&rdquo;), &ldquo;unknown&rdquo;)) {
+        $ip = getenv(&ldquo;REMOTE_ADDR&rdquo;);
+        }
+    else if (isset($<em>SERVER[&lsquo;REMOTE_ADDR&rsquo;]) &amp;&amp; $</em>SERVER[&lsquo;REMOTE_ADDR&rsquo;] &amp;&amp; strcasecmp($<em>SERVER[&lsquo;REMOTE_ADDR&rsquo;], &ldquo;unknown&rdquo;)) {
+        $ip = $</em>SERVER[&lsquo;REMOTE_ADDR&rsquo;];
+        }
+    else {
+    $ip = &ldquo;unknown&rdquo;;
+        }
+    return($ip);
+}
+ /<em>格式化header</em>/
+function parseHeaders( $headers ){
+    $head = array();
+    foreach( $headers as $k=>$v ){
+        $t = explode( &lsquo;:&rsquo;, $v, 2 );
+        if( isset( $t[1] ) ){
+            $head[ trim($t[0]) ] = trim( $t[1] );
+            }
+        else{
+            $head[] = $v;
+            if( preg_match( &ldquo;#HTTP/[0-9.]+\s+([0-9]+)#&rdquo;,$v, $out ) ){
+                $head[&lsquo;reponse_code&rsquo;] = intval($out[1]);
+                }
+            }
+        }
+    return $head;
+}
+/<em>数组格式化输出header</em>/
+function dumpout($vars, $label = &rdquo;, $return = false) {
+    $vars=parseHeaders($vars);
+    if (ini_get(&lsquo;html_errors&rsquo;)) {
+        $content = &ldquo;<pre>\n&rdquo;;
+        if ($label != &lsquo;&rsquo;) {
+            $content .= &ldquo;<strong>{$label} :</strong>\n&rdquo;;
+        }
+        $content .= htmlspecialchars(print_r($vars, true));
+        $content .= &ldquo;\n</pre>\n&rdquo;;
+    } else {
+        $content = $label . &ldquo; :\n&rdquo; . print_r($vars, true);
+    }
+    if ($return) { return $content; }
+    echo $content;
+    return null;
+}
+/<em>数组格式化输出arr</em>/
+function dumpArr($vars, $label = &lsquo;&rsquo;, $return = false) {
+    if (ini_get(&lsquo;html_errors&rsquo;)) {
+        $content = &ldquo;<pre>\n&rdquo;;
+        if ($label != &lsquo;&rsquo;) {
+            $content .= &ldquo;<strong>{$label} :</strong>\n&rdquo;;
+        }
+        $content .= htmlspecialchars(print_r($vars, true));
+        $content .= &ldquo;\n</pre>\n&rdquo;;
+    } else {
+        $content = $label . &ldquo; :\n&rdquo; . print_r($vars, true);
+    }
+    if ($return) { return $content; }
+    echo $content;
+    return null;
+}
+?></p>
+
+<p>```</p>
+
 <hr />
 
 <p>以上几种方式用得较为多的是cURl,因为它可以保存COOKIE的特性，在PHP的网络爬虫中都离不开它。</p>
@@ -230,6 +307,9 @@
     <updated>2016-05-17T23:38:25+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote</id>
     <content type="html"><![CDATA[<blockquote><p>今天接触了PHP的模拟登陆和爬虫实战，涉及到了PHP获取远程文件的几种方式，防采集的一些方法，以及微信自动投票实战。</p></blockquote>
+
+<!--more-->
+
 
 <h1>PHP获取远程文件</h1>
 
