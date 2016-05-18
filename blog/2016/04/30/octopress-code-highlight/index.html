@@ -153,13 +153,20 @@
 
 <p><strong>markdown 语法实现代码高亮有两种方法</strong></p>
 
-<pre><code>1  ```[language] [title] [url] [link text]
-     code snippet
-   ```
-2 {\% codeblock [title] [lang:language] [url] [link text] \%}
-    code snippet
-{\% endcodeblock \%}
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="mi">1</span>  <span class="sb">```[language] [title] [url] [link text]</span>
+</span><span class='line'><span class="sb">  code snippet</span>
+</span><span class='line'><span class="sb">   ```</span>
+</span><span class='line'><span class="mi">2</span> <span class="p">{</span><span class="nx">\</span><span class="o">%</span> <span class="nx">codeblock</span> <span class="p">[</span><span class="nx">title</span><span class="p">]</span> <span class="p">[</span><span class="nx">lang</span><span class="o">:</span><span class="nx">language</span><span class="p">]</span> <span class="p">[</span><span class="nx">url</span><span class="p">]</span> <span class="p">[</span><span class="nb">link</span> <span class="nx">text</span><span class="p">]</span> <span class="nx">\</span><span class="o">%</span><span class="p">}</span>
+</span><span class='line'>  <span class="nx">code</span> <span class="nx">snippet</span>
+</span><span class='line'><span class="p">{</span><span class="nx">\</span><span class="o">%</span> <span class="nx">endcodeblock</span> <span class="nx">\</span><span class="o">%</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>唉，原来这么简单。改代码走起->rake generate ->reke deploy</p>
 
@@ -251,35 +258,55 @@ easy_install pygments
 
 <p>(2) 引用pretty.css以及pretty.js,然后在网页中引用,引用方法为</p>
 
-<pre><code>&lt;link href="你保存的目录/prettify.css" type="text/css" rel="stylesheet" /&gt;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nb">link</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;你保存的目录/prettify.css&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="o">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;你保存的目录/prettify.js&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-&lt;script type="text/javascript" src="你保存的目录/prettify.js"&gt;&lt;/script&gt;
-</code></pre>
 
 <p>(3)</p>
 
-<pre><code>&lt;body&gt;标签改为&lt;body onload="prettyPrint()"&gt;
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span><span class="nx">标签改为</span><span class="o">&lt;</span><span class="nx">body</span> <span class="nx">onload</span><span class="o">=</span><span class="s2">&quot;prettyPrint()&quot;</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>(4) 将源代码用标签</p>
 
-<pre><code>&lt;pre class="prettyprint linenums"&gt;这是你的代码&lt;/pre&gt;
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span><span class="nx">这是你的代码</span><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>包含起来,例如</p>
 
-<pre><code>&lt;pre class="prettyprint linenums"&gt;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#include &quot;x.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">main</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-#include "x.h"
-
-main(){
-
- print("hello world!");
-
-}
-
-&lt;/pre&gt;
-</code></pre>
 
 <p>相应的显示效果为:</p>
 
@@ -291,33 +318,51 @@ main(){
 
 <p>(2) 引用run_prettify.js文件,方法为</p>
 
-<pre><code>&lt;script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"&gt;&lt;/script&gt;
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>或者</p>
 
-<pre><code>&lt;script src="你保存的目录/run_prettify.js"&gt;&lt;/script&gt;
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;你保存的目录/run_prettify.js&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>(3) 将源代码用标签</p>
 
-<pre><code>&lt;pre class="prettyprint"&gt;这是你的代码&lt;/pre&gt;
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span><span class="nx">这是你的代码</span><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>包含起来,例如</p>
 
-<pre><code>&lt;pre class="prettyprint"&gt;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#include &quot;x.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">main</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-#include "x.h"
-
-main(){
-
-    print("hello world!");
-
-}
-
-&lt;/pre&gt;
-</code></pre>
 
 <p>相应的显示效果为:</p>
 

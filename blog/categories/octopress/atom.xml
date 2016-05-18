@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T15:03:06+08:00</updated>
+  <updated>2016-05-18T15:06:19+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -34,17 +34,16 @@
 <p>之前在写博客的时候就有发现，我的用markdown语法写出来的代码好像是和别人的不一样。后来发现是我的代码没有用高亮。人家也是一个有追求的PHPer（尴尬脸）。我就查markdown语法啊。
 语法是这样给我说的</p>
 
-<p><strong>markdown 语法实现代码高亮有两种方法</strong></p>
-
-<pre><code>1  ```[language] [title] [url] [link text]
-     code snippet
-   ```
-2 {\% codeblock [title] [lang:language] [url] [link text] \%}
-    code snippet
-{\% endcodeblock \%}
-</code></pre>
-
-<p>唉，原来这么简单。改代码走起->rake generate ->reke deploy</p>
+<p><strong>markdown 语法实现代码高亮有两种方法</strong>
+<code>php
+    1 </code>[language] [title] [url] [link text]
+         code snippet
+       <code>
+    2 {\% codeblock [title] [lang:language] [url] [link text] \%}
+        code snippet
+    {\% endcodeblock \%}
+</code>
+唉，原来这么简单。改代码走起->rake generate ->reke deploy</p>
 
 <p>去看看我可爱的带颜色的代码呢。</p>
 
@@ -127,133 +126,7 @@ easy_install pygments
 
 <p>(1) 从<a href="https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953">https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953</a> 中打包下载pretty.css以及pretty.js,并保存到本地服务器的相应目录中来引用</p>
 
-<p>(2) 引用pretty.css以及pretty.js,然后在网页中引用,引用方法为</p>
-
-<pre><code>&lt;link href="你保存的目录/prettify.css" type="text/css" rel="stylesheet" /&gt;
-
-&lt;script type="text/javascript" src="你保存的目录/prettify.js"&gt;&lt;/script&gt;
-</code></pre>
-
-<p>(3)</p>
-
-<pre><code>&lt;body&gt;标签改为&lt;body onload="prettyPrint()"&gt;
-</code></pre>
-
-<p>(4) 将源代码用标签</p>
-
-<pre><code>&lt;pre class="prettyprint linenums"&gt;这是你的代码&lt;/pre&gt;
-</code></pre>
-
-<p>包含起来,例如</p>
-
-<pre><code>&lt;pre class="prettyprint linenums"&gt;
-
-#include "x.h"
-
-main(){
-
- print("hello world!");
-
-}
-
-&lt;/pre&gt;
-</code></pre>
-
-<p>相应的显示效果为:</p>
-
-<h2><img src="http://hiphotos.baidu.com/exp/pic/item/0fb505d5ad6eddc4ef4d78d73bdbb6fd52663331.jpg" alt="3" /></h2>
-
-<blockquote><p>方法二</p></blockquote>
-
-<p>(1) 到网址 <a href="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js">https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js</a> 中或者从<a href="http://www.colafile.com/file/145957">http://www.colafile.com/file/145957</a> 下载run_prettify.js文件</p>
-
-<p>(2) 引用run_prettify.js文件,方法为</p>
-
-<pre><code>&lt;script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"&gt;&lt;/script&gt;
-</code></pre>
-
-<p>或者</p>
-
-<pre><code>&lt;script src="你保存的目录/run_prettify.js"&gt;&lt;/script&gt;
-</code></pre>
-
-<p>(3) 将源代码用标签</p>
-
-<pre><code>&lt;pre class="prettyprint"&gt;这是你的代码&lt;/pre&gt;
-</code></pre>
-
-<p>包含起来,例如</p>
-
-<pre><code>&lt;pre class="prettyprint"&gt;
-
-#include "x.h"
-
-main(){
-
-    print("hello world!");
-
-}
-
-&lt;/pre&gt;
-</code></pre>
-
-<p>相应的显示效果为:</p>
-
-<p><img src="http://hiphotos.baidu.com/exp/pic/item/72ccb7773912b31b40ea01058418367adbb4e1de.jpg" alt="4" /></p>
-
-<p>如果你有更高的使用要求，可以到<a href="https://code.google.com/p/google-code-prettify/wiki/GettingStarted">https://code.google.com/p/google-code-prettify/wiki/GettingStarted</a>这个网页中看更高级的使用方法</p>
-
-<hr />
-
-<p>5/17/2016 8:28:40 PM  更新</p>
-
-<blockquote><p>设置显示行号</p></blockquote>
-
-<pre class="prettyprint linenums">
-1、删掉prettify里的这两个样式。  
-li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}  
-  
-2、替换以下内容，已经存在的替换，不存在的新增。  
-pre.prettyprint {  
- padding: 8px;  
- background-color: #f7f7f9;  
- border: 1px solid #e1e1e8;  
-}  
-.prettyprint.linenums {  
- -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
- -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
- box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
-}  
-  
-/* Specify class=linenums on a pre to get line numbering */  
-ol.linenums {  
- margin: 0 0 0 33px; /* IE indents via margin-left */  
-}   
-ol.linenums li {  
- padding-left: 12px;  
- color: #bebec5;  
- line-height: 18px;  
- text-shadow: 0 1px 0 #fff;  
-}  
-3、在pre标签里面一定不能有br/标签,要换行直接回车.  
-</pre>
-
-
-<hr />
-
-<h1>但是</h1>
-
-<p>这种方法在使用过程中，当是PHP代码时：如
-<code>php
-    &lt;pre class="prettyprint linenums"&gt;
-        &lt;?php
-            echo "test!";
-        ?&gt;
-    &lt;/pre&gt;
-</code>
-这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</p>
-
-<p>改成如下格式就能正常实现代码高亮效果。
+<p>(2) 引用pretty.css以及pretty.js,然后在网页中引用,引用方法为
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -332,85 +205,274 @@ ol.linenums li {
 <span class='line-number'>76</span>
 <span class='line-number'>77</span>
 <span class='line-number'>78</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'>    <span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint php&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="c1">//去掉了PHP的开始和结束符</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">test</span><span class="o">!&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nb">link</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;你保存的目录/prettify.css&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="o">/&gt;&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>    <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">pre</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;你保存的目录/prettify.js&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">script</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="sb">```</span>
-</span><span class='line'><span class="sb">我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &amp;lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。&lt;/p&gt;</span>
-</span><span class='line'><span class="sb">]]&gt;&lt;/content&gt;</span>
-</span><span class='line'><span class="sb">  &lt;/entry&gt;</span>
-</span><span class='line'><span class="sb">  </span>
-</span><span class='line'><span class="sb">  &lt;entry&gt;</span>
-</span><span class='line'><span class="sb">&lt;title type=&quot;html&quot;&gt;&lt;![CDATA[解决 Octopress 警告 Layout Nil Requested]]&gt;&lt;/title&gt;</span>
-</span><span class='line'><span class="sb">&lt;link href=&quot;http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested/&quot;/&gt;</span>
-</span><span class='line'><span class="sb">&lt;updated&gt;2016-04-29T23:08:07+08:00&lt;/updated&gt;</span>
-</span><span class='line'><span class="sb">&lt;id&gt;http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested&lt;/id&gt;</span>
-</span><span class='line'><span class="sb">&lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;blockquote&gt;&lt;p&gt;给Octopress换了主题过后重新generate会出警告Layout Nil Requested。&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;!--more--&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">body</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">标签改为</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">body</span> <span class="nx">onload</span><span class="o">=</span><span class="s2">&quot;prettyPrint()&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="nx">将源代码用标签</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;p&gt;主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null 即可&lt;/p&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">这是你的代码</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">pre</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;p&gt;Fix this error by replacing from file:&lt;/p&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">包含起来</span><span class="p">,</span><span class="nx">例如</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;blockquote&gt;&lt;p&gt;layout: nil&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;p&gt;with:&lt;/p&gt;</span>
+</span><span class='line'><span class="c1">#include &quot;x.h&quot;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;blockquote&gt;&lt;p&gt;layout: null&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'><span class="nx">main</span><span class="p">(){</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;p&gt;in files:&lt;/p&gt;</span>
+</span><span class='line'> <span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;ul&gt;</span>
-</span><span class='line'><span class="sb">&lt;li&gt;source/atom.xml&lt;/li&gt;</span>
-</span><span class='line'><span class="sb">&lt;li&gt;source/_includes/custom/category_feed.xml&lt;/li&gt;</span>
-</span><span class='line'><span class="sb">&lt;/ul&gt;</span>
+</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">]]&gt;&lt;/content&gt;</span>
-</span><span class='line'><span class="sb">  &lt;/entry&gt;</span>
-</span><span class='line'><span class="sb">  </span>
-</span><span class='line'><span class="sb">  &lt;entry&gt;</span>
-</span><span class='line'><span class="sb">&lt;title type=&quot;html&quot;&gt;&lt;![CDATA[GIT+Octopress搭建个人博客]]&gt;&lt;/title&gt;</span>
-</span><span class='line'><span class="sb">&lt;link href=&quot;http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/&quot;/&gt;</span>
-</span><span class='line'><span class="sb">&lt;updated&gt;2016-04-18T23:13:10+08:00&lt;/updated&gt;</span>
-</span><span class='line'><span class="sb">&lt;id&gt;http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke&lt;/id&gt;</span>
-</span><span class='line'><span class="sb">&lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;h1&gt;GIT+Octopress搭建个人博客&lt;/h1&gt;</span>
+</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">pre</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;!--more--&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">相应的显示效果为</span><span class="o">:</span>
+</span><span class='line'><span class="o">!</span><span class="p">[</span><span class="mi">3</span><span class="p">](</span><span class="nx">http</span><span class="o">://</span><span class="nx">hiphotos</span><span class="o">.</span><span class="nx">baidu</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nb">exp</span><span class="o">/</span><span class="nx">pic</span><span class="o">/</span><span class="nx">item</span><span class="o">/</span><span class="mi">0</span><span class="nx">fb505d5ad6eddc4ef4d78d73bdbb6fd52663331</span><span class="o">.</span><span class="nx">jpg</span><span class="p">)</span>
+</span><span class='line'><span class="o">-----</span>
+</span><span class='line'><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">方法二</span>
 </span><span class='line'>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;blockquote&gt;&lt;p&gt;新博客的第一篇博客&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="nx">到网址</span> <span class="p">[</span><span class="nx">https</span><span class="o">://</span><span class="nx">google</span><span class="o">-</span><span class="nx">code</span><span class="o">-</span><span class="nx">prettify</span><span class="o">.</span><span class="nx">googlecode</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">svn</span><span class="o">/</span><span class="nx">loader</span><span class="o">/</span><span class="nx">run_prettify</span><span class="o">.</span><span class="nx">js</span><span class="p">](</span><span class="nx">https</span><span class="o">://</span><span class="nx">google</span><span class="o">-</span><span class="nx">code</span><span class="o">-</span><span class="nx">prettify</span><span class="o">.</span><span class="nx">googlecode</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">svn</span><span class="o">/</span><span class="nx">loader</span><span class="o">/</span><span class="nx">run_prettify</span><span class="o">.</span><span class="nx">js</span><span class="p">)</span> <span class="nx">中或者从</span><span class="p">[</span><span class="nx">http</span><span class="o">://</span><span class="nx">www</span><span class="o">.</span><span class="nx">colafile</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nb">file</span><span class="o">/</span><span class="mi">145957</span><span class="p">](</span><span class="nx">http</span><span class="o">://</span><span class="nx">www</span><span class="o">.</span><span class="nx">colafile</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nb">file</span><span class="o">/</span><span class="mi">145957</span><span class="p">)</span> <span class="nx">下载run_prettify</span><span class="o">.</span><span class="nx">js文件</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;p&gt;很久以前就想自己搭个博客，今天终于开工了。在网上找了很多的教程和各种各样的框架，wordpress，jekyll等，最后选择了Octopress+Git搭建。&lt;/p&gt;</span>
+</span><span class='line'><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="nx">引用run_prettify</span><span class="o">.</span><span class="nx">js文件</span><span class="p">,</span><span class="nx">方法为</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;h2&gt;一、环境搭建&lt;/h2&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">script</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;h3&gt;&lt;a href=&quot;https://git-scm.com/download/&quot;&gt;GIT&lt;/a&gt;:版本管理工具，将代码托管到GIT。&lt;/h3&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">或者</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;h3&gt;&lt;a href=&quot;http://rubyinstaller.org/&quot;&gt;Ruby+DevKit&lt;/a&gt; ：生成静态页面&lt;/h3&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;你保存的目录/run_prettify.js&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">script</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;h3&gt;&lt;a href=&quot;http://jingyan.baidu.com/article/ca41422fe209271eaf99ed7c.html&quot;&gt;MarkDownPad&lt;/a&gt;：Windows下MarkDown语法编辑器&lt;/h3&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="nx">将源代码用标签</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;h4&gt;安装与配置&lt;/h4&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">这是你的代码</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">pre</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code&gt;GIT和Markdown安装直接点击下一步就可以了。</span>
-</span><span class='line'><span class="sb">在安装好git过后，桌面或其他位置点击右键GIT Bash 来配置Github账号（需要先注册GITHUB账号）</span>
-</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">包含起来</span><span class="p">,</span><span class="nx">例如</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;hr /&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;p&gt;1.1配置GITHUB&lt;/p&gt;</span>
+</span><span class='line'><span class="c1">#include &quot;x.h&quot;</span>
 </span><span class='line'>
-</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code&gt;```</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user_name</span> <span class="s2">&quot;XXXX&quot;</span><span class="c1">//你的github账号</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user_email</span> <span class="s2">&quot;XXXX&quot;</span><span class="c1">//你的邮箱</span>
-</span><span class='line'><span class="nx">ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">rsa</span> <span class="o">-</span><span class="nx">C</span> <span class="s2">&quot;YOUR_EMAIL&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="nx">main</span><span class="p">(){</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">pre</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="sb">``</span><span class="err">`</span>
+</span><span class='line'><span class="nx">相应的显示效果为</span><span class="o">:&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;&lt;</span><span class="nx">img</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;http://hiphotos.baidu.com/exp/pic/item/72ccb7773912b31b40ea01058418367adbb4e1de.jpg&quot;</span> <span class="nx">alt</span><span class="o">=</span><span class="s2">&quot;4&quot;</span> <span class="o">/&gt;&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">如果你有更高的使用要求，可以到</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;https://code.google.com/p/google-code-prettify/wiki/GettingStarted&quot;</span><span class="o">&gt;</span><span class="nx">https</span><span class="o">://</span><span class="nx">code</span><span class="o">.</span><span class="nx">google</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">p</span><span class="o">/</span><span class="nx">google</span><span class="o">-</span><span class="nx">code</span><span class="o">-</span><span class="nx">prettify</span><span class="o">/</span><span class="nx">wiki</span><span class="o">/</span><span class="nx">GettingStarted</span><span class="o">&lt;/</span><span class="nx">a</span><span class="o">&gt;</span><span class="nx">这个网页中看更高级的使用方法</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">hr</span> <span class="o">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="mi">5</span><span class="o">/</span><span class="mi">17</span><span class="o">/</span><span class="mi">2016</span> <span class="mi">8</span><span class="o">:</span><span class="mi">28</span><span class="o">:</span><span class="mi">40</span> <span class="nx">PM</span>  <span class="nx">更新</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">blockquote</span><span class="o">&gt;&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">设置显示行号</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;&lt;/</span><span class="nx">blockquote</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="mi">1</span><span class="nx">、删掉prettify里的这两个样式。</span>
+</span><span class='line'><span class="nx">li</span><span class="o">.</span><span class="nx">L0</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L1</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L2</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L3</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L5</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L6</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L7</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L8</span><span class="p">{</span><span class="k">list</span><span class="o">-</span><span class="nx">style</span><span class="o">-</span><span class="nx">type</span><span class="o">:</span><span class="nx">none</span><span class="p">}</span><span class="nx">li</span><span class="o">.</span><span class="nx">L1</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L3</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L5</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L7</span><span class="p">,</span><span class="nx">li</span><span class="o">.</span><span class="nx">L9</span><span class="p">{</span><span class="nx">background</span><span class="o">:</span><span class="c1">#eee}  </span>
+</span><span class='line'>
+</span><span class='line'><span class="mi">2</span><span class="nx">、替换以下内容，已经存在的替换，不存在的新增。</span>
+</span><span class='line'><span class="nx">pre</span><span class="o">.</span><span class="nx">prettyprint</span> <span class="p">{</span>
+</span><span class='line'> <span class="nx">padding</span><span class="o">:</span> <span class="mi">8</span><span class="nx">px</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">background</span><span class="o">-</span><span class="nx">color</span><span class="o">:</span> <span class="c1">#f7f7f9;  </span>
+</span><span class='line'> <span class="nx">border</span><span class="o">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span> <span class="c1">#e1e1e8;  </span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">.</span><span class="nx">prettyprint</span><span class="o">.</span><span class="nx">linenums</span> <span class="p">{</span>
+</span><span class='line'> <span class="o">-</span><span class="nx">webkit</span><span class="o">-</span><span class="nx">box</span><span class="o">-</span><span class="nx">shadow</span><span class="o">:</span> <span class="nx">inset</span> <span class="mi">40</span><span class="nx">px</span> <span class="mi">0</span> <span class="mi">0</span> <span class="c1">#fbfbfc, inset 41px 0 0 #ececf0;  </span>
+</span><span class='line'> <span class="o">-</span><span class="nx">moz</span><span class="o">-</span><span class="nx">box</span><span class="o">-</span><span class="nx">shadow</span><span class="o">:</span> <span class="nx">inset</span> <span class="mi">40</span><span class="nx">px</span> <span class="mi">0</span> <span class="mi">0</span> <span class="c1">#fbfbfc, inset 41px 0 0 #ececf0;  </span>
+</span><span class='line'> <span class="nx">box</span><span class="o">-</span><span class="nx">shadow</span><span class="o">:</span> <span class="nx">inset</span> <span class="mi">40</span><span class="nx">px</span> <span class="mi">0</span> <span class="mi">0</span> <span class="c1">#fbfbfc, inset 41px 0 0 #ececf0;  </span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Specify class=linenums on a pre to get line numbering */</span>
+</span><span class='line'><span class="nx">ol</span><span class="o">.</span><span class="nx">linenums</span> <span class="p">{</span>
+</span><span class='line'> <span class="nx">margin</span><span class="o">:</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">33</span><span class="nx">px</span><span class="p">;</span> <span class="cm">/* IE indents via margin-left */</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">ol</span><span class="o">.</span><span class="nx">linenums</span> <span class="nx">li</span> <span class="p">{</span>
+</span><span class='line'> <span class="nx">padding</span><span class="o">-</span><span class="nx">left</span><span class="o">:</span> <span class="mi">12</span><span class="nx">px</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">color</span><span class="o">:</span> <span class="c1">#bebec5;  </span>
+</span><span class='line'> <span class="nx">line</span><span class="o">-</span><span class="nx">height</span><span class="o">:</span> <span class="mi">18</span><span class="nx">px</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">text</span><span class="o">-</span><span class="nx">shadow</span><span class="o">:</span> <span class="mi">0</span> <span class="mi">1</span><span class="nx">px</span> <span class="mi">0</span> <span class="c1">#fff;  </span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="mi">3</span><span class="nx">、在pre标签里面一定不能有br</span><span class="o">/</span><span class="nx">标签</span><span class="p">,</span><span class="nx">要换行直接回车</span><span class="o">.</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">hr</span> <span class="o">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">但是</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">这种方法在使用过程中，当是PHP代码时：如</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">php</span>
+</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;test!&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">?&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">pre</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nx">这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">改成如下格式就能正常实现代码高亮效果。</span>
+</span></code></pre></td></tr></table></div></figure>php
+        <pre class="prettyprint php">
+            //去掉了PHP的开始和结束符
+            echo &ldquo;test!&rdquo;;</p>
+
+<pre><code>    &lt;/pre&gt;
+</code></pre>
+
+<p>```
+我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[解决 Octopress 警告 Layout Nil Requested]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested/"/>
+    <updated>2016-04-29T23:08:07+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/29/fix-octopress-build-warning-layout-nil-requested</id>
+    <content type="html"><![CDATA[<blockquote><p>给Octopress换了主题过后重新generate会出警告Layout Nil Requested。</p></blockquote>
+
+<!--more-->
+
+
+<p>主要原因是对于 nill 值无法判断导致的问题，只要将有出现错误的档案將 nill 改成 null 即可</p>
+
+<p>Fix this error by replacing from file:</p>
+
+<blockquote><p>layout: nil</p></blockquote>
+
+<p>with:</p>
+
+<blockquote><p>layout: null</p></blockquote>
+
+<p>in files:</p>
+
+<ul>
+<li>source/atom.xml</li>
+<li>source/_includes/custom/category_feed.xml</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GIT+Octopress搭建个人博客]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke/"/>
+    <updated>2016-04-18T23:13:10+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/18/git-plus-octopressda-jian-ge-ren-bo-ke</id>
+    <content type="html"><![CDATA[<h1>GIT+Octopress搭建个人博客</h1>
+
+<!--more-->
+
+
+<blockquote><p>新博客的第一篇博客</p></blockquote>
+
+<p>很久以前就想自己搭个博客，今天终于开工了。在网上找了很多的教程和各种各样的框架，wordpress，jekyll等，最后选择了Octopress+Git搭建。</p>
+
+<h2>一、环境搭建</h2>
+
+<h3><a href="https://git-scm.com/download/">GIT</a>:版本管理工具，将代码托管到GIT。</h3>
+
+<h3><a href="http://rubyinstaller.org/">Ruby+DevKit</a> ：生成静态页面</h3>
+
+<h3><a href="http://jingyan.baidu.com/article/ca41422fe209271eaf99ed7c.html">MarkDownPad</a>：Windows下MarkDown语法编辑器</h3>
+
+<h4>安装与配置</h4>
+
+<pre><code>GIT和Markdown安装直接点击下一步就可以了。
+在安装好git过后，桌面或其他位置点击右键GIT Bash 来配置Github账号（需要先注册GITHUB账号）
+</code></pre>
+
+<hr />
+
+<p>1.1配置GITHUB</p>
+
+<pre><code>```
+git config --global user_name "XXXX"//你的github账号
+git config --global user_email "XXXX"//你的邮箱
+ssh-keygen -t rsa -C "YOUR_EMAIL"
+```
 </code></pre>
 
 <p>下面回车默认为空即可</p>
