@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-17T20:34:47+08:00</updated>
+  <updated>2016-05-18T00:11:14+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linx-Atom-PHP代码规范和插件推荐]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/17/linux-atom-php-cs-fixer/"/>
+    <updated>2016-05-17T21:11:42+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/17/linux-atom-php-cs-fixer</id>
+    <content type="html"><![CDATA[<blockquote><p>今天在使用Atom的过程中，突然好怀念以前PHPStrom的代码的格式化。就开始找Atom的插件。</p>
+
+<h1>Atom-beautify</h1>
+
+<ul>
+<li>首先是代码格式化插件<code>Atom-Beautify</code>这个插件支持大部分的语言的格式化。</li>
+</ul>
+</blockquote>
+
+<!--more-->
+
+
+<ul>
+<li>快捷键是<code>Ctrl+Alt+b</code>但是在实际使用过程中发现这个插件对PHP的支持并不好，首先需要安装<code>php-cs-fixer</code>还需要配置其路径。</li>
+<li>在终端用<code>which php-cs-fixer</code>找到php-cs-fixer的路径。</li>
+<li>但是配置好后，在PHP页面调用<code>Ctrl+Alt+b</code>并任何效果，SAD~~</li>
+</ul>
+
+
+<h1>Atom-php-cs-fixer</h1>
+
+<ul>
+<li>先安装<a href="http://cs.sensiolabs.org/">php-cs-fixer</a></li>
+</ul>
+
+
+<pre class="prettyprint">
+wget http://get.sensiolabs.org/php-cs-fixer.phar -O php-cs-fixer
+sudo chmod a+x php-cs-fixer
+sudo mv php-cs-fixer /usr/local/bin/php-cs-fixer
+</pre>
+
+
+<ul>
+<li>首先在Atom中搜索<code>php-cs-fixer</code>安装好后。</li>
+<li>配置php-cs-fixer</li>
+</ul>
+
+
+<p><img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=a8014d177bd98d1072d40c341104c933/a2cc7cd98d1001e9bfddcfe4bf0e7bec55e7977c.jpg?referer=4dcfa78f0e23dd5478649358d112&amp;x=.jpg" alt="php-cs-fixer" /></p>
+
+<pre class="prettyprint">
+第一个红框为php-cs-fixer路径，通过
+which php-cs-fixer 
+获取
+第二个红框为php路径，通过
+which php 
+获取
+</pre>
+
+
+<p>其他配置为一些规范规则。
+<a href="http://cs.sensiolabs.org/">php-cs-fixer</a>这里进一步了解。</p>
+
+<p>我这里使用的是PSR-2规则，现在还没有具体了解各种规则，以后进一步学习再重新写博客补充。</p>
+
+<hr />
+
+<h1>插件推荐</h1>
+
+<ul>
+<li><p><code>linter</code> 代码检验工具</p>
+
+<ul>
+<li>要检验PHP还需要安装<code>linter-php</code></li>
+</ul>
+</li>
+<li><p><code>minimap</code> 和sublime右边一竖块，显示缩小版的代码</p></li>
+<li><code>color-picker</code>写CSS时非常方便的调色板</li>
+<li><code>autocomplete-paths</code>填写路径的时候有Sug提示</li>
+<li><p><code>docblockr</code>方便写注释</p>
+
+<ul>
+<li>/** 回车 就出来注释快</li>
+</ul>
+</li>
+<li><p><code>emmet</code>前端开发必备<a href="http://www.w3cplus.com/tools/emmet-cheat-sheet.html">Emmet使用手册</a></p></li>
+<li><code>file-icons</code>美化文件类型对应的图标</li>
+<li><code>active-power-mode</code>炫酷的代码输入，谁用谁知道</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[做死的Centos-Atom]]></title>

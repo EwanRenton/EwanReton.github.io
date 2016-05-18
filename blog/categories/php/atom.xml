@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-17T20:34:47+08:00</updated>
+  <updated>2016-05-18T00:11:14+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,240 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP爬虫和微信自动投票]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote/"/>
+    <updated>2016-05-17T23:38:25+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote</id>
+    <content type="html"><![CDATA[<blockquote><p>今天接触了PHP的模拟登陆和爬虫实战，涉及到了PHP获取远程文件的几种方式，防采集的一些方法，以及微信自动投票实战。</p></blockquote>
+
+<h1>PHP获取远程文件</h1>
+
+<p>PHP获取远程文件主要有以下几种方式：
+* fopen
+* file_get_centents
+* socket
+* curl
+过几天我们在结合实际代码分析这几种方式</p>
+
+<h1>防采集的一些方法</h1>
+
+<p>防采集的方法有很多，这里主要列出几种比较有效的
+* 短时间访问次数限制
+* ip校验
+* 机器特征校验
+* 复杂加密
+* 混淆代码</p>
+
+<h1>微信自动投票工具</h1>
+
+<blockquote><p>这次主要分析这个。</p></blockquote>
+
+<p>首先，我们需要将微信投票界面分析到PC端，并用浏览器F12里的功能抓取到投票的请求地址和返回数据。如下：</p>
+
+<pre class="prettyprint linenums">
+http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=index&token=jdfsam1432614294&wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&id=27&sgssz=mp.weixin.qq.com
+
+http://wx.asplay.cn/index.php?
+g=Wap&
+m=Vote&
+a=index&                    //ThinkPHP里面一些参数
+token=jdfsam1432614294&     //当前主用户标示
+wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&
+id=27&      //当前投票ID
+sgssz=mp.weixin.qq.com
+下面是请求的地址：
+http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=add_vote&token=jdfsam1432614294&wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc
+发送的数据：
+wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc&tid=27&chid=53%2C&token=jdfsam1432614294&action=add_vote、
+投票成功返回的数据：
+{"success":1,"token":"jdfsam1432614294","wecha_id":"oQIrdjjArAZYwKOh3Y6-1HeuwvEc","tid":"27","chid":"53","arrpre":{"53":33.33,"54":0,"55":0,"56":66.67}}
+</pre>
+
+
+<p>基于以上的这些信息，我们就能自己模拟POST的数据，和用户标示了。但是仅仅做到这些是不够的，我们还需要模拟微信的内核。</p>
+
+<pre class="prettyprint linenums">
+微信内核的ua：//网上能找到
+Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0
+</pre>
+
+
+<pre><code class="php ../03/curlajax.class.php">&lt;?php
+class curlajax{
+    public $cookiejar;
+    public $cookiefile;
+    public $ua;
+    public $debug;
+
+    function __construct(){
+        $this-&gt;debug = 0;
+        $this-&gt;ua = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0'; //这里模拟微信内核
+        $this-&gt;cookiejar = 'cookie.txt';
+        $this-&gt;cookiefile = 'cookie.txt';
+    }
+
+    /****************************
+    *get 请求资源
+    *@param string 地址
+    *@param string referer
+    *@param boolen 是否返回头部
+    *@param array 头部附加cookie
+    ****************************/
+    function httpget($url,$referer='',$withhead=0){
+        $ch = curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_COOKIEJAR,$this-&gt;cookiejar);
+        curl_setopt($ch,CURLOPT_COOKIEFILE,$this-&gt;cookiefile);
+        curl_setopt($ch,CURLOPT_HEADER,$withhead);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
+        //curl_setopt($ch,CURLOPT_AUTOREFERER,1);
+        curl_setopt($ch,CURLOPT_USERAGENT,$this-&gt;ua);
+        curl_setopt($ch,CURLOPT_REFERER,$referer);
+        $r = curl_exec($ch);
+        if($this-&gt;debug){
+            echo '&lt;pre&gt;';
+            var_dump(curl_getinfo($ch));
+        }
+        curl_close($ch);
+        return $r;
+    }
+
+    /****************************
+    *post 请求资源
+    *@param string 地址
+    *@param string referer
+    *@param array 提交数据
+    *@param boolen 是否返回头部
+    ****************************/
+    function httppost($url,$referer='',$postdata=array(),$withhead=0){
+        $ch = curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_HEADER,$withhead);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
+        //curl_setopt($ch,CURLOPT_AUTOREFERER,1);
+        curl_setopt($ch,CURLOPT_COOKIEJAR,$this-&gt;cookiejar);
+        curl_setopt($ch,CURLOPT_COOKIEFILE,$this-&gt;cookiefile);
+        curl_setopt($ch,CURLOPT_USERAGENT,$this-&gt;ua);
+        curl_setopt($ch,CURLOPT_REFERER,$referer);
+        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch,CURLOPT_POSTFIELDS,$postdata);
+        $r = curl_exec($ch);
+        if($this-&gt;debug){
+            echo '&lt;pre&gt;';
+            var_dump(curl_getinfo($ch));
+        }
+        curl_close($ch);
+        return $r;
+    }
+
+
+}
+</code></pre>
+
+<p>网上的cURL方法，我们这里有要用到
+<figure class='code'><figcaption><span>autoVote.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">../</span><span class="mo">03</span><span class="o">/</span><span class="nx">curlajax</span><span class="o">.</span><span class="nx">class</span><span class="o">.</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span><span class='line'><span class="x">&amp;lt;!DOCTYPE html PUBLIC &amp;ldquo;-//W3C//DTD XHTML 1.0 Transitional//EN&amp;rdquo; &amp;ldquo;&lt;a href=&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&lt;/a&gt;&amp;rdquo;&gt;</span>
+</span><span class='line'><span class="x">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span>
+</span><span class='line'><span class="x">&lt;head&gt;</span>
+</span><span class='line'><span class="x">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;</span>
+</span><span class='line'><span class="x">&lt;title&gt;微信自动投票工具&lt;/title&gt;</span>
+</span><span class='line'><span class="x">&lt;/head&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;&lt;body&gt;</span>
+</span><span class='line'><span class="x">&amp;lt;?php</span>
+</span><span class='line'><span class="x">/&lt;em&gt;模拟POST登录&lt;/em&gt;/</span>
+</span><span class='line'><span class="x">echo &amp;ldquo;&lt;h1&gt;这是微信自动投票工具&lt;/h1&gt;&amp;rdquo;;</span>
+</span><span class='line'><span class="x">$jkxy = new curlajax();</span>
+</span><span class='line'><span class="x">$jkxy-&gt;debug = 0;</span>
+</span><span class='line'><span class="x">$jkxy-&gt;cookiejar = dirname(&lt;strong&gt;FILE&lt;/strong&gt;).&amp;lsquo;\cookie1.txt&amp;rsquo;;</span>
+</span><span class='line'><span class="x">$jkxy-&gt;cookiefile = dirname(&lt;strong&gt;FILE&lt;/strong&gt;).&amp;lsquo;\cookie1.txt&amp;rsquo;;</span>
+</span><span class='line'><span class="x">/&lt;em&gt;模拟提交信息&lt;/em&gt;/</span>
+</span><span class='line'><span class="x">$username=&amp;ldquo;oQIrdjj&amp;rdquo;.rand(500,50000).&amp;ldquo;wKOh3Y6-1HeuwvEc&amp;rdquo;;//用随机数来产生不同的用户ID</span>
+</span><span class='line'><span class="x">$data = &amp;ldquo;wecha_id=&amp;rdquo;.$username.&amp;ldquo;&amp;amp;tid=27&amp;amp;chid=53%2C&amp;amp;token=jdfsam1432614294&amp;amp;action=add_vote&amp;rdquo;;//模拟不同的用户提交的数据</span>
+</span><span class='line'><span class="x">$url = &amp;lsquo;&lt;a href=&quot;http://wx.asplay.cn/index.php?g=Wap&amp;amp;m=Vote&amp;amp;a=add_vote&amp;amp;token=jdfsam1432614294&amp;amp;wecha_id=&quot;&gt;http://wx.asplay.cn/index.php?g=Wap&amp;amp;m=Vote&amp;amp;a=add_vote&amp;amp;token=jdfsam1432614294&amp;amp;wecha_id=&lt;/a&gt;&amp;rsquo;.$username;</span>
+</span><span class='line'><span class="x">$r = $jkxy-&gt;httppost($url,$url,$data,0);//获取返回数据&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;if(checkstr($r,&amp;lsquo;&amp;ldquo;success&amp;rdquo;:1&amp;rsquo;)==true){ //根据返回的数据判断是否投票成功</span>
+</span><span class='line'><span class="x">    echo &amp;ldquo;投票成功&amp;rdquo;;</span>
+</span><span class='line'><span class="x">    }</span>
+</span><span class='line'><span class="x">else{</span>
+</span><span class='line'><span class="x">    echo &amp;ldquo;投票失败&amp;rdquo;;</span>
+</span><span class='line'><span class="x">    }</span>
+</span><span class='line'><span class="x">    /&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;</span>
+</span><span class='line'><span class="x">    &lt;em&gt;检查$needle中是否含有$findstr</span>
+</span><span class='line'><span class="x">    &lt;/em&gt;@param string needle</span>
+</span><span class='line'><span class="x">    *@param string findstr</span>
+</span><span class='line'><span class="x">    &lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;/</span>
+</span><span class='line'><span class="x">function checkstr($needle,$findstr){</span>
+</span><span class='line'><span class="x">    $tempstr=explode($findstr,$needle);</span>
+</span><span class='line'><span class="x">    if($tempstr&gt;1){</span>
+</span><span class='line'><span class="x">        return true;</span>
+</span><span class='line'><span class="x">        }</span>
+</span><span class='line'><span class="x">    else{</span>
+</span><span class='line'><span class="x">        return false;</span>
+</span><span class='line'><span class="x">        }</span>
+</span><span class='line'><span class="x">    }</span>
+</span><span class='line'><span class="x">?&gt;</span>
+</span><span class='line'><span class="x">&lt;/body&gt;</span>
+</span><span class='line'><span class="x">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>通过这个实战，感觉突然打开了一扇大门。要仔细研究下爬虫的相关知识了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[QQ登录Demo]]></title>
@@ -1246,279 +1480,6 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;*/</span>
 </span></code></pre></td></tr></table></div></figure></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP无限级分类]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei/"/>
-    <updated>2016-04-29T09:36:19+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei</id>
-    <content type="html"><![CDATA[<blockquote><p>PHP无限级分类主要有两种实现方式，通过递归和全路径实现</p></blockquote>
-
-<!--more-->
-
-
-<h1>一、递归实现</h1>
-
-<pre><code>在数据库中存储如下格式的表：
-</code></pre>
-
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th style="text-align:center;">pid</th>
-<th style="text-align:center;">catename</th>
-<th style="text-align:center;">cateorder</th>
-<th style="text-align:right;">createtime</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:center;">新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>2</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:center;">图片</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>3</td>
-<td style="text-align:center;">1</td>
-<td style="text-align:center;">国内新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>4</td>
-<td style="text-align:center;">1</td>
-<td style="text-align:center;">国际新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>5</td>
-<td style="text-align:center;">3</td>
-<td style="text-align:center;">北京新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>6</td>
-<td style="text-align:center;">4</td>
-<td style="text-align:center;">美国新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>7</td>
-<td style="text-align:center;">2</td>
-<td style="text-align:center;">美女图片</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>8</td>
-<td style="text-align:center;">2</td>
-<td style="text-align:center;">风景图片</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-</tbody>
-</table>
-
-
-<pre><code>create table deepcate
-(
-id int(10) unsigned not null  auto_increment primary key,
-pid int(11) unsigned    not null,
-catename    varchar(30) not null,
-cateorder   int(11) unsigned    default 0,
-createtime  int(10) not null
-);
-
-insert into deepcate(pid,catename,cateorder,createtime)values(0,'新闻',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(0,'图片',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(1,'国内新闻',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(1,'国际新闻',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(3,'北京新闻',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(4,'美国新闻',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(2,'美女图片',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(2,'风景图片',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(7,'日韩明星',0,0);
-insert into deepcate(pid,catename,cateorder,createtime)values(9,'日本AV',0,0);
-
-select * from deepcate;
-</code></pre>
-
-<blockquote><p>php 代码实现</p></blockquote>
-
-<pre><code>&lt;?php
-header("Content-Type:text/html;Charset=UTF-8");
-// php无限分类下拉列表的代码实现
-include_once('db.inc.php') ;
-
-function getList($pid=0,&amp;$result=array(),$spac=0)
-{
-    $spac=$spac+2;
-    $sql=" SELECT * FROM deepcate WHERE pid=$pid ";
-    $res=mysql_query($sql);
-
-    while($row=mysql_fetch_assoc($res)){
-        $row['catename']=str_repeat('&amp;nbsp;&amp;nbsp;',$spac).'|--'.$row['catename'];
-        $result[]=$row;
-        getList($row['id'],$result,$spac);
-    }
-    return $result;
-}
-
-function displayCate($pid=0,$selected=0){
-     $rs=getList($pid);
-     $str="";
-     $str.="&lt;select name='cate'&gt;";
-    foreach($rs as $v){
-        if($v['id']==$selected){
-            $selected="selected";
-        }
-       $str.="&lt;option {$selected}&gt;";
-       $str.= $v['catename'];
-       $str.= "&lt;/option&gt;";
-    }
-    return $str.= "&lt;/select&gt;";
-}
-
-echo displayCate();
-
-echo "&lt;hr/&gt;&lt;hr/&gt;";
-function getCatePath($cid,&amp;$result){
-    $sql="SELECT * FROM deepcate WHERE id=$cid ";
-    $rs=mysql_query($sql);
-    $row=mysql_fetch_assoc($rs);
-    if($row){
-        $result[]=$row;
-        getCatePath($row['pid'],$result);
-    }
-    krsort($result);
-    return $result;
-}
-
-
-function displayCatePath($cid,$url="deepcate.php?cid="){
-    $res=getCatePath($cid,$result);
-    $str="";
-    foreach($res as $v){
-        $str.= "&lt;a href='{$url}{$v['id']}'&gt;{$v['catename']}&lt;/a&gt;&gt;&gt;";
-    }return $str;
-}
-
-echo displayCatePath(10);
-</code></pre>
-
-<h1>二、全路径实现</h1>
-
-<pre><code>use imooc;
-create table    likecate
-(
-id  int(11) not null  auto_increment primary key,
-path    varchar(200)    not null,
-catename    varchar(30) not null,
-cateorder   int(11) not null    default 0,
-createtime  int(11) not null
-);
-
-insert into likecate(path,catename,cateorder,createtime)values('','手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1','功能手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1,2','老人手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1,2','儿童手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1','智能手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1,5','andriod手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1,5','ios手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1,5','winphoto手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1,2,4','色盲手机',0,0);
-insert into likecate(path,catename,cateorder,createtime)values('1,2,3','大字手机',0,0);
-
-select * from likecate;
-
-select id,catename,path,concat(path,',',id) as fullpath from likecate where 1 order by fullpath asc;
-
-#结果显示如图
-+----+--------------+-------+----------+
-| id | catename     | path  | fullpath |
-+----+--------------+-------+----------+
-|  1 | 手机         |       | ,1       |
-|  2 | 功能手机     | 1     | 1,2      |
-|  3 | 老人手机     | 1,2   | 1,2,3    |
-| 10 | 大字手机     | 1,2,3 | 1,2,3,10 |
-|  4 | 儿童手机     | 1,2   | 1,2,4    |
-|  9 | 色盲手机     | 1,2,4 | 1,2,4,9  |
-|  5 | 智能手机     | 1     | 1,5      |
-|  6 | andriod手机  | 1,5   | 1,5,6    |
-|  7 | ios手机      | 1,5   | 1,5,7    |
-|  8 | winphoto手机 | 1,5   | 1,5,8    |
-+----+--------------+-------+----------+
-</code></pre>
-
-<blockquote><p>php代码实现</p></blockquote>
-
-<pre><code>&lt;?php
-header("Content-Type:text/html;Charset=UTF-8");
-//递归无限分类原理
-include_once ('db.inc.php');
-
-function likecate(){
-    $sql="select id,catename,path,concat(path,',',id) as fullpath from likecate where 1 order by fullpath asc";
-    $res=mysql_query($sql);
-    $result=array();
-    while($row=mysql_fetch_assoc($res)){
-        $deep=count(explode(',',trim($row['fullpath'],',')));
-
-        $row['catename']=str_repeat('&amp;nbsp;&amp;nbsp;',$deep*4).'|--'.$row['catename'];
-        $result[]=$row;
-    }
-    return $result;
-}
-
-
-$res=likecate();
-echo "&lt;select name='cate'&gt;";
-foreach($res as $v){
-    echo "&lt;option&gt;{$v['catename']}&lt;/option&gt;";
-}
-echo "&lt;/select&gt;";
-
-echo "&lt;hr/&gt;&lt;hr/&gt;";
-function getPathCate($cateid){
-    $sql="select *,concat(path,',',id)fullpath from likecate where id=$cateid";
-    $res=mysql_query($sql);
-    $row=mysql_fetch_assoc($res);
-    $ids=$row['fullpath'];
-    $sql="select * from likecate where id in($ids) order by id asc";
-    $res=mysql_query($sql);
-    $result=array();
-    while($row=mysql_fetch_assoc($res)){
-        $result[]=$row;
-    }
-    return $result;
-}
-
-function displayCatePath($cateid,$link='likecate.php?cid='){
-    $res=getPathCate($cateid);
-    $str="";
-    foreach($res as $v){
-        $str.="&lt;a href='{$link}'&gt;{$v['catename']}&lt;/a&gt;&gt;";
-    }
-    return $str;
-}  
-
-echo displayCatePath(4,'likecate.php?p=1&amp;cid=');
-</code></pre>
 ]]></content>
   </entry>
   

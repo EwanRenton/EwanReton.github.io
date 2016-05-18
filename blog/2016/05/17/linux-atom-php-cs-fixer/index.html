@@ -5,14 +5,11 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>初识Nginx - Ewan Reton</title>
+	<title>Linx-Atom-PHP代码规范和插件推荐 - Ewan Reton</title>
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="初识Nginx 今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础 一、常用的服务器软件 1 IIS：只能在Windows下运行性能不如Linux一类服务器
-2 Tomcat： 面向Java的重量级服务器
-3 Nginx：轻量级服务器，能支持较高的并发连接
-4 &hellip;">
+	<meta name="description" content="Linx-Atom-PHP代码规范和插件推荐 今天在使用Atom的过程中，突然好怀念以前PHPStrom的代码的格式化。就开始找Atom的插件。 Atom-beautify 首先是代码格式化插件Atom-Beautify这个插件支持大部分的语言的格式化。 快捷键是Ctrl+Alt+ &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -22,7 +19,7 @@
 
 	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/04/25/nginx/">
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/17/linux-atom-php-cs-fixer/">
 	<link href="/favicon.png" rel="shortcut icon">
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -123,97 +120,86 @@
 			
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-	<h1 class="title" itemprop="name">初识Nginx</h1>
-	<div class="entry-content" itemprop="articleBody"><blockquote><p>今天接触到了新的服务器软件Nginx，为以后在Linux下搭建LNMP环境打下基础</p></blockquote>
+	<h1 class="title" itemprop="name">Linx-Atom-PHP代码规范和插件推荐</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>今天在使用Atom的过程中，突然好怀念以前PHPStrom的代码的格式化。就开始找Atom的插件。</p>
+
+<h1>Atom-beautify</h1>
+
+<ul>
+<li>首先是代码格式化插件<code>Atom-Beautify</code>这个插件支持大部分的语言的格式化。</li>
+</ul>
+</blockquote>
 
 <!--more-->
 
 
-<h1>一、常用的服务器软件</h1>
-
 <ul>
-<li>1 IIS：只能在Windows下运行性能不如Linux一类服务器</li>
-<li>2 Tomcat： 面向Java的重量级服务器</li>
-<li>3 Nginx：轻量级服务器，能支持较高的并发连接</li>
-<li>4 Apache：稳定，开源，跨平台，但是高并发支持较弱</li>
+<li>快捷键是<code>Ctrl+Alt+b</code>但是在实际使用过程中发现这个插件对PHP的支持并不好，首先需要安装<code>php-cs-fixer</code>还需要配置其路径。</li>
+<li>在终端用<code>which php-cs-fixer</code>找到php-cs-fixer的路径。</li>
+<li>但是配置好后，在PHP页面调用<code>Ctrl+Alt+b</code>并任何效果，SAD~~</li>
 </ul>
 
 
-<h1>二、Nginx的优缺点</h1>
+<h1>Atom-php-cs-fixer</h1>
 
 <ul>
-<li>优点：可以实现高并发，部署简单，内存消耗较少，成本低等</li>
-<li>缺点：rewrite功能不够强大，模块没有Apache多。</li>
+<li>先安装<a href="http://cs.sensiolabs.org/">php-cs-fixer</a></li>
 </ul>
 
 
-<h1>三、Nginx环境的搭建</h1>
+<pre class="prettyprint">
+wget http://get.sensiolabs.org/php-cs-fixer.phar -O php-cs-fixer
+sudo chmod a+x php-cs-fixer
+sudo mv php-cs-fixer /usr/local/bin/php-cs-fixer
+</pre>
 
-<ol>
-<li><p>Linux：</p>
 
 <ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载安装包</li>
-<li>tar -zxvf nginx-1.9.15.tar.gz 解压</li>
-<li>进入解压后的文件夹 ./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>cd /usr/local 在该文件下看到Nginx则安装成功</li>
+<li>首先在Atom中搜索<code>php-cs-fixer</code>安装好后。</li>
+<li>配置php-cs-fixer</li>
 </ul>
-</li>
-<li><p>Windows：</p>
+
+
+<p><img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=a8014d177bd98d1072d40c341104c933/a2cc7cd98d1001e9bfddcfe4bf0e7bec55e7977c.jpg?referer=4dcfa78f0e23dd5478649358d112&amp;x=.jpg" alt="php-cs-fixer" /></p>
+
+<pre class="prettyprint">
+第一个红框为php-cs-fixer路径，通过
+which php-cs-fixer 
+获取
+第二个红框为php路径，通过
+which php 
+获取
+</pre>
+
+
+<p>其他配置为一些规范规则。
+<a href="http://cs.sensiolabs.org/">php-cs-fixer</a>这里进一步了解。</p>
+
+<p>我这里使用的是PSR-2规则，现在还没有具体了解各种规则，以后进一步学习再重新写博客补充。</p>
+
+<hr />
+
+<h1>插件推荐</h1>
 
 <ul>
-<li><a href="http://nginx.org/">Nginx官网</a>下载Windows安装包</li>
-<li>解压即可</li>
-</ul>
-</li>
-<li><p>常见错误：</p>
-
-<ol>
-<li>C compiler not found
+<li><p><code>linter</code> 代码检验工具</p>
 
 <ul>
-<li>进入root权限</li>
-<li>yum -y install gcc gcc-c++ autoconf automake</li>
-</ul>
-</li>
-<li><p>requires the PCRE library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install pcre pcre-devel</li>
-</ul>
-</li>
-<li><p>requires the zlib library</p>
-
-<ul>
-<li>进入root权限</li>
-<li>yum -y install zlib zlib-devel</li>
+<li>要检验PHP还需要安装<code>linter-php</code></li>
 </ul>
 </li>
-</ol>
-</li>
-</ol>
-
-
-<h1>四、启动服务</h1>
+<li><p><code>minimap</code> 和sublime右边一竖块，显示缩小版的代码</p></li>
+<li><code>color-picker</code>写CSS时非常方便的调色板</li>
+<li><code>autocomplete-paths</code>填写路径的时候有Sug提示</li>
+<li><p><code>docblockr</code>方便写注释</p>
 
 <ul>
-<li><p>Linux：</p>
-
-<ul>
-<li>/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</li>
+<li>/** 回车 就出来注释快</li>
 </ul>
 </li>
-<li><p>Windows:</p>
-
-<ul>
-<li>运行nginx.exe</li>
-</ul>
-
-
-<p>  打开浏览器访问Localhost，能访问则启动成功。</p></li>
+<li><p><code>emmet</code>前端开发必备<a href="http://www.w3cplus.com/tools/emmet-cheat-sheet.html">Emmet使用手册</a></p></li>
+<li><code>file-icons</code>美化文件类型对应的图标</li>
+<li><code>active-power-mode</code>炫酷的代码输入，谁用谁知道</li>
 </ul>
 
 </div>
@@ -246,7 +232,7 @@
   <section>
     <h1>Comments</h1>
     <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="/blog/2016/04/25/nginx" data-title="初识Nginx" data-url="http://ewanreton.github.io/blog/2016/04/25/nginx/"></div>
+	<div class="ds-thread" data-thread-key="/blog/2016/05/17/linux-atom-php-cs-fixer" data-title="Linx-Atom-PHP代码规范和插件推荐" data-url="http://ewanreton.github.io/blog/2016/05/17/linux-atom-php-cs-fixer/"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

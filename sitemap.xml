@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote/</loc>
+<lastmod>2016-05-17T23:38:25+08:00</lastmod>
+</url>
+<url>
+<loc>http://ewanreton.github.io/blog/2016/05/17/linux-atom-php-cs-fixer/</loc>
+<lastmod>2016-05-17T21:11:42+08:00</lastmod>
+</url>
+<url>
 <loc>http://ewanreton.github.io/blog/2016/05/16/nginx-url-rewrite/</loc>
 <lastmod>2016-05-16T23:36:12+08:00</lastmod>
 </url>
