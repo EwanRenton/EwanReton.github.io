@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T14:05:30+08:00</updated>
+  <updated>2016-05-18T14:55:10+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,377 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[php-get-remote-file]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file/"/>
+    <updated>2016-05-18T14:18:15+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file</id>
+    <content type="html"><![CDATA[<blockquote><p>接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。</p></blockquote>
+
+<ul>
+<li>fopen
+
+<ul>
+<li>获取本地文件</li>
+<li>获取到的资源绑定到一个流上面</li>
+</ul>
+</li>
+<li>file_get_centents
+
+<ul>
+<li>获取一些Get获得的数据，也可以POST，</li>
+<li>可以做断点续传</li>
+</ul>
+</li>
+<li>socket</li>
+<li>curl
+
+<ul>
+<li>可以保存cookie 并且在下一次发送出去</li>
+<li>做模拟登陆</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>fopen</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;fopen获取文件测试&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="cm">/*fopen打开本地文件*/</span>
+</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;test.html&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$fp</span><span class="o">=</span><span class="nb">fopen</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span><span class="s2">&quot;r+&quot;</span><span class="p">);</span><span class="c1">//r+ 只读，+表示如果不存在则创建</span>
+</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">)){</span>
+</span><span class='line'>      <span class="nv">$fc</span><span class="o">.=</span><span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span><span class="mi">1024</span><span class="p">);</span><span class="c1">//获取到的资源绑定到流上。这样来获取流数据</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;本地文件：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/*fopen打开远程url*/</span>
+</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.html&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$fp</span><span class="o">=</span><span class="nb">fopen</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出stream_get_meta_data&lt;/h4&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">dumpArr</span><span class="p">(</span><span class="nb">stream_get_meta_data</span><span class="p">(</span><span class="nv">$fp</span><span class="p">));</span>
+</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">)){</span>
+</span><span class='line'>      <span class="nv">$fc</span><span class="o">=</span><span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span><span class="mi">1024</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;远程url：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>file_get_centents</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;file_get_contents获取文件测试&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="cm">/*file_get_contents打开本地文件*/</span>
+</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;test.html&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;本地文件：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/*fopen打开远程url  get方法*/</span>
+</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;get方法获取远程url：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/*fopen打开远程url  post方法*/</span>
+</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="cm">/*构建请求头信息*/</span>
+</span><span class='line'>  <span class="nv">$post</span> <span class="o">=</span> <span class="k">array</span> <span class="p">(</span><span class="s1">&#39;type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;1&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$content</span> <span class="o">=</span> <span class="nb">http_build_query</span><span class="p">(</span><span class="nv">$post</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$content_length</span> <span class="o">=</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$content</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$options</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;http&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>          <span class="s1">&#39;method&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;header&#39;</span> <span class="o">=&gt;</span>
+</span><span class='line'>          <span class="s2">&quot;Content-type: application/x-www-form-urlencoded</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
+</span><span class='line'>          <span class="s2">&quot;Content-length: </span><span class="si">$content_length\r\n</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;content&#39;</span> <span class="o">=&gt;</span> <span class="nv">$content</span>
+</span><span class='line'>      <span class="p">)</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>  <span class="nv">$fc</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nb">stream_context_create</span><span class="p">(</span><span class="nv">$options</span><span class="p">));</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;post方法获取远程url：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>socket</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="cm">/*Accept: */</span>
+</span><span class='line'>  <span class="cm">/* Accept-Language: zh-cn,en-us;q=0.5</span>
+</span><span class='line'><span class="cm">     Content-Type: application/x-www-form-urlencoded</span>
+</span><span class='line'><span class="cm">     /*模拟浏览器信息*/</span>
+</span><span class='line'>      <span class="nx">User</span><span class="o">-</span><span class="nx">Agent</span><span class="o">:</span> <span class="nx">Mozilla</span><span class="o">/</span><span class="mf">4.0</span> <span class="p">(</span><span class="nx">compatible</span><span class="p">;</span> <span class="nx">MSIE</span> <span class="mf">5.0</span><span class="p">;</span> <span class="nx">Windows</span> <span class="nx">NT</span><span class="p">;</span> <span class="o">.</span><span class="nx">NET</span> <span class="nx">CLR</span> <span class="mf">1.0</span><span class="o">.</span><span class="mi">3705</span><span class="p">;</span> <span class="o">.</span><span class="nx">NET</span> <span class="nx">CLR</span> <span class="mf">1.1</span><span class="o">.</span><span class="mi">4322</span><span class="p">)</span>
+</span><span class='line'>      <span class="nx">Host</span><span class="o">:</span> <span class="nx">要发送到的主机地址</span>
+</span><span class='line'>      <span class="nx">Content</span><span class="o">-</span><span class="nx">Length</span><span class="o">:</span> <span class="nx">发送数据的长度</span>
+</span><span class='line'>      <span class="nx">Pragma</span><span class="o">:</span> <span class="nx">no</span><span class="o">-</span><span class="nx">cache</span>
+</span><span class='line'>      <span class="nx">Cache</span><span class="o">-</span><span class="nx">Control</span><span class="o">:</span> <span class="nx">no</span><span class="o">-</span><span class="nx">cache</span>
+</span><span class='line'>      <span class="nx">username</span><span class="o">=</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">password</span><span class="o">=</span><span class="nx">iask</span>   <span class="c1">//post发送的数据</span>
+</span><span class='line'>   <span class="o">*</span>
+</span><span class='line'>   <span class="o">*/</span>
+</span><span class='line'>  
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/*fsocket模拟get提交*/</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;fsocket模拟get提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php?type=1&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fsockopen</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span> <span class="mi">80</span><span class="p">,</span> <span class="nv">$errno</span><span class="p">,</span> <span class="nv">$errstr</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">=</span> <span class="s2">&quot;GET &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;?&quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot; HTTP/1.0</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Host: &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$write</span> <span class="o">=</span> <span class="nb">fputs</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span> <span class="nv">$head</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">)){</span>
+</span><span class='line'>      <span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$line</span><span class="o">.</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/*fsocket模拟post提交*/</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;fsocket模拟post提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$query</span><span class="o">=</span><span class="s2">&quot;type=1&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fsockopen</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span> <span class="mi">80</span><span class="p">,</span> <span class="nv">$errno</span><span class="p">,</span> <span class="nv">$errstr</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">=</span> <span class="s2">&quot;POST &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot; HTTP/1.0</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Host: &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Referer: http://&quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Content-type: application/x-www-form-urlencoded</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Content-Length: &quot;</span><span class="o">.</span><span class="nb">strlen</span><span class="p">(</span><span class="nb">trim</span><span class="p">(</span><span class="nv">$query</span><span class="p">))</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="nb">trim</span><span class="p">(</span><span class="nv">$query</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$write</span> <span class="o">=</span> <span class="nb">fputs</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span> <span class="nv">$head</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">))</span>  <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$line</span><span class="o">.</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>cURL</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="cm">/*curl模拟get提交*/</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;curl模拟get提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php?type=1&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//初始化</span>
+</span><span class='line'>  <span class="nv">$ch</span><span class="o">=</span><span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'>  <span class="c1">//设置选项，包括URL</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//执行并获取HTML文档内容</span>
+</span><span class='line'>  <span class="nv">$output</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;输出curl_getinfo相关信息&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">dumpArr</span><span class="p">(</span><span class="nv">$info</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//释放curl句柄</span>
+</span><span class='line'>  <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//打印获得的数据</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$output</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;curl模拟post提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$url</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$post_data</span> <span class="o">=</span> <span class="k">array</span> <span class="p">(</span><span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;1&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// post数据</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">// post的变量</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$post_data</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$output</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;输出curl_getinfo相关信息&lt;/h2&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">dumpArr</span><span class="p">(</span><span class="nv">$info</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//打印获得的数据</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$output</span><span class="p">);</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>以上几种方式用得较为多的是cURl,因为它可以保存COOKIE的特性，在PHP的网络爬虫中都离不开它。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP爬虫和微信自动投票]]></title>
@@ -6421,247 +6792,6 @@ server {
 
 <p>登录成功之后，鼠标选中本地文件，拖拽到右侧的远程站点，即可将文件上传到Linux云服务器
 <img src="http://mccdn.qcloud.com/img56b027728e1ec.png" alt="sd" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Nginx下PHP环境搭建1]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing/"/>
-    <updated>2016-04-26T22:53:05+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/26/nginx-php-huan-jing</id>
-    <content type="html"><![CDATA[<blockquote><p>Nginx下PHP环境搭建1</p></blockquote>
-
-<!--more-->
-
-
-<h1>一、需要准备的包</h1>
-
-<ul>
-<li>libiconv-1.7.tar.gz</li>
-<li>libmcrypt-2.5.7.tar.gz</li>
-<li>mcrypt-2.6.8.tar.gz</li>
-<li>mhash-0.9.3.tar.gz</li>
-<li>php-5.5.34.tar.bz2</li>
-</ul>
-
-
-<h1>二、具体安装</h1>
-
-<hr />
-
-<ol>
-<li><p>libiconv</p>
-
-<ol>
-<li>tar -zvxf libiconv-1.7.tar.gz</li>
-<li>cd libiconv-1.7</li>
-<li>./configure &ndash;prefix=/usr/local</li>
-<li>make</li>
-<li>make install</li>
-</ol>
-</li>
-<li><p>libmcrypt</p>
-
-<ol>
-<li>tar -zvxf libmcrypt-2.5.7.tar.gz</li>
-<li>cd libmcrypt-2.5.7</li>
-<li>./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>/sbin/ldconfig   //共享链接库</li>
-<li>./configure &ndash;enable-ltdl-install //内键指令</li>
-<li>make</li>
-<li>make install</li>
-</ol>
-</li>
-<li><p>mhash</p>
-
-<ol>
-<li>tar -zvxf mhash-0.9.3.tar.gz</li>
-<li>cd mhash-0.9.3</li>
-<li>./configure</li>
-<li>make</li>
-<li>make install</li>
-<li>ln -s /usr/local/lib/libmcrypt.la /usr/lib/ibmcrypt.la</li>
-<li>ln -s /usr/local/lib/libmcrypt.la.so.4 /usr/lib/libmcrypt.la.so.4</li>
-<li>ln -s /usr/local/lib/libmcrypt.la.so.4.4.8 /usr/lib/libmcrypt.la.so.4.4.8</li>
-<li>ln -s /usr/local/lib/libmhash.a /usr/lib/libmhash.a</li>
-<li>ln -s /usr/local/lib/libmhash.la /usr/lib/libmhash.la</li>
-<li>ln -s /usr/local/lib/libmhash.so /usr/lib/libmhash.so</li>
-<li>ln -s /usr/local/lib/libmhash.so.2 /usr/lib/libmhash.so.2</li>
-<li>ln -s /usr/local/lib/libmhash.so.2.0.1 /usr/lib/libmhash.so.2.0.1</li>
-</ol>
-</li>
-<li><p>mcrypt</p>
-
-<ol>
-<li>tar -zxvf mcrypt-2.6.8.tar.gz</li>
-<li>cd mcrypt-2.6.8</li>
-<li>/sbin/ldconfig</li>
-<li>./configure</li>
-<li>若报错则找不到LIBMCRYPT则
-
-<ol>
-<li>export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH</li>
-<li>./configure -with-libmcryp-prefix=/usr/local</li>
-</ol>
-</li>
-<li>make
-
-<ol>
-<li>报错打开报错的文件 vi /usr/local/include/mutils.h</li>
-<li>找到报错的那行看是哪个文件引入失败(mhash_config.h)</li>
-<li>find / -name mhash_config.h 在系统中找到该文件</li>
-<li>cp /home/Ewan/下载/mhash-0.9.3/mhash_config.h /usr/local/include 拷贝到include文件下</li>
-<li>make</li>
-</ol>
-</li>
-<li>make install</li>
-</ol>
-</li>
-<li><p>php-5.5.34.tar.bz2</p>
-
-<ol>
-<li>tar -jxvf php-5.5.34.tar.bz2</li>
-<li>cd php-5.5.34</li>
-<li>./configure &ndash;prefix=/usr/local/php &ndash;enable-fastcgi &ndash;enable-fpm
-
-<ol>
-<li>报错 yum install libxml2 libxml2-devel</li>
-<li>./configure &ndash;prefix=/usr/local/php &ndash;enable-fastcgi &ndash;enable-fpm</li>
-</ol>
-</li>
-<li>make ZEND_EXTRA_LIBS=&lsquo;-liconv&rsquo;</li>
-<li>make install
-
-<ol>
-<li>报错 vi /etc/ld.so.conf</li>
-<li>输入 /usr/local/lib</li>
-<li>make install</li>
-<li>如果还是出错 /sbin/ldconfig -v</li>
-<li>make install</li>
-<li>cp php.ini-dist /usr/local/php/etc/php.ini</li>
-</ol>
-</li>
-</ol>
-</li>
-<li><p>mysql (5.5版本以下)</p>
-
-<ol>
-<li>groupadd mysql //添加组</li>
-<li>useradd mysql -g mysql //添加用户</li>
-<li>tar -zxvf mysql-x.x.x</li>
-<li>cd mysql-x.x.x</li>
-<li>./configure &ndash;prefix=/usr/local/mysql &ndash;with-mysqld-ldflags=-all-static &ndash;with-client-ldflags=-all-static &ndash;with-readline &ndash;with-ssl</li>
-<li>/usr/local/mysql/bin/mysql_install_db &ndash;user//初始化数据库</li>
-<li>cp ./support-files/mysql.server /etc/init.d/mysql //复制启动项到系统中</li>
-<li>cp ./support-files/my-medium.cnf /etc/my.cnf</li>
-<li>chmod 755 /etc/init.d/mysql(755 分别代表文件拥有者，同组者，其他人的权限 rwx 7为111 可读可写可执行)</li>
-<li>cd /usr/local/mysql</li>
-<li>chown -R mysql . //将拥有者更改为mysql用户</li>
-<li>chgrp -R mysql . //归到mysql组</li>
-<li>/usr/local/mysql/bin/mysqladmin -u root password &lsquo;abc123&rsquo; //设置数据库密码</li>
-<li>报错 不能连接到local mysql</li>
-<li>ps -ef|grep mysql //找到mysql对应的进程号</li>
-<li>kill -9 xxxx //杀死进程</li>
-<li>/usr/local/mysql/bin/mysql_install_db &ndash;user//初始化数据库</li>
-<li>service mysql start //启动MYSQL</li>
-<li>/usr/local/mysql/bin/mysqladmin -u root password &lsquo;abc123&rsquo; //设置数据库密码</li>
-<li>/usr/local/mysql/bin/mysql -u root -p //测试输入的密码</li>
-<li>进入到mysql 后可以\q退出</li>
-</ol>
-</li>
-<li>安装mysql（5.5版本）
-  <a href="http://www.mysql.com/">下载Mysql5.5.4</a></li>
-</ol>
-
-
-<p><img src="http://shp.qpic.cn/txdiscuz_pic/0/_bbs_qcloud_com_forum_201503_10_171832lw4gbxwhq9z9vmho.png/0" alt="1" /></p>
-
-<p><img src="http://shp.qpic.cn/txdiscuz_pic/0/_bbs_qcloud_com_forum_201503_10_171836mubv0eb5010ewbjv.png/0" alt="1" /></p>
-
-<pre><code>1. tar zxvf mysql-5.5.40.tar.gz
-2. cd mysql-5.5.4
-3. yum install ncurses-devel cmake bison-devel libaio-devel gcc-c++ bison -y 
-    *  mysql5.5 版本之后，预编译的 configure命令改为了 cmake, 需要手动安装一下 cmake命令
-5.  cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/usr/local/mysql/data -DSYSCONFDIR=/etc -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci-- Library mysqlclient depends on OSLIBS -lpthread;m;rt;dl-- Configuring done-- Generating done-- Build files have been written to: /root/mysql-5.5.40 ————预编译无报错，成功。
-*  make 
-    *  [100%] Building CXX object mysql-test/lib/My/SafeProcess/CMakeFiles/my_safe_process.dir/safe_process.cc.oLinking CXX executable my_safe_process[100%] Built target my_safe_process————无报错，make正常。
-*   make install -- Installing: /usr/local/mysql/man/man1/mysql_fix_extensions.1 -- Installing: /usr/local/mysql/man/man1/mysqldumpslow.1 -- Installing: /usr/local/mysql/man/man1/mysql_secure_installation.1 -- Installing: /usr/local/mysql/man/man8/mysqld.8 ————无报错，make install正常。
-*    groupadd mysql ————创建mysql组
-*     useradd -g mysql mysql ————在mysql组中创建mysql用户
-* cp /usr/local/mysql/support-files/my-medium.cnf /etc/my.cnf ————默认没有mysql的配置文件，将源码包中的配置文件拷贝到etc下的配置文件中。
-*  /usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data ————初始化数据库，指定用户为mysql，家目录为/usr/local/mysql，数据库目录为/usr/local/mysql/data
-* chown -R root /usr/local/mysql/ ————改变目录的所有者
-* chown -R mysql /usr/local/mysql/data ————改变目录的所有者
-* chgrp -R mysql /usr/local/mysql/ ————改变目录的所属组
-*  export PATH=$PATH:/usr/local/mysql/bin ————将/usr/local/mysql/bin下的命令放到环境变量中
-*   /usr/local/mysql/bin/mysqld_safe --user=mysql &amp; ————启动mysql
-* mysql 
-    *  Welcome to the MySQL monitor.  Commands end with ; or \g.
-         Your MySQL connection id is 1
-</code></pre>
-
-<blockquote><p>ps:在实际的操作过程中上面在10步初始化数据库时有可能会error这时可以考虑用</p></blockquote>
-
-<pre><code> ps -ef|grep mysql //找到mysql对应的进程号
- kill -9 xxxx //杀死进程
-</code></pre>
-
-<blockquote><p>然后执行</p></blockquote>
-
-<pre><code> chown -R root /usr/local/mysql/ ————改变目录的所有者
- chown -R mysql /usr/local/mysql/data ————改变目录的所有者
- chgrp -R mysql /usr/local/mysql/ ————改变目录的所属组
- export PATH=$PATH:/usr/local/mysql/bin ————将/usr/local/mysql/bin下的命令放到环境变量中
- /usr/local/mysql/scripts/mysql_install_db --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data ————初始化数据库，指定用户为mysql，家目录为/usr/local/mysql，数据库目录为/usr/local/mysql/data
- /usr/local/mysql/bin/mysqld_safe &amp; 启动Mysql 或者
- /usr/local/mysql/bin/mysqld_safe --user=mysql &amp; ————启动mysql
- 在执行以下操作
-</code></pre>
-
-<h2>Mysql启动、停止的方法</h2>
-
-<pre><code>/usr/local/mysql/bin/mysqld_safe --user=mysql &amp;      启动
-mysqladmin –uroot –pxxx  shutdown                  停止
-tail -f /var/log/mysqld.log                        查看mysql的错误日志
-</code></pre>
-
-<h3>修改 mysql监听地址为127.0.0.1</h3>
-
-<pre><code>netstat -ntulp
-tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN      28253/mysqld       
-tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      1889/sshd    
-</code></pre>
-
-<p>默认是监听的0.0.0.0</p>
-
-<pre><code>vi /etc/my.cnf
-添加一列
-[mysqld]
-port            = 3306
-socket          = /tmp/mysql.socK
-bind-address=127.0.0.1
-# mysqladmin -uroot -p shutdow
-# /usr/local/mysql/bin/mysqld_safe --user=mysql &amp;
-保存并退出
- netstat -ntulp
-tcp        0      0 127.0.0.1:3306              0.0.0.0:*                   LISTEN      29103/mysqld   
-</code></pre>
-
-<p>————修改成功</p>
-
-<h2>修改 mysql的root密码</h2>
-
-<pre><code>use mysql
-update user set Password=PASSWORD('新密码') where User='root' and Host='localhost';
-flush privileges;flush privileges;
-# mysql -uroot -p
-Enter password:
-mysql&gt;
-</code></pre>
-
-<p>————修改新密码成功</p>
 ]]></content>
   </entry>
   

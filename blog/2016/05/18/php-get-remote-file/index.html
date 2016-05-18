@@ -5,11 +5,11 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Ewan Reton</title>
+	<title>php-get-remote-file - Ewan Reton</title>
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php Php-get-remote-file 接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。 fopen 获取本地文件
+	<meta name="description" content="Php-get-remote-file 接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。 fopen 获取本地文件
 获取到的资源绑定到一个流上面 file_get_centents 获取一些Get获得的数据，也可以POST，
 可以做断点续传 socket
 curl &hellip;">
@@ -22,7 +22,7 @@ curl &hellip;">
 
 	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://ewanreton.github.io/">
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file/">
 	<link href="/favicon.png" rel="shortcut icon">
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -122,37 +122,9 @@ curl &hellip;">
 				
 			
 			<div class="mid-col-container">
-				<div id="content" class="inner">
-<div itemscope itemtype="http://schema.org/Blog">
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-18T14:18:15+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/18/php-get-remote-file/" itemprop="url">Php-get-remote-file</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。</p></blockquote>
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Php-get-remote-file</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。</p></blockquote>
 
 <ul>
 <li>fopen
@@ -515,700 +487,52 @@ curl &hellip;">
 <hr />
 
 <p>以上几种方式用得较为多的是cURl,因为它可以保存COOKIE的特性，在PHP的网络爬虫中都离不开它。</p>
-
-		
-		
-	</div>
+</div>
 
 </article>
 
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	 
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
   
-
-
-<time datetime="2016-05-17T23:38:25+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
 </div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/17/wechat-auto-vote/" itemprop="url">PHP爬虫和微信自动投票</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天接触了PHP的模拟登陆和爬虫实战，涉及到了PHP获取远程文件的几种方式，防采集的一些方法，以及微信自动投票实战。</p></blockquote>
 
-<h1>PHP获取远程文件</h1>
 
-<p>PHP获取远程文件主要有以下几种方式：</p>
 
-<ul>
-<li>fopen</li>
-<li>file_get_centents</li>
-<li>socket</li>
-<li>curl</li>
-</ul>
-
-
-<p>过几天我们在结合实际代码分析这几种方式</p>
-
-<h1>防采集的一些方法</h1>
-
-<p>防采集的方法有很多，这里主要列出几种比较有效的</p>
-
-<ul>
-<li>短时间访问次数限制</li>
-<li>ip校验</li>
-<li>机器特征校验</li>
-<li>复杂加密</li>
-<li>混淆代码</li>
-</ul>
-
-
-<h1>微信自动投票工具</h1>
-
-<blockquote><p>这次主要分析这个。</p></blockquote>
-
-<p>首先，我们需要将微信投票界面分析到PC端，并用浏览器F12里的功能抓取到投票的请求地址和返回数据。如下：</p>
-
-<pre class="prettyprint linenums">
-http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=index&token=jdfsam1432614294&wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&id=27&sgssz=mp.weixin.qq.com
-
-http://wx.asplay.cn/index.php?
-g=Wap&
-m=Vote&
-a=index&                    //ThinkPHP里面一些参数
-token=jdfsam1432614294&     //当前主用户标示
-wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&
-id=27&      //当前投票ID
-sgssz=mp.weixin.qq.com
-下面是请求的地址：
-http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=add_vote&token=jdfsam1432614294&wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc
-发送的数据：
-wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc&tid=27&chid=53%2C&token=jdfsam1432614294&action=add_vote、
-投票成功返回的数据：
-{"success":1,"token":"jdfsam1432614294","wecha_id":"oQIrdjjArAZYwKOh3Y6-1HeuwvEc","tid":"27","chid":"53","arrpre":{"53":33.33,"54":0,"55":0,"56":66.67}}
-</pre>
-
-
-<p>基于以上的这些信息，我们就能自己模拟POST的数据，和用户标示了。但是仅仅做到这些是不够的，我们还需要模拟微信的内核。</p>
-
-<pre class="prettyprint linenums">
-微信内核的ua：//网上能找到
-Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0
-</pre>
-
-
-<figure class='code'><figcaption><span>../03/curlajax.class.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">curlajax</span><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$cookiejar</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$cookiefile</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$ua</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nv">$debug</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">__construct</span><span class="p">(){</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">debug</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">ua</span> <span class="o">=</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0&#39;</span><span class="p">;</span> <span class="c1">//这里模拟微信内核</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiejar</span> <span class="o">=</span> <span class="s1">&#39;cookie.txt&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiefile</span> <span class="o">=</span> <span class="s1">&#39;cookie.txt&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="sd">/****************************</span>
-</span><span class='line'><span class="sd">    *get 请求资源</span>
-</span><span class='line'><span class="sd">    *@param string 地址</span>
-</span><span class='line'><span class="sd">    *@param string referer</span>
-</span><span class='line'><span class="sd">    *@param boolen 是否返回头部</span>
-</span><span class='line'><span class="sd">    *@param array 头部附加cookie</span>
-</span><span class='line'><span class="sd">    ****************************/</span>
-</span><span class='line'>    <span class="k">function</span> <span class="nf">httpget</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$referer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nv">$withhead</span><span class="o">=</span><span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>        <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_URL</span><span class="p">,</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEJAR</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiejar</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEFILE</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiefile</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_HEADER</span><span class="p">,</span><span class="nv">$withhead</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//curl_setopt($ch,CURLOPT_AUTOREFERER,1);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_USERAGENT</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">ua</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_REFERER</span><span class="p">,</span><span class="nv">$referer</span><span class="p">);</span>
-</span><span class='line'>        <span class="nv">$r</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">debug</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="s1">&#39;&lt;pre&gt;&#39;</span><span class="p">;</span>
-</span><span class='line'>            <span class="nb">var_dump</span><span class="p">(</span><span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">));</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$r</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="sd">/****************************</span>
-</span><span class='line'><span class="sd">    *post 请求资源</span>
-</span><span class='line'><span class="sd">    *@param string 地址</span>
-</span><span class='line'><span class="sd">    *@param string referer</span>
-</span><span class='line'><span class="sd">    *@param array 提交数据</span>
-</span><span class='line'><span class="sd">    *@param boolen 是否返回头部</span>
-</span><span class='line'><span class="sd">    ****************************/</span>
-</span><span class='line'>    <span class="k">function</span> <span class="nf">httppost</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$referer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nv">$postdata</span><span class="o">=</span><span class="k">array</span><span class="p">(),</span><span class="nv">$withhead</span><span class="o">=</span><span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>        <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_URL</span><span class="p">,</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_HEADER</span><span class="p">,</span><span class="nv">$withhead</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//curl_setopt($ch,CURLOPT_AUTOREFERER,1);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEJAR</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiejar</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEFILE</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiefile</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_USERAGENT</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">ua</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_REFERER</span><span class="p">,</span><span class="nv">$referer</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_POST</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span><span class="nv">$postdata</span><span class="p">);</span>
-</span><span class='line'>        <span class="nv">$r</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">debug</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="s1">&#39;&lt;pre&gt;&#39;</span><span class="p">;</span>
-</span><span class='line'>            <span class="nb">var_dump</span><span class="p">(</span><span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">));</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$r</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>网上的cURL方法，我们这里有要用到</p>
-
-<figure class='code'><figcaption><span>autoVote.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s2">&quot;../03/curlajax.class.php&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;</span>
-</span><span class='line'><span class="x">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span>
-</span><span class='line'><span class="x">&lt;head&gt;</span>
-</span><span class='line'><span class="x">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;</span>
-</span><span class='line'><span class="x">&lt;title&gt;微信自动投票工具&lt;/title&gt;</span>
-</span><span class='line'><span class="x">&lt;/head&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="x">&lt;body&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cm">/*模拟POST登录*/</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;h1&gt;这是微信自动投票工具&lt;/h1&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$jkxy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">curlajax</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">debug</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">cookiejar</span> <span class="o">=</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;\cookie1.txt&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">cookiefile</span> <span class="o">=</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;\cookie1.txt&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="cm">/*模拟提交信息*/</span>
-</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="s2">&quot;oQIrdjj&quot;</span><span class="o">.</span><span class="nb">rand</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span><span class="mi">50000</span><span class="p">)</span><span class="o">.</span><span class="s2">&quot;wKOh3Y6-1HeuwvEc&quot;</span><span class="p">;</span><span class="c1">//用随机数来产生不同的用户ID</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="s2">&quot;wecha_id=&quot;</span><span class="o">.</span><span class="nv">$username</span><span class="o">.</span><span class="s2">&quot;&amp;tid=27&amp;chid=53%2C&amp;token=jdfsam1432614294&amp;action=add_vote&quot;</span><span class="p">;</span><span class="c1">//模拟不同的用户提交的数据</span>
-</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="s1">&#39;http://wx.asplay.cn/index.php?g=Wap&amp;m=Vote&amp;a=add_vote&amp;token=jdfsam1432614294&amp;wecha_id=&#39;</span><span class="o">.</span><span class="nv">$username</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">httppost</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$data</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span><span class="c1">//获取返回数据</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nx">checkstr</span><span class="p">(</span><span class="nv">$r</span><span class="p">,</span><span class="s1">&#39;&quot;success&quot;:1&#39;</span><span class="p">)</span><span class="o">==</span><span class="k">true</span><span class="p">){</span> <span class="c1">//根据返回的数据判断是否投票成功</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;投票成功&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;投票失败&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>    <span class="sd">/****************************</span>
-</span><span class='line'><span class="sd">    *检查$needle中是否含有$findstr</span>
-</span><span class='line'><span class="sd">    *@param string needle </span>
-</span><span class='line'><span class="sd">    *@param string findstr</span>
-</span><span class='line'><span class="sd">    ****************************/</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">checkstr</span><span class="p">(</span><span class="nv">$needle</span><span class="p">,</span><span class="nv">$findstr</span><span class="p">){</span>
-</span><span class='line'>  <span class="nv">$tempstr</span><span class="o">=</span><span class="nb">explode</span><span class="p">(</span><span class="nv">$findstr</span><span class="p">,</span><span class="nv">$needle</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$tempstr</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">){</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="k">else</span><span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;/body&gt;</span>
-</span><span class='line'><span class="x">&lt;/html&gt; </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过这个实战，感觉突然打开了一扇大门。要仔细研究下爬虫的相关知识了。</p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-17T21:11:42+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/linux/'>linux</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/17/linux-atom-php-cs-fixer/" itemprop="url">Linx-Atom-PHP代码规范和插件推荐</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天在使用Atom的过程中，突然好怀念以前PHPStrom的代码的格式化。就开始找Atom的插件。</p>
-
-<h1>Atom-beautify</h1>
-
-<ul>
-<li>首先是代码格式化插件<code>Atom-Beautify</code>这个插件支持大部分的语言的格式化。</li>
-</ul>
-</blockquote>
-
-
-		
-		<a href="/blog/2016/05/17/linux-atom-php-cs-fixer/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-16T23:36:12+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/nginx/'>nginx</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/16/nginx-url-rewrite/" itemprop="url">Nginx下ThinkPHP应用Url重写</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>在调Nginx的虚拟主机时发现，我之前的TP改写的商城没放过来（之前挂载BAE上），把BAE上的项目移植过来过后发现，只能访问主页其他页面全部都报404错误</p></blockquote>
-
-<p>到处查资料过后发现，是因为nginx下ThinkPHP应用的url重写和Apache有点不一样。</p>
-
-<p><a href="http://www.kancloud.cn/manual/thinkphp/1866">官方手册</a>说在Nginx低版本中，是不支持PATHINFO的，但是可以通过在Nginx.conf中配置转发规则实现：</p>
-
-<pre class="prettyprint linenums">
- location / { // …..省略部分代码
-   if (!-e $request_filename) {
-   rewrite  ^(.*)$  /index.php?s=$1  last;
-   break;
-    }
- }
-</pre>
-
-
-<p>但是好像对我并不适用，在网上找到一篇博文成功解决了问题。</p>
-
-<p><a href="http://blog.jjonline.cn/linux/159.html">原文链接</a></p>
-
-<p>按照博文的方法在我的虚拟主机配置中（/etc/nginx/conf.d/shop.ewanreton.cn.conf）添加了如下代码：</p>
-
-<pre class="prettyprint linenums">
-location / {
- root /usr/share/nginx/html/shop;
- index index.html index.htm index.php;
- if (!-e $request_filename) {
- rewrite ^/index.php(.*)$ /index.php?s=$1 last;
- rewrite ^(.*)$ /index.php?s=$1 last;
- break;
- }
-}
-</pre>
-
-
-<p>这里我仅仅对我用ThinkPHP框架写的应用进行了配置，如果需要所有都配置的话，推荐直接写在Nginx的配置文件中。</p>
-
-<p>虽然解决了这个问题，但是对这个问题的核心还是没有搞太懂，以后深入学习过后再回来补充这篇文章。</p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-16T23:36:00+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/nginx/'>nginx</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/16/nginx-virtualhost/" itemprop="url">Nginx虚拟主机配置</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天闲下来决定把腾讯云服务器上的网站弄成虚拟主机。毕竟通过 /xx/xx访问也不成样子 0.0</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/16/nginx-virtualhost/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-15T16:12:15+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/15/qq-login/" itemprop="url">QQ登录Demo</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天完成了一个QQ登录的小Deom</p></blockquote>
-
-<h1>前置条件</h1>
-
-<ul>
-<li>一个QQ号</li>
-<li>一台公网通过域名可访问的web服务器</li>
-</ul>
-
-
-
-		
-		<a href="/blog/2016/05/15/qq-login/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-14T20:08:26+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/14/memcache/" itemprop="url">PHP-Memcache</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h1>什么是Memcache</h1>
-
-<blockquote><p>Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中，所以这将会加速查询速度。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/14/memcache/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-13T20:26:58+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/13/spl/" itemprop="url">Spl初识</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h1>什么是SPL</h1>
-
-<blockquote><p>SPL是Standard PHP Library（PHP标准库）的缩写。
-根据官方定义，它是"a collection of interfaces and classes that are meant to solve standard problems"。但是，目前在使用中，SPL更多地被看作是一种使object（物体）模仿array（数组）行为的interfaces和classes。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/13/spl/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-12T20:52:24+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/12/php-curl/" itemprop="url">cURL</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h1>cURl的概念</h1>
-
-<blockquote><p>cURL（Client URL Library Functions）使用URL语法传输数据的命令行工具</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/12/php-curl/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-12T14:58:33+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/12/ubuntu-huan-jing-da-jian/" itemprop="url">Ubuntu环境搭建</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0.</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/12/ubuntu-huan-jing-da-jian/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-</div>
-<nav id="pagenavi">
-    
-    
-        <a href="/posts/2" class="next">Next</a>
-		
-    
-    <div class="center"><a href="/blog/archives">Blog Archives</a></div>
-</nav>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="/blog/2016/05/18/php-get-remote-file" data-title="php-get-remote-file" data-url="http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"ewanreton"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end --></div>
+  </section>
 </div>
 			</div>
 			<footer id="footer" class="inner">Copyright &copy; 2016
