@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T13:47:32+08:00</updated>
+  <updated>2016-05-18T14:05:30+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,259 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress代码高亮问题（Windows10）]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/04/30/octopress-code-highlight/"/>
+    <updated>2016-04-30T00:57:01+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/04/30/octopress-code-highlight</id>
+    <content type="html"><![CDATA[<blockquote><p>首先我要用祭出一段代码。。</p></blockquote>
+
+<!--more-->
+
+
+<pre><code class="php">&lt;?php
+    for($i=0;i&lt;100;i++){
+    echo "Octopress 的代码高亮真的真的有坑！！！"
+}
+
+?&gt;
+</code></pre>
+
+<p>之前在写博客的时候就有发现，我的用markdown语法写出来的代码好像是和别人的不一样。后来发现是我的代码没有用高亮。人家也是一个有追求的PHPer（尴尬脸）。我就查markdown语法啊。
+语法是这样给我说的</p>
+
+<p><strong>markdown 语法实现代码高亮有两种方法</strong></p>
+
+<pre><code>1  ```[language] [title] [url] [link text]
+     code snippet
+   ```
+2 {\% codeblock [title] [lang:language] [url] [link text] \%}
+    code snippet
+{\% endcodeblock \%}
+</code></pre>
+
+<p>唉，原来这么简单。改代码走起->rake generate ->reke deploy</p>
+
+<p>去看看我可爱的带颜色的代码呢。</p>
+
+<p>！！！！！
+为什么我的博客一片空白了！！！</p>
+
+<p>然后我去度娘，去google。。</p>
+
+<p>终于找到跟我一样懵逼的小伙伴<a href="http://www.tuicool.com/articles/myqIba">戳过去同情他</a></p>
+
+<hr />
+
+<blockquote><p>按照这个小伙伴的思路我开始装Python</p></blockquote>
+
+<p>我装的是<a href="https://www.python.org/downloads/release/python-2711/">Python2.7.11</a> 选择 Windows x86-64 MSI installer下载。然后一直下一步安装。</p>
+
+<blockquote><p>安装完成后添加环境变量
+<a href="http://www.blogjava.net/lishunli/archive/2012/03/18/372115.html">这个博客可以参考</a>
+鼠标右击我的电脑，选择属性，再选择高级系统设置，右下角有一个环境变量，点进去</p></blockquote>
+
+<p><img src="https://pic1.zhimg.com/6afe9ded178646e6c71e0c3fd908bdb8_b.jpg" alt="1" /></p>
+
+<p>找到path项，选择编辑，把你的Python安装路径(如：C:\Python27)输入进去，注意要用一个 ; 符号与前面的路径分开，再点确定就可以了。完事后可以运行cmd，输入python，如下显示就是成功了
+<img src="https://pic4.zhimg.com/7c56fca865253473857066067a0c053b_b.jpg" alt="2" /></p>
+
+<blockquote><p>这个时候突然发现了另一篇博文</p></blockquote>
+
+<p>这个博文看起来要简单点<a href="http://www.cnblogs.com/oec2003/archive/2013/05/27/3100896.html">传送门</a></p>
+
+<blockquote><p>按照下一篇博文的方法</p></blockquote>
+
+<pre class="prettyprint linenums">
+安装Python
+安装Python,也是一路next就可以，博客的代码高亮用到了Python的Pygments模块，在Python中安装第三方库需要使用easy_install，在下面地址下载跟Python相对应的安装程序安装后就可以使用easy_install了。
+
+https://pypi.python.org/pypi/setuptools
+easy_install会安装在Python安装目录的Scripts目录中，例如我的Python目录是C:\Python27，所以需要将C:\Python27\Scripts目录加入到环境变量中才能在命令提示符中使用easy_install命令。
+
+在命令提示符中输入如下命令就可以安装Pygments了。
+
+easy_install pygments
+</pre>
+
+
+<p><a href="https://pypi.python.org/pypi/setuptools">https://pypi.python.org/pypi/setuptools</a>去找到Windows (simplified)又懵逼了。它给了一段代码需要自己编译运行<a href="https://bootstrap.pypa.io/ez_setup.py">ez_setup.py</a>新建文本文档将网页上的代码全部粘贴下来，保存重命名为ez_setup.py</p>
+
+<pre class="prettyprint linenums">
+ Win+R
+ cmd
+ 进到你刚刚保存的那文件的路径
+ python ez_setup.py //安装easy_install
+ 等到安装完成过后
+ 将C:\Python27\Scripts目录加入到环境变量中前面的C:\Python27\和你之前添加的Python的环境变量一样
+ easy_install pygments
+ 等到这一步完成后，基本就算大工告成了
+</pre>
+
+
+<p> 如果你还是出现相同问题的话，那请找网管重启机器。</p>
+
+<hr />
+
+<pre><code class="php">&lt;?php
+    echo"不出意外的话你的问题也应该解决了。\n"
+    echo"你看我是不是一段有颜色的代码啊！";
+?&gt;
+</code></pre>
+
+<h1>后记</h1>
+
+<blockquote><p>在解决上述问题的过程中，了解到另一种代码高亮的方法</p></blockquote>
+
+<p><a href="http://jingyan.baidu.com/article/67508eb4e660ed9cca1ce4ec.html">请戳这里</a></p>
+
+<p>使用google-code-prettify可以用来很方便地对网页中的程序代码进行高亮显示,从而在视觉上使得网页上的代码看得比较舒服,这对网站站长来说是很重要的。</p>
+
+<p>有两种方法来启用google-code-prettify,下面简要介绍一下步骤。</p>
+
+<blockquote><p>方法一</p></blockquote>
+
+<p>(1) 从<a href="https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953">https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953</a> 中打包下载pretty.css以及pretty.js,并保存到本地服务器的相应目录中来引用</p>
+
+<p>(2) 引用pretty.css以及pretty.js,然后在网页中引用,引用方法为</p>
+
+<pre><code>&lt;link href="你保存的目录/prettify.css" type="text/css" rel="stylesheet" /&gt;
+
+&lt;script type="text/javascript" src="你保存的目录/prettify.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>(3)</p>
+
+<pre><code>&lt;body&gt;标签改为&lt;body onload="prettyPrint()"&gt;
+</code></pre>
+
+<p>(4) 将源代码用标签</p>
+
+<pre><code>&lt;pre class="prettyprint linenums"&gt;这是你的代码&lt;/pre&gt;
+</code></pre>
+
+<p>包含起来,例如</p>
+
+<pre><code>&lt;pre class="prettyprint linenums"&gt;
+
+#include "x.h"
+
+main(){
+
+ print("hello world!");
+
+}
+
+&lt;/pre&gt;
+</code></pre>
+
+<p>相应的显示效果为:</p>
+
+<h2><img src="http://hiphotos.baidu.com/exp/pic/item/0fb505d5ad6eddc4ef4d78d73bdbb6fd52663331.jpg" alt="3" /></h2>
+
+<blockquote><p>方法二</p></blockquote>
+
+<p>(1) 到网址 <a href="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js">https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js</a> 中或者从<a href="http://www.colafile.com/file/145957">http://www.colafile.com/file/145957</a> 下载run_prettify.js文件</p>
+
+<p>(2) 引用run_prettify.js文件,方法为</p>
+
+<pre><code>&lt;script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>或者</p>
+
+<pre><code>&lt;script src="你保存的目录/run_prettify.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>(3) 将源代码用标签</p>
+
+<pre><code>&lt;pre class="prettyprint"&gt;这是你的代码&lt;/pre&gt;
+</code></pre>
+
+<p>包含起来,例如</p>
+
+<pre><code>&lt;pre class="prettyprint"&gt;
+
+#include "x.h"
+
+main(){
+
+    print("hello world!");
+
+}
+
+&lt;/pre&gt;
+</code></pre>
+
+<p>相应的显示效果为:</p>
+
+<p><img src="http://hiphotos.baidu.com/exp/pic/item/72ccb7773912b31b40ea01058418367adbb4e1de.jpg" alt="4" /></p>
+
+<p>如果你有更高的使用要求，可以到<a href="https://code.google.com/p/google-code-prettify/wiki/GettingStarted">https://code.google.com/p/google-code-prettify/wiki/GettingStarted</a>这个网页中看更高级的使用方法</p>
+
+<hr />
+
+<p>5/17/2016 8:28:40 PM  更新</p>
+
+<blockquote><p>设置显示行号</p></blockquote>
+
+<p><pre class="prettyprint linenums">
+1、删掉prettify里的这两个样式。<br/>
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}</p>
+
+<p>2、替换以下内容，已经存在的替换，不存在的新增。<br/>
+pre.prettyprint {<br/>
+ padding: 8px;<br/>
+ background-color: #f7f7f9;<br/>
+ border: 1px solid #e1e1e8;<br/>
+}<br/>
+.prettyprint.linenums {<br/>
+ -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
+ -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
+ box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;<br/>
+}</p>
+
+<p>/<em> Specify class=linenums on a pre to get line numbering </em>/<br/>
+ol.linenums {<br/>
+ margin: 0 0 0 33px; /<em> IE indents via margin-left </em>/<br/>
+} <br/>
+ol.linenums li {<br/>
+ padding-left: 12px;<br/>
+ color: #bebec5;<br/>
+ line-height: 18px;<br/>
+ text-shadow: 0 1px 0 #fff;<br/>
+}<br/>
+3、在<pre>标签里面一定不能有<br/>标签,要换行直接回车.<br/>
+</pre></p>
+
+<hr />
+
+<h1>但是</h1>
+
+<p>这种方法在使用过程中，当是PHP代码时：如</p>
+
+<pre><code>&lt;pre class="prettyprint php"&gt;
+    &lt;?php
+        echo "test!";
+    ?&gt;
+&lt;/pre&gt;
+</code></pre>
+
+<p>这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</p>
+
+<p>改成如下格式就能正常实现代码高亮效果。</p>
+
+<pre><code>    &lt;pre class="prettyprint php"&gt;
+        //去掉了PHP的开始和结束符
+        echo "test!";
+
+    &lt;/pre&gt;
+</code></pre>
+
+<p>我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[解决 Octopress 警告 Layout Nil Requested]]></title>

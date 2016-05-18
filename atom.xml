@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T13:47:32+08:00</updated>
+  <updated>2016-05-18T14:05:30+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -28,10 +28,11 @@
 <li>fopen</li>
 <li>file_get_centents</li>
 <li>socket</li>
-<li>curl
-过几天我们在结合实际代码分析这几种方式</li>
+<li>curl</li>
 </ul>
 
+
+<p>过几天我们在结合实际代码分析这几种方式</p>
 
 <h1>防采集的一些方法</h1>
 
