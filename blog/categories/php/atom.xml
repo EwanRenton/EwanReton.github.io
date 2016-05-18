@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T00:11:14+08:00</updated>
+  <updated>2016-05-18T13:47:32+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -22,21 +22,29 @@
 
 <h1>PHP获取远程文件</h1>
 
-<p>PHP获取远程文件主要有以下几种方式：
-* fopen
-* file_get_centents
-* socket
-* curl
-过几天我们在结合实际代码分析这几种方式</p>
+<p>PHP获取远程文件主要有以下几种方式：</p>
+
+<ul>
+<li>fopen</li>
+<li>file_get_centents</li>
+<li>socket</li>
+<li>curl
+过几天我们在结合实际代码分析这几种方式</li>
+</ul>
+
 
 <h1>防采集的一些方法</h1>
 
-<p>防采集的方法有很多，这里主要列出几种比较有效的
-* 短时间访问次数限制
-* ip校验
-* 机器特征校验
-* 复杂加密
-* 混淆代码</p>
+<p>防采集的方法有很多，这里主要列出几种比较有效的</p>
+
+<ul>
+<li>短时间访问次数限制</li>
+<li>ip校验</li>
+<li>机器特征校验</li>
+<li>复杂加密</li>
+<li>混淆代码</li>
+</ul>
+
 
 <h1>微信自动投票工具</h1>
 
