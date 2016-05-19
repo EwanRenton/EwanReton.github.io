@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-19T17:25:28+08:00</updated>
+  <updated>2016-05-19T17:27:47+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -244,6 +244,9 @@ spl_autoload会把类名转化为小写进行文件搜索，
     <updated>2016-05-18T14:18:15+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file</id>
     <content type="html"><![CDATA[<blockquote><p>接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。</p></blockquote>
+
+<!--more-->
+
 
 <ul>
 <li>fopen

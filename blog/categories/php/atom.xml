@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-19T17:25:28+08:00</updated>
+  <updated>2016-05-19T17:27:47+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -602,6 +602,9 @@ spl_autoload会把类名转化为小写进行文件搜索，
 <span class='line-number'>540</span>
 <span class='line-number'>541</span>
 <span class='line-number'>542</span>
+<span class='line-number'>543</span>
+<span class='line-number'>544</span>
+<span class='line-number'>545</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
 </span><span class='line'><span class="k">namespace</span> <span class="nx">libs</span><span class="p">;</span>
 </span><span class='line'><span class="k">use</span> <span class="nx">\PDO</span><span class="p">;</span>
@@ -716,6 +719,9 @@ spl_autoload会把类名转化为小写进行文件搜索，
 </span><span class='line'><span class="sb">    &lt;updated&gt;2016-05-18T14:18:15+08:00&lt;/updated&gt;</span>
 </span><span class='line'><span class="sb">    &lt;id&gt;http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file&lt;/id&gt;</span>
 </span><span class='line'><span class="sb">    &lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;blockquote&gt;&lt;p&gt;接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;!--more--&gt;</span>
+</span><span class='line'>
 </span><span class='line'>
 </span><span class='line'><span class="sb">&lt;ul&gt;</span>
 </span><span class='line'><span class="sb">&lt;li&gt;fopen</span>
