@@ -1,0 +1,265 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>PHP-namespace-use用法 - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="PHP-namespace-use用法 今天在看视频的时候发现作者用到了namespce和use。以前只在ThinkPHP框架中看到过这种用法，以为是ThinkPHP框架特有的，也就一直没上心。今天有又看到了觉定深入了解下。 什么是命名空间？ 从广义上来说，命名空间是一种封装事物的方法。 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/18/php-namespace-use/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>	<link type="text/css" rel="stylesheet" href='/prettify/prettify.css' >
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
+	<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+
+<body onload="prettyPrint()">
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="main-nav"><section>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>linux (5)</a></li>
+<li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
+<li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (12)</a></li>
+<li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
+
+  </ul>
+</section></nav> 
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">PHP-namespace-use用法</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>今天在看视频的时候发现作者用到了namespce和use。以前只在ThinkPHP框架中看到过这种用法，以为是ThinkPHP框架特有的，也就一直没上心。今天有又看到了觉定深入了解下。</p></blockquote>
+
+<!--more-->
+
+
+<h1>什么是命名空间？</h1>
+
+<p>从广义上来说，命名空间是一种封装事物的方法。在很多地方都可以见到这种抽象概念。例如，在操作系统中目录用来将相关文件分组，对于目录中的文件来说，它就扮演了命名空间的角色。具体举个例子，文件 foo.txt 可以同时在目录/home/greg 和 /home/other 中存在，但在同一个目录中不能存在两个 foo.txt 文件。另外，在目录 /home/greg 外访问 foo.txt 文件时，我们必须将目录名以及目录分隔符放在文件名之前得到 /home/greg/foo.txt。这个原理应用到程序设计领域就是命名空间的概念。</p>
+
+<p>在PHP中，命名空间用来解决在编写类库或应用程序时创建可重用的代码如类或函数时碰到的两类问题：</p>
+
+<ol>
+<li>用户编写的代码与PHP内部的类/函数/常量或第三方类/函数/常量之间的名字冲突。</li>
+<li>为很长的标识符名称(通常是为了缓解第一类问题而定义的)创建一个别名（或简短）的名称，提高源代码的可读性。</li>
+</ol>
+
+
+<p>下面介绍几种使用namespace和use的方法:</p>
+
+<p>namespace（以下简称ns）。在定义了一个ns之后，下面所申明的class、interface、const（不包含variable）都是在申明的ns这个“域”里面的。当引用一个申明了ns的包含文件，想要调用这个ns里面的东西，那必须调整当前脚本也到此ns域，否则就得用全称（）包含ns全称）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">// inc.php  </span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Foo</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Bar</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 访问Foo的第一种方法，用全称  </span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;inc.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$foo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Foo\Bar</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 访问Foo的第二种方法  </span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Foo</span><span class="p">;</span> <span class="c1">// 调整当前脚本到Foo这个ns域，而且namespace申明必须在第一句  </span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;inc.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$foo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bar</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>use关键字目的是使用ns的别名：</em></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">// 比如  </span>
+</span><span class='line'><span class="k">use</span> <span class="nx">A\Very\Long\Namespace</span> <span class="k">as</span> <span class="nx">Ns</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 这样就可以用Ns来代替A/Very/Long/Namespace这个ns下定义的东西  </span>
+</span><span class='line'><span class="nv">$foo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Ns\Foo</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是在一些开源项目里面经常会看到use Ns\Component这样的用法，没有用as，这让我以前一直在思考use是否还有第二种用法，糟糕的是php的文档里面也没有对此用法有描述，只能靠猜测，后来仔细想过这个问题，得出一个比较靠谱的结论是use可以省略as以及后面的别名而直接把ns最后一个节点的名字当作别名，感觉是不是很像ln -s命令的用法呢：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">// 第三种用法  </span>
+</span><span class='line'><span class="k">require</span> <span class="s1">&#39;inc.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">Foo\Bar</span><span class="p">;</span> <span class="c1">// 这样Bar就等于Foo\Bar了  </span>
+</span><span class='line'><span class="nv">$foo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bar</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	 
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+  
+</div>
+
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="/blog/2016/05/18/php-namespace-use" data-title="PHP-namespace-use用法" data-url="http://ewanreton.github.io/blog/2016/05/18/php-namespace-use/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"ewanreton"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end --></div>
+  </section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+<!--
+-->
+
+
+</body>
+</html>

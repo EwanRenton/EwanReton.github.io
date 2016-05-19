@@ -9,10 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php PHP获取远程文件的几种方式 接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。 fopen 获取本地文件
-获取到的资源绑定到一个流上面 file_get_centents 获取一些Get获得的数据，也可以POST，
-可以做断点续传 socket
-curl &hellip;">
+	<meta name="description" content="php php手机归属地查询Demo 看了视频过后准备自己撸一个PHP的手机归属地查询。这个Demo的思路和方法其实算不上难。但是这个Demo作者使用了框架的思维并且用到了SPL等知识。以前没有写过这样的代码，所以决定自己写一次。 下面具体说说这个Demo中遇到的一些问题。 SPL- &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,7 +78,7 @@ curl &hellip;">
 <li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (10)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (12)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -124,6 +121,212 @@ curl &hellip;">
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-18T22:37:17+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/18/php-phone-location/" itemprop="url">php手机归属地查询Demo</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>看了视频过后准备自己撸一个PHP的手机归属地查询。这个Demo的思路和方法其实算不上难。但是这个Demo作者使用了框架的思维并且用到了SPL等知识。以前没有写过这样的代码，所以决定自己写一次。</p></blockquote>
+
+<h1>下面具体说说这个Demo中遇到的一些问题。</h1>
+
+<p><strong>SPL-AutoLoad</strong></p>
+
+<p>在使用SPL的autoload时，借助以前的Spl的代码来实际使用，发现在实际的项目中老是出现无法加载的情况。
+先把具体代码贴出来</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>  <span class="k">use</span> <span class="nx">app\MobileQuery</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">spl_autoload_extensions</span><span class="p">();</span>
+</span><span class='line'>    <span class="nb">set_include_path</span><span class="p">(</span><span class="nb">get_include_path</span><span class="p">()</span><span class="o">.</span><span class="nx">PATH_SEPARATOR</span><span class="o">.</span><span class="s2">&quot;libs/&quot;</span><span class="o">.</span><span class="nx">PATH_SEPARATOR</span><span class="o">.</span><span class="s2">&quot;app/&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">spl_autoload_register</span><span class="p">();</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='PHP'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span> <span class="nx">libs</span><span class="o">/</span><span class="nx">mypdo</span><span class="o">.</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">libs</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">\PDO</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">mypdo</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上，当我将<code>libs/mypdo.php</code>命名为<code>MyPdo.php</code>时，在实例化<code>mypdo</code>就会发生不能加载的情况，而如果命名成小写就没有问题。
+原因如下:</p>
+
+<pre class="prettyprint linenums">
+WINDOWS大小写不敏感，而在LINUX下区分大小写，
+spl_autoload会把类名转化为小写进行文件搜索，
+这样就造成linux下无法正常include文件.
+解决办法:
+1.索性把被包含文件改成小写；
+2.扫目录得到文件列表，然后遍历列表去匹配出正确文件名，包含之。
+</pre>
+
+
+<p><strong>PHP内存不够</strong></p>
+
+<p>这个其实问题是出在对命名空间理解不透彻。</p>
+
+<p>之前在使用PDO的时候为了方便，直接将自定义的PDO操作类命名为<code>PDO.php</code>并且在构造函数中实例化PDO对象。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">libs</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">\PDO</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">PDO</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s2">&quot;mysql:host=&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db_host</span><span class="o">.</span><span class="s2">&quot;;dbname=&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db_name</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db_user</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db_pass</span><span class="p">);</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="s2">&quot;SET CHARACTER SET&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db_charset</span><span class="p">);</span>
+</span><span class='line'>                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="s2">&quot;SET NAMES&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db_charset</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">print</span> <span class="s2">&quot;Error!:&quot;</span><span class="o">.</span><span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">die</span><span class="p">();</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一直报错，PHP每次不够，改了很多次<code>php.ini</code>都没用。后来突然发现是我在<code>new PDO</code>的时候它实际上是<code>new</code>的自己本身，造成了一个死循环。</p>
+
+<p>后来将类名改成<code>mypdo</code>后发现找不到PDO。</p>
+
+<p>原来是我这里用了命名空间的概念，如果想用PDO需要在前面加入</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">use</span> <span class="nx">\PDO</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>。</p>
+
+<p><em>*MySQL删除json_encode()出来的*</em></p>
+
+<p>在将数据保存到数据库后，在读数据时不能<code>json_decode</code>对应的中文。</p>
+
+<p>后来发现是在存入数据库时，中文编码出来的<code>\</code>被删除了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="o">:</span><span class="s2">&quot;\u232e234\e23&quot;</span><span class="p">}</span><span class="c1">//json_encode的结果</span>
+</span><span class='line'><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="o">:</span><span class="s2">&quot;u232e234e23&quot;</span><span class="p">}</span><span class="c1">//存到数据库的结果</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解决方法:
+在外层调用一下函数addslashes();这个函数会在每个反斜杠的前面添加反斜杠，如此这般就可以存进数据库了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">addslashes</span><span class="p">(</span><span class="nb">json_encode</span><span class="p">(</span><span class="nv">$review_log</span><span class="p">));</span><span class="c1">//这样处理后存进数据库就不回丢失“\&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后我将这个Demo放到了GitHub：<a href="https://github.com/EwanReton/PhpPhoneLocation">https://github.com/EwanReton/PhpPhoneLocation</a></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-18T22:14:17+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/18/php-namespace-use/" itemprop="url">PHP-namespace-use用法</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>今天在看视频的时候发现作者用到了namespce和use。以前只在ThinkPHP框架中看到过这种用法，以为是ThinkPHP框架特有的，也就一直没上心。今天有又看到了觉定深入了解下。</p></blockquote>
+
+
+		
+		<a href="/blog/2016/05/18/php-namespace-use/" class="more-link">阅读全文&rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -937,72 +1140,6 @@ curl &hellip;">
 
 		
 		<a href="/blog/2016/05/13/spl/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-12T20:52:24+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/12/php-curl/" itemprop="url">cURL</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h1>cURl的概念</h1>
-
-<blockquote><p>cURL（Client URL Library Functions）使用URL语法传输数据的命令行工具</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/12/php-curl/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-12T14:58:33+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/12/ubuntu-huan-jing-da-jian/" itemprop="url">Ubuntu环境搭建</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>在经历上次把Centos玩坏的经历过后，我还是回到Ubuntu吧。毕竟这个环境配置，软件安装都要简单得多0 0.</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/12/ubuntu-huan-jing-da-jian/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

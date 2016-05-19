@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-18T15:06:19+08:00</updated>
+  <updated>2016-05-19T17:25:28+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,440 +14,53 @@
 
   
   <entry>
-    <title type="html"><![CDATA[PHP获取远程文件的几种方式]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file/"/>
-    <updated>2016-05-18T14:18:15+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file</id>
-    <content type="html"><![CDATA[<blockquote><p>接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。</p></blockquote>
+    <title type="html"><![CDATA[php手机归属地查询Demo]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/18/php-phone-location/"/>
+    <updated>2016-05-18T22:37:17+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/18/php-phone-location</id>
+    <content type="html"><![CDATA[<blockquote><p>看了视频过后准备自己撸一个PHP的手机归属地查询。这个Demo的思路和方法其实算不上难。但是这个Demo作者使用了框架的思维并且用到了SPL等知识。以前没有写过这样的代码，所以决定自己写一次。</p></blockquote>
 
-<ul>
-<li>fopen
+<h1>下面具体说说这个Demo中遇到的一些问题。</h1>
 
-<ul>
-<li>获取本地文件</li>
-<li>获取到的资源绑定到一个流上面</li>
-</ul>
-</li>
-<li>file_get_centents
+<p><strong>SPL-AutoLoad</strong></p>
 
-<ul>
-<li>获取一些Get获得的数据，也可以POST，</li>
-<li>可以做断点续传</li>
-</ul>
-</li>
-<li>socket</li>
-<li>curl
-
-<ul>
-<li>可以保存cookie 并且在下一次发送出去</li>
-<li>做模拟登陆</li>
-</ul>
-</li>
-</ul>
-
-
-<h1>fopen</h1>
-
-<pre><code class="php">&lt;?php 
-    require_once('common.php');
-    echo "&lt;h2&gt;fopen获取文件测试&lt;/h2&gt;";
-    /*fopen打开本地文件*/
-    $filename="test.html";
-    $fp=fopen($filename,"r+");//r+ 只读，+表示如果不存在则创建
-    $fc="";
-    while(!feof($fp)){
-        $fc.=fgets($fp,1024);//获取到的资源绑定到流上。这样来获取流数据
-        }
-    fclose($fp);
-    echo "&lt;h4&gt;输出http_response_header&lt;/h4&gt;";
-    dumpout($http_response_header); 
-    echo "&lt;h3&gt;本地文件：".$fc."&lt;/h3&gt;";
-
-    /*fopen打开远程url*/
-    $filename="http://localhost/Login/02/test.html";
-    $fp=fopen($filename,"r");
-    echo "&lt;h4&gt;输出stream_get_meta_data&lt;/h4&gt;";
-    dumpArr(stream_get_meta_data($fp));
-    $fc="";
-    while(!feof($fp)){
-        $fc=fgets($fp,1024);
-        }
-    fclose($fp);
-    echo "&lt;h4&gt;输出http_response_header&lt;/h4&gt;";
-    dumpout($http_response_header);
-    echo "&lt;h3&gt;远程url：".$fc."&lt;/h3&gt;";
-
-?&gt;
-</code></pre>
-
-<h1>file_get_centents</h1>
-
-<pre><code class="php">&lt;?php 
-    require_once('common.php');
-    echo "&lt;h2&gt;file_get_contents获取文件测试&lt;/h2&gt;";
-    /*file_get_contents打开本地文件*/
-    $filename="test.html";
-    $fc=file_get_contents($filename);
-    echo "&lt;h3&gt;本地文件：".$fc."&lt;/h3&gt;";
-
-    /*fopen打开远程url  get方法*/
-    $filename="http://localhost/Login/02/test.php";
-    $fc=file_get_contents($filename);
-    echo "&lt;h4&gt;输出http_response_header&lt;/h4&gt;";
-    dumpout($http_response_header);   
-    echo "&lt;h3&gt;get方法获取远程url：".$fc."&lt;/h3&gt;";
-
-    /*fopen打开远程url  post方法*/
-    $filename="http://localhost/Login/02/test.php";
-    /*构建请求头信息*/
-    $post = array ('type' =&gt; '1');
-    $content = http_build_query($post);
-    $content_length = strlen($content);
-    $options = array(
-        'http' =&gt; array(
-            'method' =&gt; 'POST',
-            'header' =&gt;
-            "Content-type: application/x-www-form-urlencoded\r\n" .
-            "Content-length: $content_length\r\n",
-            'content' =&gt; $content
-        )
-    );
-    $fc = file_get_contents($filename, false, stream_context_create($options));
-    echo "&lt;h4&gt;输出http_response_header&lt;/h4&gt;";
-    dumpout($http_response_header);   
-    echo "&lt;h3&gt;post方法获取远程url：".$fc."&lt;/h3&gt;";
-
-
-?&gt;
-</code></pre>
-
-<h1>socket</h1>
-
-<pre><code class="php">&lt;?php 
-    require_once('common.php');
-    /*Accept: */
-    /*  Accept-Language: zh-cn,en-us;q=0.5
-        Content-Type: application/x-www-form-urlencoded
-        /*模拟浏览器信息*/
-        User-Agent: Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; .NET CLR 1.0.3705; .NET CLR 1.1.4322)
-        Host: 要发送到的主机地址
-        Content-Length: 发送数据的长度
-        Pragma: no-cache
-        Cache-Control: no-cache
-        username=php&amp;password=iask   //post发送的数据
-     *
-     */
-
-
-    /*fsocket模拟get提交*/
-    echo "&lt;h2&gt;fsocket模拟get提交&lt;/h2&gt;";
-    $url="http://localhost/Login/02/test.php?type=1";
-    $info = parse_url($url);  
-    $fp = fsockopen($info["host"], 80, $errno, $errstr, 3);  
-    $head = "GET ".$info['path']."?".$info["query"]." HTTP/1.0\r\n";  
-    $head .= "Host: ".$info['host']."\r\n";  
-    $head .= "\r\n";  
-    $write = fputs($fp, $head);  
-    while (!feof($fp)){  
-        $line = fgets($fp); 
-        echo $line."&lt;br&gt;";  
-        }
-
-    /*fsocket模拟post提交*/
-    echo "&lt;h2&gt;fsocket模拟post提交&lt;/h2&gt;";
-    $query="type=1";
-    $info = parse_url($url);  
-    $fp = fsockopen($info["host"], 80, $errno, $errstr, 3);  
-    $head = "POST ".$info['path']." HTTP/1.0\r\n";  
-    $head .= "Host: ".$info['host']."\r\n";  
-    $head .= "Referer: http://".$info['host'].$info['path']."\r\n";  
-    $head .= "Content-type: application/x-www-form-urlencoded\r\n";  
-    $head .= "Content-Length: ".strlen(trim($query))."\r\n";  
-    $head .= "\r\n";  
-    $head .= trim($query);  
-    $write = fputs($fp, $head);  
-    while (!feof($fp))  {  
-        $line = fgets($fp);  
-        echo $line."&lt;br&gt;";  
-        }
-?&gt;
-</code></pre>
-
-<h1>cURL</h1>
-
-<pre><code class="php">&lt;?php 
-    require_once('common.php');
-    /*curl模拟get提交*/
-    echo "&lt;h2&gt;curl模拟get提交&lt;/h2&gt;";
-    $url="http://localhost/Login/02/test.php?type=1";
-
-    //初始化
-    $ch=curl_init();
-    //设置选项，包括URL
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HEADER, 0); 
-    //执行并获取HTML文档内容
-    $output = curl_exec($ch); 
-    echo "&lt;h2&gt;输出curl_getinfo相关信息&lt;/h2&gt;";
-    $info = curl_getinfo($ch);
-    dumpArr($info);
-    //释放curl句柄
-    curl_close($ch); 
-    //打印获得的数据
-    print_r($output);
-
-
-    echo "&lt;h2&gt;curl模拟post提交&lt;/h2&gt;";
-    $url="http://localhost/Login/02/test.php";
-    $post_data = array ("type" =&gt; "1");
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    // post数据
-    curl_setopt($ch, CURLOPT_POST, 1);
-    // post的变量
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-    $output = curl_exec($ch);
-    echo "&lt;h2&gt;输出curl_getinfo相关信息&lt;/h2&gt;";
-    $info = curl_getinfo($ch);
-    dumpArr($info);
-    curl_close($ch);
-    //打印获得的数据
-    print_r($output);
-?&gt;
-</code></pre>
-
-<p>上面的文件引用的common.php
-`&ldquo;php common.php
+<p>在使用SPL的autoload时，借助以前的Spl的代码来实际使用，发现在实际的项目中老是出现无法加载的情况。
+先把具体代码贴出来
+<code>php
 &lt;?php
-header(&ldquo;Content-type:text/html;charset:utf-8&rdquo;);
-/<em>获取当前访问用户IP</em>/
-function GetIP(){
-    if (getenv(&ldquo;HTTP_CLIENT_IP&rdquo;) &amp;&amp; strcasecmp(getenv(&ldquo;HTTP_CLIENT_IP&rdquo;), &ldquo;unknown&rdquo;)){
-        $ip = getenv(&ldquo;HTTP_CLIENT_IP&rdquo;);
-        }
-    else if (getenv(&ldquo;HTTP_X_FORWARDED_FOR&rdquo;) &amp;&amp; strcasecmp(getenv(&ldquo;HTTP_X_FORWARDED_FOR&rdquo;), &ldquo;unknown&rdquo;)) {
-        $ip = getenv(&ldquo;HTTP_X_FORWARDED_FOR&rdquo;);
-        }
-    else if (getenv(&ldquo;REMOTE_ADDR&rdquo;) &amp;&amp; strcasecmp(getenv(&ldquo;REMOTE_ADDR&rdquo;), &ldquo;unknown&rdquo;)) {
-        $ip = getenv(&ldquo;REMOTE_ADDR&rdquo;);
-        }
-    else if (isset($<em>SERVER[&lsquo;REMOTE_ADDR&rsquo;]) &amp;&amp; $</em>SERVER[&lsquo;REMOTE_ADDR&rsquo;] &amp;&amp; strcasecmp($<em>SERVER[&lsquo;REMOTE_ADDR&rsquo;], &ldquo;unknown&rdquo;)) {
-        $ip = $</em>SERVER[&lsquo;REMOTE_ADDR&rsquo;];
-        }
-    else {
-    $ip = &ldquo;unknown&rdquo;;
-        }
-    return($ip);
-}
- /<em>格式化header</em>/
-function parseHeaders( $headers ){
-    $head = array();
-    foreach( $headers as $k=>$v ){
-        $t = explode( &lsquo;:&rsquo;, $v, 2 );
-        if( isset( $t[1] ) ){
-            $head[ trim($t[0]) ] = trim( $t[1] );
-            }
-        else{
-            $head[] = $v;
-            if( preg_match( &ldquo;#HTTP/[0-9.]+\s+([0-9]+)#&rdquo;,$v, $out ) ){
-                $head[&lsquo;reponse_code&rsquo;] = intval($out[1]);
-                }
-            }
-        }
-    return $head;
-}
-/<em>数组格式化输出header</em>/
-function dumpout($vars, $label = &rdquo;, $return = false) {
-    $vars=parseHeaders($vars);
-    if (ini_get(&lsquo;html_errors&rsquo;)) {
-        $content = &ldquo;<pre>\n&rdquo;;
-        if ($label != &lsquo;&rsquo;) {
-            $content .= &ldquo;<strong>{$label} :</strong>\n&rdquo;;
-        }
-        $content .= htmlspecialchars(print_r($vars, true));
-        $content .= &ldquo;\n</pre>\n&rdquo;;
-    } else {
-        $content = $label . &ldquo; :\n&rdquo; . print_r($vars, true);
+    use app\MobileQuery;
+    spl_autoload_extensions();
+    set_include_path(get_include_path().PATH_SEPARATOR."libs/".PATH_SEPARATOR."app/");
+    spl_autoload_register();
+?&gt;
+</code>
+<code>PHP
+&lt;?php libs/mypdo.php
+namespace libs;
+use \PDO;
+    class mypdo
+    {
     }
-    if ($return) { return $content; }
-    echo $content;
-    return null;
-}
-/<em>数组格式化输出arr</em>/
-function dumpArr($vars, $label = &lsquo;&rsquo;, $return = false) {
-    if (ini_get(&lsquo;html_errors&rsquo;)) {
-        $content = &ldquo;<pre>\n&rdquo;;
-        if ($label != &lsquo;&rsquo;) {
-            $content .= &ldquo;<strong>{$label} :</strong>\n&rdquo;;
-        }
-        $content .= htmlspecialchars(print_r($vars, true));
-        $content .= &ldquo;\n</pre>\n&rdquo;;
-    } else {
-        $content = $label . &ldquo; :\n&rdquo; . print_r($vars, true);
-    }
-    if ($return) { return $content; }
-    echo $content;
-    return null;
-}
-?></p>
-
-<p>```</p>
-
-<hr />
-
-<p>以上几种方式用得较为多的是cURl,因为它可以保存COOKIE的特性，在PHP的网络爬虫中都离不开它。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP爬虫和微信自动投票]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote/"/>
-    <updated>2016-05-17T23:38:25+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote</id>
-    <content type="html"><![CDATA[<blockquote><p>今天接触了PHP的模拟登陆和爬虫实战，涉及到了PHP获取远程文件的几种方式，防采集的一些方法，以及微信自动投票实战。</p></blockquote>
-
-<!--more-->
-
-
-<h1>PHP获取远程文件</h1>
-
-<p>PHP获取远程文件主要有以下几种方式：</p>
-
-<ul>
-<li>fopen</li>
-<li>file_get_centents</li>
-<li>socket</li>
-<li>curl</li>
-</ul>
-
-
-<p>过几天我们在结合实际代码分析这几种方式</p>
-
-<h1>防采集的一些方法</h1>
-
-<p>防采集的方法有很多，这里主要列出几种比较有效的</p>
-
-<ul>
-<li>短时间访问次数限制</li>
-<li>ip校验</li>
-<li>机器特征校验</li>
-<li>复杂加密</li>
-<li>混淆代码</li>
-</ul>
-
-
-<h1>微信自动投票工具</h1>
-
-<blockquote><p>这次主要分析这个。</p></blockquote>
-
-<p>首先，我们需要将微信投票界面分析到PC端，并用浏览器F12里的功能抓取到投票的请求地址和返回数据。如下：</p>
+</code>
+如上，当我将<code>libs/mypdo.php</code>命名为<code>MyPdo.php</code>时，在实例化<code>mypdo</code>就会发生不能加载的情况，而如果命名成小写就没有问题。
+原因如下:</p>
 
 <pre class="prettyprint linenums">
-http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=index&token=jdfsam1432614294&wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&id=27&sgssz=mp.weixin.qq.com
-
-http://wx.asplay.cn/index.php?
-g=Wap&
-m=Vote&
-a=index&                    //ThinkPHP里面一些参数
-token=jdfsam1432614294&     //当前主用户标示
-wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&
-id=27&      //当前投票ID
-sgssz=mp.weixin.qq.com
-下面是请求的地址：
-http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=add_vote&token=jdfsam1432614294&wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc
-发送的数据：
-wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc&tid=27&chid=53%2C&token=jdfsam1432614294&action=add_vote、
-投票成功返回的数据：
-{"success":1,"token":"jdfsam1432614294","wecha_id":"oQIrdjjArAZYwKOh3Y6-1HeuwvEc","tid":"27","chid":"53","arrpre":{"53":33.33,"54":0,"55":0,"56":66.67}}
+WINDOWS大小写不敏感，而在LINUX下区分大小写，
+spl_autoload会把类名转化为小写进行文件搜索，
+这样就造成linux下无法正常include文件.
+解决办法:
+1.索性把被包含文件改成小写；
+2.扫目录得到文件列表，然后遍历列表去匹配出正确文件名，包含之。
 </pre>
 
 
-<p>基于以上的这些信息，我们就能自己模拟POST的数据，和用户标示了。但是仅仅做到这些是不够的，我们还需要模拟微信的内核。</p>
+<p><strong>PHP内存不够</strong></p>
 
-<pre class="prettyprint linenums">
-微信内核的ua：//网上能找到
-Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0
-</pre>
+<p>这个其实问题是出在对命名空间理解不透彻。</p>
 
-
-<pre><code class="php ../03/curlajax.class.php">&lt;?php
-class curlajax{
-    public $cookiejar;
-    public $cookiefile;
-    public $ua;
-    public $debug;
-
-    function __construct(){
-        $this-&gt;debug = 0;
-        $this-&gt;ua = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0'; //这里模拟微信内核
-        $this-&gt;cookiejar = 'cookie.txt';
-        $this-&gt;cookiefile = 'cookie.txt';
-    }
-
-    /****************************
-    *get 请求资源
-    *@param string 地址
-    *@param string referer
-    *@param boolen 是否返回头部
-    *@param array 头部附加cookie
-    ****************************/
-    function httpget($url,$referer='',$withhead=0){
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL,$url);
-        curl_setopt($ch,CURLOPT_COOKIEJAR,$this-&gt;cookiejar);
-        curl_setopt($ch,CURLOPT_COOKIEFILE,$this-&gt;cookiefile);
-        curl_setopt($ch,CURLOPT_HEADER,$withhead);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
-        //curl_setopt($ch,CURLOPT_AUTOREFERER,1);
-        curl_setopt($ch,CURLOPT_USERAGENT,$this-&gt;ua);
-        curl_setopt($ch,CURLOPT_REFERER,$referer);
-        $r = curl_exec($ch);
-        if($this-&gt;debug){
-            echo '&lt;pre&gt;';
-            var_dump(curl_getinfo($ch));
-        }
-        curl_close($ch);
-        return $r;
-    }
-
-    /****************************
-    *post 请求资源
-    *@param string 地址
-    *@param string referer
-    *@param array 提交数据
-    *@param boolen 是否返回头部
-    ****************************/
-    function httppost($url,$referer='',$postdata=array(),$withhead=0){
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL,$url);
-        curl_setopt($ch,CURLOPT_HEADER,$withhead);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
-        //curl_setopt($ch,CURLOPT_AUTOREFERER,1);
-        curl_setopt($ch,CURLOPT_COOKIEJAR,$this-&gt;cookiejar);
-        curl_setopt($ch,CURLOPT_COOKIEFILE,$this-&gt;cookiefile);
-        curl_setopt($ch,CURLOPT_USERAGENT,$this-&gt;ua);
-        curl_setopt($ch,CURLOPT_REFERER,$referer);
-        curl_setopt($ch,CURLOPT_POST,1);
-        curl_setopt($ch,CURLOPT_POSTFIELDS,$postdata);
-        $r = curl_exec($ch);
-        if($this-&gt;debug){
-            echo '&lt;pre&gt;';
-            var_dump(curl_getinfo($ch));
-        }
-        curl_close($ch);
-        return $r;
-    }
-
-
-}
-</code></pre>
-
-<p>网上的cURL方法，我们这里有要用到
-<figure class='code'><figcaption><span>autoVote.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>之前在使用PDO的时候为了方便，直接将自定义的PDO操作类命名为<code>PDO.php</code>并且在构造函数中实例化PDO对象。
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -494,54 +107,1092 @@ class curlajax{
 <span class='line-number'>45</span>
 <span class='line-number'>46</span>
 <span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+<span class='line-number'>340</span>
+<span class='line-number'>341</span>
+<span class='line-number'>342</span>
+<span class='line-number'>343</span>
+<span class='line-number'>344</span>
+<span class='line-number'>345</span>
+<span class='line-number'>346</span>
+<span class='line-number'>347</span>
+<span class='line-number'>348</span>
+<span class='line-number'>349</span>
+<span class='line-number'>350</span>
+<span class='line-number'>351</span>
+<span class='line-number'>352</span>
+<span class='line-number'>353</span>
+<span class='line-number'>354</span>
+<span class='line-number'>355</span>
+<span class='line-number'>356</span>
+<span class='line-number'>357</span>
+<span class='line-number'>358</span>
+<span class='line-number'>359</span>
+<span class='line-number'>360</span>
+<span class='line-number'>361</span>
+<span class='line-number'>362</span>
+<span class='line-number'>363</span>
+<span class='line-number'>364</span>
+<span class='line-number'>365</span>
+<span class='line-number'>366</span>
+<span class='line-number'>367</span>
+<span class='line-number'>368</span>
+<span class='line-number'>369</span>
+<span class='line-number'>370</span>
+<span class='line-number'>371</span>
+<span class='line-number'>372</span>
+<span class='line-number'>373</span>
+<span class='line-number'>374</span>
+<span class='line-number'>375</span>
+<span class='line-number'>376</span>
+<span class='line-number'>377</span>
+<span class='line-number'>378</span>
+<span class='line-number'>379</span>
+<span class='line-number'>380</span>
+<span class='line-number'>381</span>
+<span class='line-number'>382</span>
+<span class='line-number'>383</span>
+<span class='line-number'>384</span>
+<span class='line-number'>385</span>
+<span class='line-number'>386</span>
+<span class='line-number'>387</span>
+<span class='line-number'>388</span>
+<span class='line-number'>389</span>
+<span class='line-number'>390</span>
+<span class='line-number'>391</span>
+<span class='line-number'>392</span>
+<span class='line-number'>393</span>
+<span class='line-number'>394</span>
+<span class='line-number'>395</span>
+<span class='line-number'>396</span>
+<span class='line-number'>397</span>
+<span class='line-number'>398</span>
+<span class='line-number'>399</span>
+<span class='line-number'>400</span>
+<span class='line-number'>401</span>
+<span class='line-number'>402</span>
+<span class='line-number'>403</span>
+<span class='line-number'>404</span>
+<span class='line-number'>405</span>
+<span class='line-number'>406</span>
+<span class='line-number'>407</span>
+<span class='line-number'>408</span>
+<span class='line-number'>409</span>
+<span class='line-number'>410</span>
+<span class='line-number'>411</span>
+<span class='line-number'>412</span>
+<span class='line-number'>413</span>
+<span class='line-number'>414</span>
+<span class='line-number'>415</span>
+<span class='line-number'>416</span>
+<span class='line-number'>417</span>
+<span class='line-number'>418</span>
+<span class='line-number'>419</span>
+<span class='line-number'>420</span>
+<span class='line-number'>421</span>
+<span class='line-number'>422</span>
+<span class='line-number'>423</span>
+<span class='line-number'>424</span>
+<span class='line-number'>425</span>
+<span class='line-number'>426</span>
+<span class='line-number'>427</span>
+<span class='line-number'>428</span>
+<span class='line-number'>429</span>
+<span class='line-number'>430</span>
+<span class='line-number'>431</span>
+<span class='line-number'>432</span>
+<span class='line-number'>433</span>
+<span class='line-number'>434</span>
+<span class='line-number'>435</span>
+<span class='line-number'>436</span>
+<span class='line-number'>437</span>
+<span class='line-number'>438</span>
+<span class='line-number'>439</span>
+<span class='line-number'>440</span>
+<span class='line-number'>441</span>
+<span class='line-number'>442</span>
+<span class='line-number'>443</span>
+<span class='line-number'>444</span>
+<span class='line-number'>445</span>
+<span class='line-number'>446</span>
+<span class='line-number'>447</span>
+<span class='line-number'>448</span>
+<span class='line-number'>449</span>
+<span class='line-number'>450</span>
+<span class='line-number'>451</span>
+<span class='line-number'>452</span>
+<span class='line-number'>453</span>
+<span class='line-number'>454</span>
+<span class='line-number'>455</span>
+<span class='line-number'>456</span>
+<span class='line-number'>457</span>
+<span class='line-number'>458</span>
+<span class='line-number'>459</span>
+<span class='line-number'>460</span>
+<span class='line-number'>461</span>
+<span class='line-number'>462</span>
+<span class='line-number'>463</span>
+<span class='line-number'>464</span>
+<span class='line-number'>465</span>
+<span class='line-number'>466</span>
+<span class='line-number'>467</span>
+<span class='line-number'>468</span>
+<span class='line-number'>469</span>
+<span class='line-number'>470</span>
+<span class='line-number'>471</span>
+<span class='line-number'>472</span>
+<span class='line-number'>473</span>
+<span class='line-number'>474</span>
+<span class='line-number'>475</span>
+<span class='line-number'>476</span>
+<span class='line-number'>477</span>
+<span class='line-number'>478</span>
+<span class='line-number'>479</span>
+<span class='line-number'>480</span>
+<span class='line-number'>481</span>
+<span class='line-number'>482</span>
+<span class='line-number'>483</span>
+<span class='line-number'>484</span>
+<span class='line-number'>485</span>
+<span class='line-number'>486</span>
+<span class='line-number'>487</span>
+<span class='line-number'>488</span>
+<span class='line-number'>489</span>
+<span class='line-number'>490</span>
+<span class='line-number'>491</span>
+<span class='line-number'>492</span>
+<span class='line-number'>493</span>
+<span class='line-number'>494</span>
+<span class='line-number'>495</span>
+<span class='line-number'>496</span>
+<span class='line-number'>497</span>
+<span class='line-number'>498</span>
+<span class='line-number'>499</span>
+<span class='line-number'>500</span>
+<span class='line-number'>501</span>
+<span class='line-number'>502</span>
+<span class='line-number'>503</span>
+<span class='line-number'>504</span>
+<span class='line-number'>505</span>
+<span class='line-number'>506</span>
+<span class='line-number'>507</span>
+<span class='line-number'>508</span>
+<span class='line-number'>509</span>
+<span class='line-number'>510</span>
+<span class='line-number'>511</span>
+<span class='line-number'>512</span>
+<span class='line-number'>513</span>
+<span class='line-number'>514</span>
+<span class='line-number'>515</span>
+<span class='line-number'>516</span>
+<span class='line-number'>517</span>
+<span class='line-number'>518</span>
+<span class='line-number'>519</span>
+<span class='line-number'>520</span>
+<span class='line-number'>521</span>
+<span class='line-number'>522</span>
+<span class='line-number'>523</span>
+<span class='line-number'>524</span>
+<span class='line-number'>525</span>
+<span class='line-number'>526</span>
+<span class='line-number'>527</span>
+<span class='line-number'>528</span>
+<span class='line-number'>529</span>
+<span class='line-number'>530</span>
+<span class='line-number'>531</span>
+<span class='line-number'>532</span>
+<span class='line-number'>533</span>
+<span class='line-number'>534</span>
+<span class='line-number'>535</span>
+<span class='line-number'>536</span>
+<span class='line-number'>537</span>
+<span class='line-number'>538</span>
+<span class='line-number'>539</span>
+<span class='line-number'>540</span>
+<span class='line-number'>541</span>
+<span class='line-number'>542</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">../</span><span class="mo">03</span><span class="o">/</span><span class="nx">curlajax</span><span class="o">.</span><span class="nx">class</span><span class="o">.</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&amp;lt;!DOCTYPE html PUBLIC &amp;ldquo;-//W3C//DTD XHTML 1.0 Transitional//EN&amp;rdquo; &amp;ldquo;&lt;a href=&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&lt;/a&gt;&amp;rdquo;&gt;</span>
-</span><span class='line'><span class="x">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span>
-</span><span class='line'><span class="x">&lt;head&gt;</span>
-</span><span class='line'><span class="x">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;</span>
-</span><span class='line'><span class="x">&lt;title&gt;微信自动投票工具&lt;/title&gt;</span>
-</span><span class='line'><span class="x">&lt;/head&gt;&lt;/p&gt;</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">libs</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">\PDO</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">PDO</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">try</span> <span class="p">{</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">&lt;p&gt;&lt;body&gt;</span>
-</span><span class='line'><span class="x">&amp;lt;?php</span>
-</span><span class='line'><span class="x">/&lt;em&gt;模拟POST登录&lt;/em&gt;/</span>
-</span><span class='line'><span class="x">echo &amp;ldquo;&lt;h1&gt;这是微信自动投票工具&lt;/h1&gt;&amp;rdquo;;</span>
-</span><span class='line'><span class="x">$jkxy = new curlajax();</span>
-</span><span class='line'><span class="x">$jkxy-&gt;debug = 0;</span>
-</span><span class='line'><span class="x">$jkxy-&gt;cookiejar = dirname(&lt;strong&gt;FILE&lt;/strong&gt;).&amp;lsquo;\cookie1.txt&amp;rsquo;;</span>
-</span><span class='line'><span class="x">$jkxy-&gt;cookiefile = dirname(&lt;strong&gt;FILE&lt;/strong&gt;).&amp;lsquo;\cookie1.txt&amp;rsquo;;</span>
-</span><span class='line'><span class="x">/&lt;em&gt;模拟提交信息&lt;/em&gt;/</span>
-</span><span class='line'><span class="x">$username=&amp;ldquo;oQIrdjj&amp;rdquo;.rand(500,50000).&amp;ldquo;wKOh3Y6-1HeuwvEc&amp;rdquo;;//用随机数来产生不同的用户ID</span>
-</span><span class='line'><span class="x">$data = &amp;ldquo;wecha_id=&amp;rdquo;.$username.&amp;ldquo;&amp;amp;tid=27&amp;amp;chid=53%2C&amp;amp;token=jdfsam1432614294&amp;amp;action=add_vote&amp;rdquo;;//模拟不同的用户提交的数据</span>
-</span><span class='line'><span class="x">$url = &amp;lsquo;&lt;a href=&quot;http://wx.asplay.cn/index.php?g=Wap&amp;amp;m=Vote&amp;amp;a=add_vote&amp;amp;token=jdfsam1432614294&amp;amp;wecha_id=&quot;&gt;http://wx.asplay.cn/index.php?g=Wap&amp;amp;m=Vote&amp;amp;a=add_vote&amp;amp;token=jdfsam1432614294&amp;amp;wecha_id=&lt;/a&gt;&amp;rsquo;.$username;</span>
-</span><span class='line'><span class="x">$r = $jkxy-&gt;httppost($url,$url,$data,0);//获取返回数据&lt;/p&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>            <span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s2">&quot;mysql:host=&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db_host</span><span class="o">.</span><span class="s2">&quot;;dbname=&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db_name</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db_user</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db_pass</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nb">exec</span><span class="p">(</span><span class="s2">&quot;SET CHARACTER SET&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db_charset</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nb">exec</span><span class="p">(</span><span class="s2">&quot;SET NAMES&quot;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">db_charset</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">print</span> <span class="s2">&quot;Error!:&quot;</span><span class="o">.</span><span class="nv">$e</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">getMessage</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;&amp;lt;br&amp;gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">die</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'><span class="x">&lt;p&gt;if(checkstr($r,&amp;lsquo;&amp;ldquo;success&amp;rdquo;:1&amp;rsquo;)==true){ //根据返回的数据判断是否投票成功</span>
-</span><span class='line'><span class="x">    echo &amp;ldquo;投票成功&amp;rdquo;;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;?&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nx">一直报错，PHP每次不够，改了很多次</span><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">php</span><span class="o">.</span><span class="nx">ini</span><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">都没用。后来突然发现是我在</span><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">new</span> <span class="nx">PDO</span><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">的时候它实际上是</span><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="k">new</span><span class="sb">```的自己本身，造成了一个死循环。&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;后来将类名改成&lt;code&gt;mypdo&lt;/code&gt;后发现找不到PDO。&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;原来是我这里用了命名空间的概念，如果想用PDO需要在前面加入</span>
+</span><span class='line'><span class="sb">&lt;code&gt;php</span>
+</span><span class='line'><span class="sb">use \PDO;</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;。&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;&lt;em&gt;*MySQL删除json_encode()出来的*&lt;/em&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;在将数据保存到数据库后，在读数据时不能&lt;code&gt;json_decode&lt;/code&gt;对应的中文。&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;后来发现是在存入数据库时，中文编码出来的&lt;code&gt;\&lt;/code&gt;被删除了。</span>
+</span><span class='line'><span class="sb">&lt;code&gt;php</span>
+</span><span class='line'><span class="sb">{&quot;a&quot;:&quot;\u232e234\e23&quot;}//json_encode的结果</span>
+</span><span class='line'><span class="sb">{&quot;a&quot;:&quot;u232e234e23&quot;}//存到数据库的结果</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;</span>
+</span><span class='line'><span class="sb">解决方法:</span>
+</span><span class='line'><span class="sb">在外层调用一下函数addslashes();这个函数会在每个反斜杠的前面添加反斜杠，如此这般就可以存进数据库了。</span>
+</span><span class='line'><span class="sb">&lt;code&gt;php</span>
+</span><span class='line'><span class="sb">  $info = addslashes(json_encode($review_log));//这样处理后存进数据库就不回丢失“\&quot;</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;</span>
+</span><span class='line'><span class="sb">最后我将这个Demo放到了GitHub：&lt;a href=&quot;https://github.com/EwanReton/PhpPhoneLocation&quot;&gt;https://github.com/EwanReton/PhpPhoneLocation&lt;/a&gt;&lt;/p&gt;</span>
+</span><span class='line'><span class="sb">]]&gt;&lt;/content&gt;</span>
+</span><span class='line'><span class="sb">  &lt;/entry&gt;</span>
+</span><span class='line'><span class="sb">  </span>
+</span><span class='line'><span class="sb">  &lt;entry&gt;</span>
+</span><span class='line'><span class="sb">    &lt;title type=&quot;html&quot;&gt;&lt;![CDATA[PHP-namespace-use用法]]&gt;&lt;/title&gt;</span>
+</span><span class='line'><span class="sb">    &lt;link href=&quot;http://ewanreton.github.io/blog/2016/05/18/php-namespace-use/&quot;/&gt;</span>
+</span><span class='line'><span class="sb">    &lt;updated&gt;2016-05-18T22:14:17+08:00&lt;/updated&gt;</span>
+</span><span class='line'><span class="sb">    &lt;id&gt;http://ewanreton.github.io/blog/2016/05/18/php-namespace-use&lt;/id&gt;</span>
+</span><span class='line'><span class="sb">    &lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;blockquote&gt;&lt;p&gt;今天在看视频的时候发现作者用到了namespce和use。以前只在ThinkPHP框架中看到过这种用法，以为是ThinkPHP框架特有的，也就一直没上心。今天有又看到了觉定深入了解下。&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;!--more--&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h1&gt;什么是命名空间？&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;从广义上来说，命名空间是一种封装事物的方法。在很多地方都可以见到这种抽象概念。例如，在操作系统中目录用来将相关文件分组，对于目录中的文件来说，它就扮演了命名空间的角色。具体举个例子，文件 foo.txt 可以同时在目录/home/greg 和 /home/other 中存在，但在同一个目录中不能存在两个 foo.txt 文件。另外，在目录 /home/greg 外访问 foo.txt 文件时，我们必须将目录名以及目录分隔符放在文件名之前得到 /home/greg/foo.txt。这个原理应用到程序设计领域就是命名空间的概念。&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;在PHP中，命名空间用来解决在编写类库或应用程序时创建可重用的代码如类或函数时碰到的两类问题：&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;ol&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;用户编写的代码与PHP内部的类/函数/常量或第三方类/函数/常量之间的名字冲突。&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;为很长的标识符名称(通常是为了缓解第一类问题而定义的)创建一个别名（或简短）的名称，提高源代码的可读性。&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;/ol&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;下面介绍几种使用namespace和use的方法:&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;namespace（以下简称ns）。在定义了一个ns之后，下面所申明的class、interface、const（不包含variable）都是在申明的ns这个“域”里面的。当引用一个申明了ns的包含文件，想要调用这个ns里面的东西，那必须调整当前脚本也到此ns域，否则就得用全称（）包含ns全称）：&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;// inc.php  </span>
+</span><span class='line'><span class="sb">namespace Foo;  </span>
+</span><span class='line'><span class="sb">class Bar {}  </span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">// 访问Foo的第一种方法，用全称  </span>
+</span><span class='line'><span class="sb">require &#39;inc.php&#39;;  </span>
+</span><span class='line'><span class="sb">$foo = new \Foo\Bar();  </span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">// 访问Foo的第二种方法  </span>
+</span><span class='line'><span class="sb">namespace Foo; // 调整当前脚本到Foo这个ns域，而且namespace申明必须在第一句  </span>
+</span><span class='line'><span class="sb">require &#39;inc.php&#39;;  </span>
+</span><span class='line'><span class="sb">$foo = new Bar();  </span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;&lt;em&gt;use关键字目的是使用ns的别名：&lt;/em&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;// 比如  </span>
+</span><span class='line'><span class="sb">use A\Very\Long\Namespace as Ns;  </span>
+</span><span class='line'><span class="sb">// 这样就可以用Ns来代替A/Very/Long/Namespace这个ns下定义的东西  </span>
+</span><span class='line'><span class="sb">$foo = new Ns\Foo(); </span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;但是在一些开源项目里面经常会看到use Ns\Component这样的用法，没有用as，这让我以前一直在思考use是否还有第二种用法，糟糕的是php的文档里面也没有对此用法有描述，只能靠猜测，后来仔细想过这个问题，得出一个比较靠谱的结论是use可以省略as以及后面的别名而直接把ns最后一个节点的名字当作别名，感觉是不是很像ln -s命令的用法呢：&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;// 第三种用法  </span>
+</span><span class='line'><span class="sb">require &#39;inc.php&#39;;  </span>
+</span><span class='line'><span class="sb">use Foo\Bar; // 这样Bar就等于Foo\Bar了  </span>
+</span><span class='line'><span class="sb">$foo = new Bar();  </span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'><span class="sb">]]&gt;&lt;/content&gt;</span>
+</span><span class='line'><span class="sb">  &lt;/entry&gt;</span>
+</span><span class='line'><span class="sb">  </span>
+</span><span class='line'><span class="sb">  &lt;entry&gt;</span>
+</span><span class='line'><span class="sb">    &lt;title type=&quot;html&quot;&gt;&lt;![CDATA[PHP获取远程文件的几种方式]]&gt;&lt;/title&gt;</span>
+</span><span class='line'><span class="sb">    &lt;link href=&quot;http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file/&quot;/&gt;</span>
+</span><span class='line'><span class="sb">    &lt;updated&gt;2016-05-18T14:18:15+08:00&lt;/updated&gt;</span>
+</span><span class='line'><span class="sb">    &lt;id&gt;http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file&lt;/id&gt;</span>
+</span><span class='line'><span class="sb">    &lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;blockquote&gt;&lt;p&gt;接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;fopen</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;获取本地文件&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;获取到的资源绑定到一个流上面&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;/ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;file_get_centents</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;获取一些Get获得的数据，也可以POST，&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;可以做断点续传&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;/ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;socket&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;curl</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;可以保存cookie 并且在下一次发送出去&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;li&gt;做模拟登陆&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;/ul&gt;</span>
+</span><span class='line'><span class="sb">&lt;/li&gt;</span>
+</span><span class='line'><span class="sb">&lt;/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h1&gt;fopen&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;&amp;lt;?php </span>
+</span><span class='line'><span class="sb">    require_once(&#39;common.php&#39;);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;fopen获取文件测试&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    /*fopen打开本地文件*/</span>
+</span><span class='line'><span class="sb">    $filename=&quot;test.html&quot;;</span>
+</span><span class='line'><span class="sb">    $fp=fopen($filename,&quot;r+&quot;);//r+ 只读，+表示如果不存在则创建</span>
+</span><span class='line'><span class="sb">    $fc=&quot;&quot;;</span>
+</span><span class='line'><span class="sb">    while(!feof($fp)){</span>
+</span><span class='line'><span class="sb">        $fc.=fgets($fp,1024);//获取到的资源绑定到流上。这样来获取流数据</span>
+</span><span class='line'><span class="sb">        }</span>
+</span><span class='line'><span class="sb">    fclose($fp);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h4&amp;gt;输出http_response_header&amp;lt;/h4&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    dumpout($http_response_header); </span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h3&amp;gt;本地文件：&quot;.$fc.&quot;&amp;lt;/h3&amp;gt;&quot;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">    /*fopen打开远程url*/</span>
+</span><span class='line'><span class="sb">    $filename=&quot;http://localhost/Login/02/test.html&quot;;</span>
+</span><span class='line'><span class="sb">    $fp=fopen($filename,&quot;r&quot;);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h4&amp;gt;输出stream_get_meta_data&amp;lt;/h4&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    dumpArr(stream_get_meta_data($fp));</span>
+</span><span class='line'><span class="sb">    $fc=&quot;&quot;;</span>
+</span><span class='line'><span class="sb">    while(!feof($fp)){</span>
+</span><span class='line'><span class="sb">        $fc=fgets($fp,1024);</span>
+</span><span class='line'><span class="sb">        }</span>
+</span><span class='line'><span class="sb">    fclose($fp);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h4&amp;gt;输出http_response_header&amp;lt;/h4&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    dumpout($http_response_header);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h3&amp;gt;远程url：&quot;.$fc.&quot;&amp;lt;/h3&amp;gt;&quot;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">?&amp;gt;</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h1&gt;file_get_centents&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;&amp;lt;?php </span>
+</span><span class='line'><span class="sb">    require_once(&#39;common.php&#39;);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;file_get_contents获取文件测试&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    /*file_get_contents打开本地文件*/</span>
+</span><span class='line'><span class="sb">    $filename=&quot;test.html&quot;;</span>
+</span><span class='line'><span class="sb">    $fc=file_get_contents($filename);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h3&amp;gt;本地文件：&quot;.$fc.&quot;&amp;lt;/h3&amp;gt;&quot;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">    /*fopen打开远程url  get方法*/</span>
+</span><span class='line'><span class="sb">    $filename=&quot;http://localhost/Login/02/test.php&quot;;</span>
+</span><span class='line'><span class="sb">    $fc=file_get_contents($filename);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h4&amp;gt;输出http_response_header&amp;lt;/h4&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    dumpout($http_response_header);   </span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h3&amp;gt;get方法获取远程url：&quot;.$fc.&quot;&amp;lt;/h3&amp;gt;&quot;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">    /*fopen打开远程url  post方法*/</span>
+</span><span class='line'><span class="sb">    $filename=&quot;http://localhost/Login/02/test.php&quot;;</span>
+</span><span class='line'><span class="sb">    /*构建请求头信息*/</span>
+</span><span class='line'><span class="sb">    $post = array (&#39;type&#39; =&amp;gt; &#39;1&#39;);</span>
+</span><span class='line'><span class="sb">    $content = http_build_query($post);</span>
+</span><span class='line'><span class="sb">    $content_length = strlen($content);</span>
+</span><span class='line'><span class="sb">    $options = array(</span>
+</span><span class='line'><span class="sb">        &#39;http&#39; =&amp;gt; array(</span>
+</span><span class='line'><span class="sb">            &#39;method&#39; =&amp;gt; &#39;POST&#39;,</span>
+</span><span class='line'><span class="sb">            &#39;header&#39; =&amp;gt;</span>
+</span><span class='line'><span class="sb">            &quot;Content-type: application/x-www-form-urlencoded\r\n&quot; .</span>
+</span><span class='line'><span class="sb">            &quot;Content-length: $content_length\r\n&quot;,</span>
+</span><span class='line'><span class="sb">            &#39;content&#39; =&amp;gt; $content</span>
+</span><span class='line'><span class="sb">        )</span>
+</span><span class='line'><span class="sb">    );</span>
+</span><span class='line'><span class="sb">    $fc = file_get_contents($filename, false, stream_context_create($options));</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h4&amp;gt;输出http_response_header&amp;lt;/h4&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    dumpout($http_response_header);   </span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h3&amp;gt;post方法获取远程url：&quot;.$fc.&quot;&amp;lt;/h3&amp;gt;&quot;;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">?&amp;gt;</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h1&gt;socket&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;&amp;lt;?php </span>
+</span><span class='line'><span class="sb">    require_once(&#39;common.php&#39;);</span>
+</span><span class='line'><span class="sb">    /*Accept: */</span>
+</span><span class='line'><span class="sb">    /*  Accept-Language: zh-cn,en-us;q=0.5</span>
+</span><span class='line'><span class="sb">        Content-Type: application/x-www-form-urlencoded</span>
+</span><span class='line'><span class="sb">        /*模拟浏览器信息*/</span>
+</span><span class='line'><span class="sb">        User-Agent: Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; .NET CLR 1.0.3705; .NET CLR 1.1.4322)</span>
+</span><span class='line'><span class="sb">        Host: 要发送到的主机地址</span>
+</span><span class='line'><span class="sb">        Content-Length: 发送数据的长度</span>
+</span><span class='line'><span class="sb">        Pragma: no-cache</span>
+</span><span class='line'><span class="sb">        Cache-Control: no-cache</span>
+</span><span class='line'><span class="sb">        username=php&amp;amp;password=iask   //post发送的数据</span>
+</span><span class='line'><span class="sb">     *</span>
+</span><span class='line'><span class="sb">     */</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">    /*fsocket模拟get提交*/</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;fsocket模拟get提交&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    $url=&quot;http://localhost/Login/02/test.php?type=1&quot;;</span>
+</span><span class='line'><span class="sb">    $info = parse_url($url);  </span>
+</span><span class='line'><span class="sb">    $fp = fsockopen($info[&quot;host&quot;], 80, $errno, $errstr, 3);  </span>
+</span><span class='line'><span class="sb">    $head = &quot;GET &quot;.$info[&#39;path&#39;].&quot;?&quot;.$info[&quot;query&quot;].&quot; HTTP/1.0\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= &quot;Host: &quot;.$info[&#39;host&#39;].&quot;\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= &quot;\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $write = fputs($fp, $head);  </span>
+</span><span class='line'><span class="sb">    while (!feof($fp)){  </span>
+</span><span class='line'><span class="sb">        $line = fgets($fp); </span>
+</span><span class='line'><span class="sb">        echo $line.&quot;&amp;lt;br&amp;gt;&quot;;  </span>
+</span><span class='line'><span class="sb">        }</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">    /*fsocket模拟post提交*/</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;fsocket模拟post提交&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    $query=&quot;type=1&quot;;</span>
+</span><span class='line'><span class="sb">    $info = parse_url($url);  </span>
+</span><span class='line'><span class="sb">    $fp = fsockopen($info[&quot;host&quot;], 80, $errno, $errstr, 3);  </span>
+</span><span class='line'><span class="sb">    $head = &quot;POST &quot;.$info[&#39;path&#39;].&quot; HTTP/1.0\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= &quot;Host: &quot;.$info[&#39;host&#39;].&quot;\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= &quot;Referer: http://&quot;.$info[&#39;host&#39;].$info[&#39;path&#39;].&quot;\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= &quot;Content-type: application/x-www-form-urlencoded\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= &quot;Content-Length: &quot;.strlen(trim($query)).&quot;\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= &quot;\r\n&quot;;  </span>
+</span><span class='line'><span class="sb">    $head .= trim($query);  </span>
+</span><span class='line'><span class="sb">    $write = fputs($fp, $head);  </span>
+</span><span class='line'><span class="sb">    while (!feof($fp))  {  </span>
+</span><span class='line'><span class="sb">        $line = fgets($fp);  </span>
+</span><span class='line'><span class="sb">        echo $line.&quot;&amp;lt;br&amp;gt;&quot;;  </span>
+</span><span class='line'><span class="sb">        }</span>
+</span><span class='line'><span class="sb">?&amp;gt;</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;h1&gt;cURL&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;&amp;lt;?php </span>
+</span><span class='line'><span class="sb">    require_once(&#39;common.php&#39;);</span>
+</span><span class='line'><span class="sb">    /*curl模拟get提交*/</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;curl模拟get提交&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    $url=&quot;http://localhost/Login/02/test.php?type=1&quot;;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">    //初始化</span>
+</span><span class='line'><span class="sb">    $ch=curl_init();</span>
+</span><span class='line'><span class="sb">    //设置选项，包括URL</span>
+</span><span class='line'><span class="sb">    curl_setopt($ch, CURLOPT_URL, $url);</span>
+</span><span class='line'><span class="sb">    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);</span>
+</span><span class='line'><span class="sb">    curl_setopt($ch, CURLOPT_HEADER, 0); </span>
+</span><span class='line'><span class="sb">    //执行并获取HTML文档内容</span>
+</span><span class='line'><span class="sb">    $output = curl_exec($ch); </span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;输出curl_getinfo相关信息&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    $info = curl_getinfo($ch);</span>
+</span><span class='line'><span class="sb">    dumpArr($info);</span>
+</span><span class='line'><span class="sb">    //释放curl句柄</span>
+</span><span class='line'><span class="sb">    curl_close($ch); </span>
+</span><span class='line'><span class="sb">    //打印获得的数据</span>
+</span><span class='line'><span class="sb">    print_r($output);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;curl模拟post提交&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    $url=&quot;http://localhost/Login/02/test.php&quot;;</span>
+</span><span class='line'><span class="sb">    $post_data = array (&quot;type&quot; =&amp;gt; &quot;1&quot;);</span>
+</span><span class='line'><span class="sb">    $ch = curl_init();</span>
+</span><span class='line'><span class="sb">    curl_setopt($ch, CURLOPT_URL, $url);</span>
+</span><span class='line'><span class="sb">    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);</span>
+</span><span class='line'><span class="sb">    // post数据</span>
+</span><span class='line'><span class="sb">    curl_setopt($ch, CURLOPT_POST, 1);</span>
+</span><span class='line'><span class="sb">    // post的变量</span>
+</span><span class='line'><span class="sb">    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);</span>
+</span><span class='line'><span class="sb">    $output = curl_exec($ch);</span>
+</span><span class='line'><span class="sb">    echo &quot;&amp;lt;h2&amp;gt;输出curl_getinfo相关信息&amp;lt;/h2&amp;gt;&quot;;</span>
+</span><span class='line'><span class="sb">    $info = curl_getinfo($ch);</span>
+</span><span class='line'><span class="sb">    dumpArr($info);</span>
+</span><span class='line'><span class="sb">    curl_close($ch);</span>
+</span><span class='line'><span class="sb">    //打印获得的数据</span>
+</span><span class='line'><span class="sb">    print_r($output);</span>
+</span><span class='line'><span class="sb">?&amp;gt;</span>
+</span><span class='line'><span class="sb">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">&lt;p&gt;上面的文件引用的common.php</span>
+</span><span class='line'><span class="sb">`</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">php</span> <span class="nx">common</span><span class="o">.</span><span class="nx">php</span>
+</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Content</span><span class="o">-</span><span class="nx">type</span><span class="o">:</span><span class="nx">text</span><span class="o">/</span><span class="nx">html</span><span class="p">;</span><span class="nx">charset</span><span class="o">:</span><span class="nx">utf</span><span class="o">-</span><span class="mi">8</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="o">/&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">获取当前访问用户IP</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">GetIP</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">HTTP_CLIENT_IP</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;)</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">HTTP_CLIENT_IP</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;),</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">unknown</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;)){</span>
+</span><span class='line'>        <span class="nv">$ip</span> <span class="o">=</span> <span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">HTTP_CLIENT_IP</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">HTTP_X_FORWARDED_FOR</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;)</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">HTTP_X_FORWARDED_FOR</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;),</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">unknown</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$ip</span> <span class="o">=</span> <span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">HTTP_X_FORWARDED_FOR</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">REMOTE_ADDR</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;)</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">REMOTE_ADDR</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;),</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">unknown</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$ip</span> <span class="o">=</span> <span class="nb">getenv</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">REMOTE_ADDR</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="err">$</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">SERVER</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">REMOTE_ADDR</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;])</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="err">$</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">SERVER</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">REMOTE_ADDR</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="err">$</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">SERVER</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">REMOTE_ADDR</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;],</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">unknown</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$ip</span> <span class="o">=</span> <span class="err">$</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">SERVER</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">REMOTE_ADDR</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$ip</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">unknown</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">(</span><span class="nv">$ip</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'> <span class="o">/&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">格式化header</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">parseHeaders</span><span class="p">(</span> <span class="nv">$headers</span> <span class="p">){</span>
+</span><span class='line'>    <span class="nv">$head</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">foreach</span><span class="p">(</span> <span class="nv">$headers</span> <span class="k">as</span> <span class="nv">$k</span><span class="o">=&gt;</span><span class="nv">$v</span> <span class="p">){</span>
+</span><span class='line'>        <span class="nv">$t</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">:&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="nv">$v</span><span class="p">,</span> <span class="mi">2</span> <span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="nb">isset</span><span class="p">(</span> <span class="nv">$t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">){</span>
+</span><span class='line'>            <span class="nv">$head</span><span class="p">[</span> <span class="nb">trim</span><span class="p">(</span><span class="nv">$t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">trim</span><span class="p">(</span> <span class="nv">$t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">{</span>
+</span><span class='line'>            <span class="nv">$head</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$v</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span> <span class="nb">preg_match</span><span class="p">(</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="c1">#HTTP/[0-9.]+\s+([0-9]+)#&amp;rdquo;,$v, $out ) ){</span>
+</span><span class='line'>                <span class="nv">$head</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">reponse_code</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nv">$out</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nv">$head</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">/&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">数组格式化输出header</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">dumpout</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="nv">$label</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span> <span class="nv">$return</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$vars</span><span class="o">=</span><span class="nx">parseHeaders</span><span class="p">(</span><span class="nv">$vars</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">ini_get</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">html_errors</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$label</span> <span class="o">!=</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$content</span> <span class="o">.=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">strong</span><span class="o">&gt;</span><span class="p">{</span><span class="nv">$label</span><span class="p">}</span> <span class="o">:&lt;/</span><span class="nx">strong</span><span class="o">&gt;</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="nb">htmlspecialchars</span><span class="p">(</span><span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">));</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">\n</span><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$label</span> <span class="o">.</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span> <span class="o">:</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span> <span class="o">.</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nv">$return</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nv">$content</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$content</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">/&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">数组格式化输出arr</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">dumpArr</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="nv">$label</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="nv">$return</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">ini_get</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">html_errors</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$label</span> <span class="o">!=</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$content</span> <span class="o">.=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">strong</span><span class="o">&gt;</span><span class="p">{</span><span class="nv">$label</span><span class="p">}</span> <span class="o">:&lt;/</span><span class="nx">strong</span><span class="o">&gt;</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="nb">htmlspecialchars</span><span class="p">(</span><span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">));</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">\n</span><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$label</span> <span class="o">.</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span> <span class="o">:</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span> <span class="o">.</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nv">$return</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nv">$content</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$content</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">?&gt;</span><span class="x">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;```&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;hr /&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;以上几种方式用得较为多的是cURl,因为它可以保存COOKIE的特性，在PHP的网络爬虫中都离不开它。&lt;/p&gt;</span>
+</span><span class='line'><span class="x">]]&gt;&lt;/content&gt;</span>
+</span><span class='line'><span class="x">  &lt;/entry&gt;</span>
+</span><span class='line'><span class="x">  </span>
+</span><span class='line'><span class="x">  &lt;entry&gt;</span>
+</span><span class='line'><span class="x">    &lt;title type=&quot;html&quot;&gt;&lt;![CDATA[PHP爬虫和微信自动投票]]&gt;&lt;/title&gt;</span>
+</span><span class='line'><span class="x">    &lt;link href=&quot;http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote/&quot;/&gt;</span>
+</span><span class='line'><span class="x">    &lt;updated&gt;2016-05-17T23:38:25+08:00&lt;/updated&gt;</span>
+</span><span class='line'><span class="x">    &lt;id&gt;http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote&lt;/id&gt;</span>
+</span><span class='line'><span class="x">    &lt;content type=&quot;html&quot;&gt;&lt;![CDATA[&lt;blockquote&gt;&lt;p&gt;今天接触了PHP的模拟登陆和爬虫实战，涉及到了PHP获取远程文件的几种方式，防采集的一些方法，以及微信自动投票实战。&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;!--more--&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;h1&gt;PHP获取远程文件&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;PHP获取远程文件主要有以下几种方式：&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;ul&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;fopen&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;file_get_centents&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;socket&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;curl&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;过几天我们在结合实际代码分析这几种方式&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;h1&gt;防采集的一些方法&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;防采集的方法有很多，这里主要列出几种比较有效的&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;ul&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;短时间访问次数限制&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;ip校验&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;机器特征校验&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;复杂加密&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;li&gt;混淆代码&lt;/li&gt;</span>
+</span><span class='line'><span class="x">&lt;/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;h1&gt;微信自动投票工具&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;blockquote&gt;&lt;p&gt;这次主要分析这个。&lt;/p&gt;&lt;/blockquote&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;首先，我们需要将微信投票界面分析到PC端，并用浏览器F12里的功能抓取到投票的请求地址和返回数据。如下：&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;pre class=&quot;prettyprint linenums&quot;&gt;</span>
+</span><span class='line'><span class="x">http://wx.asplay.cn/index.php?g=Wap&amp;m=Vote&amp;a=index&amp;token=jdfsam1432614294&amp;wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&amp;id=27&amp;sgssz=mp.weixin.qq.com</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">http://wx.asplay.cn/index.php?</span>
+</span><span class='line'><span class="x">g=Wap&amp;</span>
+</span><span class='line'><span class="x">m=Vote&amp;</span>
+</span><span class='line'><span class="x">a=index&amp;                    //ThinkPHP里面一些参数</span>
+</span><span class='line'><span class="x">token=jdfsam1432614294&amp;     //当前主用户标示</span>
+</span><span class='line'><span class="x">wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&amp;</span>
+</span><span class='line'><span class="x">id=27&amp;      //当前投票ID</span>
+</span><span class='line'><span class="x">sgssz=mp.weixin.qq.com</span>
+</span><span class='line'><span class="x">下面是请求的地址：</span>
+</span><span class='line'><span class="x">http://wx.asplay.cn/index.php?g=Wap&amp;m=Vote&amp;a=add_vote&amp;token=jdfsam1432614294&amp;wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc</span>
+</span><span class='line'><span class="x">发送的数据：</span>
+</span><span class='line'><span class="x">wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc&amp;tid=27&amp;chid=53%2C&amp;token=jdfsam1432614294&amp;action=add_vote、</span>
+</span><span class='line'><span class="x">投票成功返回的数据：</span>
+</span><span class='line'><span class="x">{&quot;success&quot;:1,&quot;token&quot;:&quot;jdfsam1432614294&quot;,&quot;wecha_id&quot;:&quot;oQIrdjjArAZYwKOh3Y6-1HeuwvEc&quot;,&quot;tid&quot;:&quot;27&quot;,&quot;chid&quot;:&quot;53&quot;,&quot;arrpre&quot;:{&quot;53&quot;:33.33,&quot;54&quot;:0,&quot;55&quot;:0,&quot;56&quot;:66.67}}</span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;基于以上的这些信息，我们就能自己模拟POST的数据，和用户标示了。但是仅仅做到这些是不够的，我们还需要模拟微信的内核。&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;pre class=&quot;prettyprint linenums&quot;&gt;</span>
+</span><span class='line'><span class="x">微信内核的ua：//网上能找到</span>
+</span><span class='line'><span class="x">Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0</span>
+</span><span class='line'><span class="x">&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;pre&gt;&lt;code class=&quot;php ../03/curlajax.class.php&quot;&gt;&amp;lt;?php</span>
+</span><span class='line'><span class="x">class curlajax{</span>
+</span><span class='line'><span class="x">    public $cookiejar;</span>
+</span><span class='line'><span class="x">    public $cookiefile;</span>
+</span><span class='line'><span class="x">    public $ua;</span>
+</span><span class='line'><span class="x">    public $debug;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    function __construct(){</span>
+</span><span class='line'><span class="x">        $this-&amp;gt;debug = 0;</span>
+</span><span class='line'><span class="x">        $this-&amp;gt;ua = &#39;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0&#39;; //这里模拟微信内核</span>
+</span><span class='line'><span class="x">        $this-&amp;gt;cookiejar = &#39;cookie.txt&#39;;</span>
+</span><span class='line'><span class="x">        $this-&amp;gt;cookiefile = &#39;cookie.txt&#39;;</span>
 </span><span class='line'><span class="x">    }</span>
-</span><span class='line'><span class="x">else{</span>
-</span><span class='line'><span class="x">    echo &amp;ldquo;投票失败&amp;rdquo;;</span>
-</span><span class='line'><span class="x">    }</span>
-</span><span class='line'><span class="x">    /&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;&lt;strong&gt;</span>
-</span><span class='line'><span class="x">    &lt;em&gt;检查$needle中是否含有$findstr</span>
-</span><span class='line'><span class="x">    &lt;/em&gt;@param string needle</span>
-</span><span class='line'><span class="x">    *@param string findstr</span>
-</span><span class='line'><span class="x">    &lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;&lt;/strong&gt;/</span>
-</span><span class='line'><span class="x">function checkstr($needle,$findstr){</span>
-</span><span class='line'><span class="x">    $tempstr=explode($findstr,$needle);</span>
-</span><span class='line'><span class="x">    if($tempstr&gt;1){</span>
-</span><span class='line'><span class="x">        return true;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">    /****************************</span>
+</span><span class='line'><span class="x">    *get 请求资源</span>
+</span><span class='line'><span class="x">    *@param string 地址</span>
+</span><span class='line'><span class="x">    *@param string referer</span>
+</span><span class='line'><span class="x">    *@param boolen 是否返回头部</span>
+</span><span class='line'><span class="x">    *@param array 头部附加cookie</span>
+</span><span class='line'><span class="x">    ****************************/</span>
+</span><span class='line'><span class="x">    function httpget($url,$referer=&#39;&#39;,$withhead=0){</span>
+</span><span class='line'><span class="x">        $ch = curl_init();</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_URL,$url);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_COOKIEJAR,$this-&amp;gt;cookiejar);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_COOKIEFILE,$this-&amp;gt;cookiefile);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_HEADER,$withhead);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);</span>
+</span><span class='line'><span class="x">        //curl_setopt($ch,CURLOPT_AUTOREFERER,1);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_USERAGENT,$this-&amp;gt;ua);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_REFERER,$referer);</span>
+</span><span class='line'><span class="x">        $r = curl_exec($ch);</span>
+</span><span class='line'><span class="x">        if($this-&amp;gt;debug){</span>
+</span><span class='line'><span class="x">            echo &#39;&amp;lt;pre&amp;gt;&#39;;</span>
+</span><span class='line'><span class="x">            var_dump(curl_getinfo($ch));</span>
 </span><span class='line'><span class="x">        }</span>
-</span><span class='line'><span class="x">    else{</span>
-</span><span class='line'><span class="x">        return false;</span>
-</span><span class='line'><span class="x">        }</span>
+</span><span class='line'><span class="x">        curl_close($ch);</span>
+</span><span class='line'><span class="x">        return $r;</span>
 </span><span class='line'><span class="x">    }</span>
-</span><span class='line'><span class="x">?&gt;</span>
-</span><span class='line'><span class="x">&lt;/body&gt;</span>
-</span><span class='line'><span class="x">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure></p>
+</span><span class='line'>
+</span><span class='line'><span class="x">    /****************************</span>
+</span><span class='line'><span class="x">    *post 请求资源</span>
+</span><span class='line'><span class="x">    *@param string 地址</span>
+</span><span class='line'><span class="x">    *@param string referer</span>
+</span><span class='line'><span class="x">    *@param array 提交数据</span>
+</span><span class='line'><span class="x">    *@param boolen 是否返回头部</span>
+</span><span class='line'><span class="x">    ****************************/</span>
+</span><span class='line'><span class="x">    function httppost($url,$referer=&#39;&#39;,$postdata=array(),$withhead=0){</span>
+</span><span class='line'><span class="x">        $ch = curl_init();</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_URL,$url);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_HEADER,$withhead);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);</span>
+</span><span class='line'><span class="x">        //curl_setopt($ch,CURLOPT_AUTOREFERER,1);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_COOKIEJAR,$this-&amp;gt;cookiejar);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_COOKIEFILE,$this-&amp;gt;cookiefile);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_USERAGENT,$this-&amp;gt;ua);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_REFERER,$referer);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_POST,1);</span>
+</span><span class='line'><span class="x">        curl_setopt($ch,CURLOPT_POSTFIELDS,$postdata);</span>
+</span><span class='line'><span class="x">        $r = curl_exec($ch);</span>
+</span><span class='line'><span class="x">        if($this-&amp;gt;debug){</span>
+</span><span class='line'><span class="x">            echo &#39;&amp;lt;pre&amp;gt;&#39;;</span>
+</span><span class='line'><span class="x">            var_dump(curl_getinfo($ch));</span>
+</span><span class='line'><span class="x">        }</span>
+</span><span class='line'><span class="x">        curl_close($ch);</span>
+</span><span class='line'><span class="x">        return $r;</span>
+</span><span class='line'><span class="x">    }</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'><span class="x">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">&lt;p&gt;网上的cURL方法，我们这里有要用到</span>
+</span></code></pre></td></tr></table></div></figure>php autoVote.php
+&lt;?php
+require_once(&ldquo;../03/curlajax.class.php&rdquo;);
+?>
+&lt;!DOCTYPE html PUBLIC &ldquo;-//W3C//DTD XHTML 1.0 Transitional//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd</a>&rdquo;>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微信自动投票工具</title>
+</head></p>
+
+<p><body>
+&lt;?php
+/<em>模拟POST登录</em>/
+echo &ldquo;<h1>这是微信自动投票工具</h1>&rdquo;;
+$jkxy = new curlajax();
+$jkxy->debug = 0;
+$jkxy->cookiejar = dirname(<strong>FILE</strong>).&lsquo;\cookie1.txt&rsquo;;
+$jkxy->cookiefile = dirname(<strong>FILE</strong>).&lsquo;\cookie1.txt&rsquo;;
+/<em>模拟提交信息</em>/
+$username=&ldquo;oQIrdjj&rdquo;.rand(500,50000).&ldquo;wKOh3Y6-1HeuwvEc&rdquo;;//用随机数来产生不同的用户ID
+$data = &ldquo;wecha_id=&rdquo;.$username.&ldquo;&amp;tid=27&amp;chid=53%2C&amp;token=jdfsam1432614294&amp;action=add_vote&rdquo;;//模拟不同的用户提交的数据
+$url = &lsquo;<a href="http://wx.asplay.cn/index.php?g=Wap&amp;m=Vote&amp;a=add_vote&amp;token=jdfsam1432614294&amp;wecha_id=">http://wx.asplay.cn/index.php?g=Wap&amp;m=Vote&amp;a=add_vote&amp;token=jdfsam1432614294&amp;wecha_id=</a>&rsquo;.$username;
+$r = $jkxy->httppost($url,$url,$data,0);//获取返回数据</p>
+
+<p>if(checkstr($r,&lsquo;&ldquo;success&rdquo;:1&rsquo;)==true){ //根据返回的数据判断是否投票成功
+    echo &ldquo;投票成功&rdquo;;
+    }
+else{
+    echo &ldquo;投票失败&rdquo;;
+    }
+    /<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>
+    <em>检查$needle中是否含有$findstr
+    </em>@param string needle
+    *@param string findstr
+    </strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/
+function checkstr($needle,$findstr){
+    $tempstr=explode($findstr,$needle);
+    if($tempstr>1){
+        return true;
+        }
+    else{
+        return false;
+        }
+    }
+?>
+</body>
+</html>
+```</p>
 
 <p>通过这个实战，感觉突然打开了一扇大门。要仔细研究下爬虫的相关知识了。</p>
 ]]></content>
@@ -674,546 +1325,6 @@ setcookie("qq_openid",$openid,time()+86400);
 header("Location:index.php")
 ?&gt;
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP-Memcache]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/14/memcache/"/>
-    <updated>2016-05-14T20:08:26+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/14/memcache</id>
-    <content type="html"><![CDATA[<h1>什么是Memcache</h1>
-
-<blockquote><p>Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中，所以这将会加速查询速度。</p></blockquote>
-
-<!--more-->
-
-
-<h1>Memcache使用场景</h1>
-
-<ul>
-<li>非持久化存储：对数据存储要求不高</li>
-<li>分布式存储：不适合单机（对内存消耗很大）</li>
-<li>ke/value存储：格式简单，不支持List，Array数据格式
-
-<h1>Memcache服务端的安装</h1></li>
-<li>编译安装 Libevent Memcache</li>
-<li>依赖管理工具 yum apt-get</li>
-<li>Memcache 和Memcached
-
-<ul>
-<li>Memcached 是Memcache的升级版本 推荐使用
-<code>
-$sudo apt-get install memcached
-</code></li>
-</ul>
-</li>
-</ul>
-
-
-<p>安装完Memcache服务端以后，我们需要启动该服务：</p>
-
-<pre><code>memcached -d -m 128 -p 11211 -u root
-</code></pre>
-
-<p>使用
-<code>
-ps -ef |grep memcach
-</code>查看是否启动
-这里需要说明一下memcached服务的启动参数：</p>
-
-<ul>
-<li>-p 监听的端口</li>
-<li>-l 连接的IP地址, 默认是本机</li>
-<li>-d start 启动memcached服务
-
-<ul>
-<li>-d restart 重起memcached服务</li>
-<li>-d stop|shutdown 关闭正在运行的memcached服务</li>
-<li>-d install 安装memcached服务</li>
-<li>-d uninstall 卸载memcached服务</li>
-</ul>
-</li>
-<li>-u 以的身份运行 (仅在以root运行的时候有效)</li>
-<li>-m 最大内存使用，单位MB。默认64MB</li>
-<li>-M 内存耗尽时返回错误，而不是删除项</li>
-<li>-c 最大同时连接数，默认是1024</li>
-<li>-f 块大小增长因子，默认是1.25-n 最小分配空间，key+value+flags默认是48</li>
-<li>-h 显示帮助
-
-<h1>Memcache客户端的安装</h1></li>
-<li>安装Libmemcached</li>
-<li>为PHP安装memcached扩展
-<code>
-$sudo apt-get install php5-memcache
-</code>
-安装完以后我们需要在php.ini里进行简单的配置,打开/etc/php5/apache2/php.ini文件在末尾添加如下内容：
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="p">[</span><span class="nx">Memcache</span><span class="p">]</span><span class="o">&lt;/</span><span class="nx">li</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">;</span> <span class="nx">一个高性能的分布式的内存对象缓存系统，通过在内存里维护一个统一的巨大的hash表，</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">它能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">;</span> <span class="nx">是否在遇到错误时透明地向其他服务器进行故障转移。</span>
-</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">allow_failover</span> <span class="o">=</span> <span class="nx">On</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">;</span> <span class="nx">接受和发送数据时最多尝试多少个服务器，只在打开memcache</span><span class="o">.</span><span class="nx">allow_failover时有效。memcache</span><span class="o">.</span><span class="nx">max_failover_attempts</span> <span class="o">=</span> <span class="mi">20</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">;</span> <span class="nx">数据将按照此值设定的块大小进行转移。此值越小所需的额外网络传输越多。</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">如果发现无法解释的速度降低，可以尝试将此值增加到32768。</span>
-</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">chunk_size</span> <span class="o">=</span> <span class="mi">8192</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">;</span> <span class="nx">连接到memcached服务器时使用的默认TCP端口。</span>
-</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">default_port</span> <span class="o">=</span> <span class="mi">11211</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">;</span> <span class="nx">控制将key映射到server的策略。默认值”standard”表示使用先前版本的老hash策略。</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">设为”consistent”可以允许在连接池中添加</span><span class="o">/</span><span class="nx">删除服务器时不必重新计算key与server之间的映射关系。</span>
-</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_strategy</span> <span class="o">=</span> <span class="nx">“standard”</span><span class="p">;</span> <span class="nx">控制将key映射到server的散列函数。默认值”crc32″使用CRC32算法，而”fnv”则表示使用FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a算法。</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a比CRC32速度稍低，但是散列效果更好。</span>
-</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_function</span> <span class="o">=</span> <span class="nx">“crc32″</span>
-</span></code></pre></td></tr></table></div></figure></p>
-
-<p>保存<code>php.ini</code>,执行<code>service apache2 restart</code>重启Apache。使用<code>php -m |grep memchched</code>查看是否安装成功</p>
-
-<h1>Memcached 常见操作</h1>
-
-<pre><code class="php">&lt;?php
-$m = new Memcached();
-$array=array(
-  array('127.0.0.1',11211),
-
-);
-$m-&gt;addServers($array); //添加服务器 添加多条为addServers 一条为 addServer（“127.0.0.1”，11211）；
-// // echo "11";
-// $info=$m-&gt;getStats();
-// print_r($info);
-//数据类操作
-//add
-$m-&gt;add("mkey","mvalue",600);//key value time
-$m-&gt;add("mkey","mvalue2",600);//两次赋值不会改变它的值
-$m-&gt;replace("mkey","mvalue3",600);//替换
-echo $m-&gt;get("mkey");
-$m-&gt;set("mkey","mvalue",600);//常用，如果不存在mkey则创建，如果存在则覆盖
-$m-&gt;delete("mkey");//删除
-$m-&gt;flush();//清空memcache中的所有缓存
-$m-&gt;set("num",5,0);
-$m-&gt;increment("num",5);//每次刷新num+5
-$m-&gt;decrement("num",5);//每次刷新num-5
-?&gt;
-</code></pre>
-
-<pre><code class="php">&lt;?php
-  $m = new Memcached();
-  $array=array(
-    array("127.0.0.1",11211),
-  );
-  $m-&gt;addServers($array);
-  $data=array(
-    "key" =&gt; "value",
-    "key2" =&gt;"value2",
-
-  );
-  $m-&gt;setMulti($data,0); //一次设置多个值
- $result=  $m-&gt;getMulti(array("key","key2"));//一次获取多个值
- print_r($result);
- $m-&gt;deleteMulti(array("key","key2"));//一次删除多个值
- $m-&gt;getResultCode();//获取上次操作返回值
- $m-&gt;getResultMessage();//获取上次操作的信息
-?&gt;
-</code></pre>
-
-<p><a href="http://php.net/manual/zh/book.memcached.php">官方说明文档</a></p>
-
-<h1>项目中使用Memcached</h1>
-
-<ul>
-<li>即时生成缓存　
-
-<ul>
-<li>类似于新闻详情页，第一个人来了生成缓存，第二个人再来直接读缓存</li>
-</ul>
-</li>
-<li>提前生成缓存
-
-<ul>
-<li>适合高访问量</li>
-</ul>
-</li>
-<li>永久缓存
-
-<ul>
-<li>关于我们 这种基本不变的网页</li>
-</ul>
-</li>
-</ul>
-
-
-<h1>注意事项</h1>
-
-<ul>
-<li>不要在单机模式中使用Memcached</li>
-<li>不要在Memcached保存重要数据。掉电会丢失。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP性能优化初识]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/04/php-xing-neng-you-hua/"/>
-    <updated>2016-05-04T22:46:21+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/04/php-xing-neng-you-hua</id>
-    <content type="html"><![CDATA[<blockquote><p>PHP性能优化</p></blockquote>
-
-<!--more-->
-
-
-<h1>一、PHP性能优化问题解析</h1>
-
-<p>PHP的性能问题，占整体项目性能问题的比例不足50%，所以在考虑性能优化项目的时候，不要局限于仅优化PHP。</p>
-
-<p>PHP的性能优化问题的解决方向（困难度从容易到简单）</p>
-
-<pre><code>PHP语言级的性能优化
-PHP周边问题的性能优化（开发环境等）
-PHP语言自身分析、优化（底层C）
-</code></pre>
-
-<h2>压力测试工具简介</h2>
-
-<p><strong>Apache Benchmark（ab）</strong></p>
-
-<p>简介</p>
-
-<pre><code>ab是由Apache提供的压力测试软件。安装Apache服务器时会自带该压测软件。
-</code></pre>
-
-<p>如何使用</p>
-
-<pre><code>./ab -n1000 -c100 http://www.baidu.com （目标网址）
--n 请求数
--c 并发数
-url 目标压测地址
-</code></pre>
-
-<p>结果分析</p>
-
-<pre><code>主要看
-Request per second 每秒接受的请求数
-Time per request   一个请求的耗时
-</code></pre>
-
-<h1>二、PHP语言级的优化</h1>
-
-<p><strong>优化点：少写代码，多用PHP自身能力,多使用PHP内置的函数，变量，常量</strong></p>
-
-<p><strong>性能问题：自写代码冗余较多，可读性不佳，并且性能低</strong></p>
-
-<p>为什么性能低？</p>
-
-<pre><code>我们自己写的代码每次需要编译解析成底层语言，每一次请求都会处理一遍开销很大。
-</code></pre>
-
-<hr />
-
-<p><strong>PHP内置函数的性能优劣</strong></p>
-
-<p>情况描述：</p>
-
-<pre><code>PHP内置函数之间依然存在着快慢差异
-</code></pre>
-
-<p>多去了解PHP内置函数的时间复杂度</p>
-
-<p>举例
-<code>php
-&lt;?php
-    $start=current_time();
-    $i=0;
-    $arr=range(1,200000);
-    while($i&lt;200000){
-        ++$i;
-        //isset($arr[$i]); //测试结果50多ms
-        array_key_exists($i,$arr); //测试结果80多ms
-    }
-    $end=current_time();
-    echo "Lost Time:".number_format($end-$start,3)*1000;
-    echo "\n";
-    /**
-     *返回一个微秒级别的时间戳
-     */
-    function current_time(){
-        list($usec,$sec)=explode("",microtime());
-        return ((float)$usce+(float)$sec);
-    }
-?&gt;
-</code>
-测试结果说明isset比array_key_exists函数更优化。</p>
-
-<hr />
-
-<p><strong>减少PHP魔法函数的使用</strong></p>
-
-<p>情况描述：</p>
-
-<pre><code>PHP提供的魔法函数性能不佳
-</code></pre>
-
-<p>举例
-<code>php
-&lt;?php
-class test{
-    private $var="123";
-    public function __get($varname){
-        return $this-&gt;var;
-    }
-}
-$i=0;
-while($i&lt;10000-){
-    $i++;
-    $test=new test();
-    $test-&gt;var;
-}//大概80ms
-?&gt;
-</code></p>
-
-<pre><code class="php">&lt;?php
-class test{
-    public $var="123";
-    //public function __get($varname){
-        //return $this-&gt;var;
-    //}
-}
-$i=0;
-while($i&lt;100000){
-    $i++;
-    $test=new test();
-    $test-&gt;var;
-}//大概50ms
-?&gt;
-</code></pre>
-
-<p>不使用魔法函数，性能更优化。</p>
-
-<p>PS：</p>
-
-<pre><code>在Linux中可以使用 time php test.php
-会输出三个时间，主要关注user为执行时间
-</code></pre>
-
-<hr />
-
-<p><strong>产生额外开销的错误抑制符@</strong></p>
-
-<p>情况描述：</p>
-
-<pre><code>@的实际逻辑是在代码开始前结束后增加Opcode 忽略报错。
-在@这行前加入Opcode忽略报错，又在这行结束后再加入Opcode，恢复报错。
-</code></pre>
-
-<pre><code class="php">&lt;?php
-    file_get_contents("XXX");
-
-?&gt;
-</code></pre>
-
-<p>用VLD扩展看Opcode代码：</p>
-
-<pre><code>php -dvld.active=1 -dvld.execute=0 at.php //我们只看代码不执行
-
-有三行代码
-加上@符号后
-有五行代码
-</code></pre>
-
-<p>建议不要使用错误抑制符@，
-多使用try catch</p>
-
-<hr />
-
-<p><strong>合理使用内存</strong></p>
-
-<p>情况描述：</p>
-
-<pre><code>PHP有内存回收机制保底，但也要小心使用内存。
-</code></pre>
-
-<p>利用unset（）及时释放不适用的内存（注：unset（）出现注销不掉的情况）</p>
-
-<hr />
-
-<p><strong>尽量少的使用正则表达式</strong></p>
-
-<p>情况描述：</p>
-
-<pre><code>正则表达式的回溯开销较大。
-</code></pre>
-
-<hr />
-
-<p><strong>避免在循环内做运算</strong></p>
-
-<p>情况描述:</p>
-
-<pre><code>循环内的计算式将会被重复计算
-</code></pre>
-
-<pre><code class="php">&lt;?php
-    $str="Hello World!"
-    for($i=0;$i&lt;strlen($str);$i++){//每次循环都会计算这个字符串的长度
-        //do something
-    }
-?&gt;
-</code></pre>
-
-<p>改进：</p>
-
-<pre><code class="php">&lt;?php
-    $str="Hello World!"
-    $strlen=strlen($str)
-    for($i=0;$i&lt;$strlen;$i++){
-        //do something
-    }
-?&gt;
-</code></pre>
-
-<hr />
-
-<p><strong>减少计算密集型业务</strong></p>
-
-<p>情况描述：</p>
-
-<pre><code>PHP的语言特性决定了PHP不适合密集型运算的场景。
-因为PHP是基于C语言的，所以在处理大型运算的时候开销是比C大很多的。
-</code></pre>
-
-<p>适合的场景：</p>
-
-<pre><code>衔接Webserver与后端服务，UI呈现。
-</code></pre>
-
-<hr />
-
-<p><strong>务必使用带引号字符串做键值</strong></p>
-
-<p>情况描述：</p>
-
-<pre><code>PHP会将没有引号的键值当做常量，产生查找常量的开销。
-</code></pre>
-
-<hr />
-
-<h1>三、PHP周边问题的性能优化</h1>
-
-<p><strong>Linux 运行环境</strong></p>
-
-<p><strong>减少文件类的操作</strong></p>
-
-<p>常见PHP场景的开销次序：</p>
-
-<pre><code>读写内存&lt;&lt;读写数据库（数据库有内存缓存）&lt;读写磁盘&lt;读写网络数据（网络延迟）
-</code></pre>
-
-<hr />
-
-<p><strong>优化网络请求</strong></p>
-
-<p>可能的问题：
-    1. 对方接口的不确定因素
-    2. 网络稳定性</p>
-
-<p>优化：</p>
-
-<pre><code>1. 设置超时时间
-    连接超时（２００ｍｓ）
-    读超时（８００ｍｓ）
-    写超时（５００ｍｓ）
-２.　串行请求并行化
-    使用curl_multi_*() //取决于最长的连接时间所以不推荐
-    使用swoole扩展　　
-</code></pre>
-
-<hr />
-
-<p><strong>压缩PHP接口输出</strong></p>
-
-<p>使用Gzip压缩即可</p>
-
-<p>优点：</p>
-
-<pre><code>利于我们的数据输出，Client能更快获取数据
-</code></pre>
-
-<p>缺点：</p>
-
-<pre><code>产生cpu额外开销
-</code></pre>
-
-<p>可以考虑当数据大于多少时再使用压缩来优化。</p>
-
-<hr />
-
-<p><strong>缓存重复计算的内容</strong></p>
-
-<p>什么情况下：</p>
-
-<pre><code>多次请求，内容不变 //使用模板渲染缓存 如smarty 开启caching
-</code></pre>
-
-<hr />
-
-<p><strong>重叠时间窗口思想和旁路方案</strong></p>
-
-<pre><code>在几个任务不强依赖前一个任务的输出或者返回时。可以在上一个任务没完成时就执行下一个任务
-</code></pre>
-
-<hr />
-
-<h1>四、PHP性能分析</h1>
-
-<p><strong>用XHPorf进行PHP性能问题的具体分析</strong></p>
-
-<p>XHPorf：源自Facebook的PHP性能优化工具
-其他工具：</p>
-
-<pre><code>ab -压力测试
-vld -opcode 代码分析
-</code></pre>
-
-<p><a href="http://www.imooc.com/video/4275">here</a></p>
-
-<h1>五、PHP性能瓶颈究极办法</h1>
-
-<p>Opcode Cache ： PHP扩展APC，memcache</p>
-
-<p>通过PHP扩展代替原PHP代码中高频逻辑</p>
-
-<p>Runtime优化： HHVM</p>
 ]]></content>
   </entry>
   
