@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-19T17:27:47+08:00</updated>
+  <updated>2016-05-21T16:08:10+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,542 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Learn-more-PDO]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo/"/>
+    <updated>2016-05-19T18:47:27+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo</id>
+    <content type="html"><![CDATA[<blockquote><p>前段时间在做手机归属地查询的Demo时突然发现自己对PDO还是太生疏，一直都是用的以前的代码。很多都不太了解，于是重新系统的学习了一下PDO类。</p></blockquote>
+
+<h1>什么是PDO</h1>
+
+<p>PDO（PHP Data Object）数据库访问抽象层，统一各种数据库的访问接口。
+<strong>特性</strong>
+* 编码一致性
+* 灵活性
+* 高性能
+* 面向对象特性</p>
+
+<p>PDO的安装与配置，和PHP其他扩展的开启一样，只需要在<code>php.ini</code>里设置即可，这里就不多说了。</p>
+
+<h1>PDO连接数据库</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="c1">//通过参数形式连接数据库</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$dsn</span><span class="o">=</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$passwd</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$passwd</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$pdo</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDO exec</h1>
+
+<blockquote><p>增删改，返回得是受影响的行数</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//exec():执行一条sql语句并返回其受影响的记录的条数,如果没有受影响的记录，他返回0</span>
+</span><span class='line'>  <span class="c1">//exec对于select没有作用</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=&lt;&lt;&lt;</span><span class="nx">EOF</span>
+</span><span class='line'>      <span class="nx">CREATE</span> <span class="nx">TABLE</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="nx">EXISTS</span> <span class="nx">user</span><span class="p">(</span>
+</span><span class='line'>      <span class="nx">id</span> <span class="nx">INT</span> <span class="nx">UNSIGNED</span> <span class="nx">AUTO_INCREMENT</span> <span class="nx">KEY</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">username</span> <span class="nx">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="nx">UNIQUE</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">password</span> <span class="nx">CHAR</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">email</span> <span class="nx">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span>
+</span><span class='line'>      <span class="p">);</span>
+</span><span class='line'><span class="nx">EOF</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">//$sql=&#39;INSERT user(username,password,email) VALUES(&quot;reton&quot;,&quot;reton&quot;,&quot;reton@qq.com&quot;)&#39;;</span>
+</span><span class='line'>  <span class="c1">//$res=$pdo-&gt;exec($sql);</span>
+</span><span class='line'>  <span class="c1">//echo &#39;受影响的记录的条数为：&#39;.$res,&#39;&lt;br/&gt;&#39;;</span>
+</span><span class='line'>  <span class="c1">//$pdo-&gt;lastInsertId():得到新插入记录的ID号</span>
+</span><span class='line'>  <span class="c1">//echo &#39;最后插入的ID号为&#39;.$pdo-&gt;lastInsertId();</span>
+</span><span class='line'>  <span class="nv">$res</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$res</span><span class="p">);</span>   
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;INSERT user(username,password,email) VALUES(&quot;reton&quot;,&quot;&#39;</span><span class="o">.</span><span class="nb">md5</span><span class="p">(</span><span class="s1">&#39;reton&#39;</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;&quot;,&quot;test@qq.com&quot;)&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//echo $sql;</span>
+</span><span class='line'>  <span class="nv">$res</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$res</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDO error 获取错误信息</h1>
+
+<blockquote><p>获取错误码和错误信息</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;delete from user12 where id=1&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$res</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//echo $res.&#39;条记录被影响&#39;;</span>
+</span><span class='line'>  <span class="c1">//var_dump($res);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$res</span><span class="o">===</span><span class="k">false</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//$pdo-&gt;errorCode():SQLSTATE的值</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">errorCode</span><span class="p">();</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;&lt;hr/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="c1">//$pdo-&gt;errorInfo():返回的错误信息的数组，数组中包含3个单元</span>
+</span><span class='line'>      <span class="c1">//0=&gt;SQLSTATE,1=&gt;CODE,2=&gt;INFO</span>
+</span><span class='line'>      <span class="nv">$errInfo</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">errorInfo</span><span class="p">();</span>
+</span><span class='line'>      <span class="nb">print_r</span><span class="p">(</span><span class="nv">$errInfo</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="c1">//   echo &#39;&lt;hr/&gt;&#39;;</span>
+</span><span class='line'><span class="c1">//   echo $pdo-&gt;lastInsertId();</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDO query</h1>
+
+<blockquote><p>执行查询，返回的是PDOStatement对象</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//$sql=&#39;select * from user where id=2&#39;;</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;select id,username,email from user&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">//$pdo-&gt;query($sql)，执行SQL语句，返回PDOStatement对象</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$stmt</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;&lt;hr/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$stmt</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//print_r($row);</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;编号：&#39;</span><span class="o">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span><span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;用户名：&#39;</span><span class="o">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span><span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;邮箱：&#39;</span><span class="o">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">],</span><span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;&lt;hr/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDO prepare</h1>
+
+<blockquote><p>prepare 准备方法</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;select * from user where username=&quot;reton&quot;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">//prepare($sql):准备SQL语句</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//execute():执行预处理语句</span>
+</span><span class='line'>  <span class="nv">$res</span><span class="o">=</span><span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>  <span class="c1">//var_dump($res);</span>
+</span><span class='line'>  <span class="c1">//fetch():得到结果集中的一条记录</span>
+</span><span class='line'>  <span class="nv">$row</span><span class="o">=</span><span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">fetch</span><span class="p">();</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$row</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">//var_dump($stmt);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>fetch.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;select * from user&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$res</span><span class="o">=</span><span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'><span class="c1">//   if($res){</span>
+</span><span class='line'><span class="c1">//       while($row=$stmt-&gt;fetch()){</span>
+</span><span class='line'><span class="c1">//           print_r($row);</span>
+</span><span class='line'><span class="c1">//           echo &#39;&lt;hr/&gt;&#39;;</span>
+</span><span class='line'><span class="c1">//       }</span>
+</span><span class='line'><span class="c1">//   }</span>
+</span><span class='line'>  <span class="nv">$rows</span><span class="o">=</span><span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">fetchAll</span><span class="p">();</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$rows</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">//var_dump($stmt);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>setFetchMode.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;select * from user&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$res</span><span class="o">=</span><span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'><span class="c1">//   if($res){</span>
+</span><span class='line'><span class="c1">//       while($row=$stmt-&gt;fetch(PDO::FETCH_OBJ)){//返回对象</span>
+</span><span class='line'><span class="c1">//           print_r($row);</span>
+</span><span class='line'><span class="c1">//           echo &#39;&lt;hr/&gt;&#39;;</span>
+</span><span class='line'><span class="c1">//       }</span>
+</span><span class='line'><span class="c1">//   }</span>
+</span><span class='line'><span class="c1">//   $rows=$stmt-&gt;fetchAll(PDO::FETCH_ASSOC);//返回关联数组BOTH为数组加索引</span>
+</span><span class='line'><span class="c1">//   print_r($rows);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;&lt;hr/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">setFetchMode</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">FETCH_ASSOC</span><span class="p">);</span><span class="c1">//set了就不用传参了    </span>
+</span><span class='line'>  <span class="c1">//var_dump($stmt);</span>
+</span><span class='line'>  <span class="nv">$rows</span><span class="o">=</span><span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">fetchAll</span><span class="p">();</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$rows</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDO getAttribute</h1>
+
+<blockquote><p>获得数据库连接属性</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$dsn</span><span class="o">=</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$passwd</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$passwd</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;自动提交：&#39;</span><span class="o">.</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">getAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_AUTOCOMMIT</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;PDO默认的错误处理模式：&#39;</span><span class="o">.</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">getAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_ERRMODE</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">setAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_AUTOCOMMIT</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;自动提交：&#39;</span><span class="o">.</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">getAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_AUTOCOMMIT</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>获取常用属性 并不是所有环境都支持一下的属性</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$dsn</span><span class="o">=</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$passwd</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$passwd</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$attrArr</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s1">&#39;AUTOCOMMIT&#39;</span><span class="p">,</span><span class="s1">&#39;ERRMODE&#39;</span><span class="p">,</span><span class="s1">&#39;CASE&#39;</span><span class="p">,</span><span class="s1">&#39;PERSISTENT&#39;</span><span class="p">,</span><span class="s1">&#39;TIMEOUT&#39;</span><span class="p">,</span><span class="s1">&#39;ORACLE_NULLS&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;SERVER_INFO&#39;</span><span class="p">,</span><span class="s1">&#39;SERVER_VERSION&#39;</span><span class="p">,</span><span class="s1">&#39;CLIENT_VERSION&#39;</span><span class="p">,</span><span class="s1">&#39;CONNECTION_STATUS&#39;</span>
+</span><span class='line'>  <span class="p">);</span>
+</span><span class='line'>  <span class="k">foreach</span><span class="p">(</span><span class="nv">$attrArr</span> <span class="k">as</span> <span class="nv">$attr</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;PDO::ATTR_</span><span class="si">$attr</span><span class="s2">: &quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">getAttribute</span><span class="p">(</span><span class="nb">constant</span><span class="p">(</span><span class="s2">&quot;PDO::ATTR_</span><span class="si">$attr</span><span class="s2">&quot;</span><span class="p">)),</span><span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDO setAttribute</h1>
+
+<blockquote><p>设置数据库连接属性</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$dsn</span><span class="o">=</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$passwd</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$options</span><span class="o">=</span><span class="k">array</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_AUTOCOMMIT</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_ERRMODE</span><span class="o">=&gt;</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ERRMODE_EXCEPTION</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$passwd</span><span class="p">,</span> <span class="nv">$options</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">getAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_AUTOCOMMIT</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">getAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_ERRMODE</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDOStatement 对象的使用</h1>
+
+<p><strong>quote防注入</strong></p>
+
+<figure class='code'><figcaption><span>login.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="cp">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;title&gt;</span>Insert title here<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&#39;doAction2.php&#39;</span> <span class="na">method=</span><span class="s">&#39;post&#39;</span><span class="nt">&gt;</span>
+</span><span class='line'>用户名：<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;text&#39;</span> <span class="na">name=</span><span class="s">&#39;username&#39;</span> <span class="nt">/&gt;&lt;br/&gt;</span>
+</span><span class='line'>密码：<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;password&#39;</span> <span class="na">name=</span><span class="s">&#39;password&#39;</span><span class="nt">/&gt;&lt;br/&gt;</span>
+</span><span class='line'><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&#39;submit&#39;</span> <span class="na">value=</span><span class="s">&#39;登陆&#39;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/form&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>doAction2.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>   
+</span><span class='line'>  <span class="c1">//echo $pdo-&gt;quote($username);</span>
+</span><span class='line'>  <span class="c1">//$sql=&quot;select * from user where username=&#39;{$username}&#39; and password=&#39;{$password}&#39;&quot;;</span>
+</span><span class='line'>  <span class="c1">//echo $sql;</span>
+</span><span class='line'>  <span class="c1">//通过quote():返回带引号的字符串，过滤字符串中的特殊字符</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">quote</span><span class="p">(</span><span class="nv">$username</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;select * from user where username=</span><span class="si">{</span><span class="nv">$username</span><span class="si">}</span><span class="s2"> and password=&#39;</span><span class="si">{</span><span class="nv">$password</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$sql</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="c1">//PDOStatement对象的方法：rouCount()：对于select操作返回的结果集中记录的条数，</span>
+</span><span class='line'>  <span class="c1">//对于INSERT、UPDATE、DELETE返回受影响的记录的条数</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[php手机归属地查询Demo]]></title>
@@ -6226,450 +6762,6 @@ emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house n
 </span><span class='line'>$detailErrorArray_mouth = SeasLog::analyzerDetail(SEASLOG_ERROR,date('Ym',time()));
 </span><span class='line'>
 </span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP无限级分类]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei/"/>
-    <updated>2016-04-29T09:36:19+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/29/wu-xian-ji-fen-lei</id>
-    <content type="html"><![CDATA[<blockquote><p>PHP无限级分类主要有两种实现方式，通过递归和全路径实现</p></blockquote>
-
-<!--more-->
-
-
-<h1>一、递归实现</h1>
-
-<pre><code>在数据库中存储如下格式的表：
-</code></pre>
-
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th style="text-align:center;">pid</th>
-<th style="text-align:center;">catename</th>
-<th style="text-align:center;">cateorder</th>
-<th style="text-align:right;">createtime</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:center;">新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>2</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:center;">图片</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>3</td>
-<td style="text-align:center;">1</td>
-<td style="text-align:center;">国内新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>4</td>
-<td style="text-align:center;">1</td>
-<td style="text-align:center;">国际新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>5</td>
-<td style="text-align:center;">3</td>
-<td style="text-align:center;">北京新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>6</td>
-<td style="text-align:center;">4</td>
-<td style="text-align:center;">美国新闻</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>7</td>
-<td style="text-align:center;">2</td>
-<td style="text-align:center;">美女图片</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-<tr>
-<td>8</td>
-<td style="text-align:center;">2</td>
-<td style="text-align:center;">风景图片</td>
-<td style="text-align:center;">0</td>
-<td style="text-align:right;">0</td>
-</tr>
-</tbody>
-</table>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>create table deepcate
-</span><span class='line'>(
-</span><span class='line'>id int(10) unsigned   not null  auto_increment primary key,
-</span><span class='line'>pid   int(11) unsigned    not null,
-</span><span class='line'>catename  varchar(30) not null,
-</span><span class='line'>cateorder int(11) unsigned    default 0,
-</span><span class='line'>createtime    int(10) not null
-</span><span class='line'>);
-</span><span class='line'>
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(0,'新闻',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(0,'图片',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(1,'国内新闻',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(1,'国际新闻',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(3,'北京新闻',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(4,'美国新闻',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(2,'美女图片',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(2,'风景图片',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(7,'日韩明星',0,0);
-</span><span class='line'>insert into deepcate(pid,catename,cateorder,createtime)values(9,'日本AV',0,0);
-</span><span class='line'>
-</span><span class='line'>select * from deepcate;</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>php 代码实现</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
-</span><span class='line'>header("Content-Type:text/html;Charset=UTF-8");
-</span><span class='line'>// php无限分类下拉列表的代码实现
-</span><span class='line'>include_once('db.inc.php') ;
-</span><span class='line'>
-</span><span class='line'>function getList($pid=0,&$result=array(),$spac=0)
-</span><span class='line'>{
-</span><span class='line'>    $spac=$spac+2;
-</span><span class='line'>    $sql=" SELECT * FROM deepcate WHERE pid=$pid ";
-</span><span class='line'>    $res=mysql_query($sql);
-</span><span class='line'>   
-</span><span class='line'>    while($row=mysql_fetch_assoc($res)){
-</span><span class='line'>        $row['catename']=str_repeat('&nbsp;&nbsp;',$spac).'|--'.$row['catename'];
-</span><span class='line'>        $result[]=$row;
-</span><span class='line'>        getList($row['id'],$result,$spac);
-</span><span class='line'>    }
-</span><span class='line'>    return $result;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>function displayCate($pid=0,$selected=0){
-</span><span class='line'>     $rs=getList($pid);
-</span><span class='line'>     $str="";
-</span><span class='line'>     $str.="&lt;select name='cate'&gt;";
-</span><span class='line'>    foreach($rs as $v){
-</span><span class='line'>        if($v['id']==$selected){
-</span><span class='line'>            $selected="selected";
-</span><span class='line'>        }
-</span><span class='line'>       $str.="&lt;option {$selected}&gt;";
-</span><span class='line'>       $str.= $v['catename'];
-</span><span class='line'>       $str.= "&lt;/option&gt;";
-</span><span class='line'>    }
-</span><span class='line'>    return $str.= "&lt;/select&gt;";
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>echo displayCate();
-</span><span class='line'>
-</span><span class='line'>echo "&lt;hr/&gt;&lt;hr/&gt;";
-</span><span class='line'>function getCatePath($cid,&$result){
-</span><span class='line'>    $sql="SELECT * FROM deepcate WHERE id=$cid ";
-</span><span class='line'>    $rs=mysql_query($sql);
-</span><span class='line'>    $row=mysql_fetch_assoc($rs);
-</span><span class='line'>    if($row){
-</span><span class='line'>        $result[]=$row;
-</span><span class='line'>        getCatePath($row['pid'],$result);
-</span><span class='line'>    }
-</span><span class='line'>    krsort($result);
-</span><span class='line'>    return $result;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>function displayCatePath($cid,$url="deepcate.php?cid="){
-</span><span class='line'>    $res=getCatePath($cid,$result);
-</span><span class='line'>    $str="";
-</span><span class='line'>    foreach($res as $v){
-</span><span class='line'>        $str.= "&lt;a href='{$url}{$v['id']}'&gt;{$v['catename']}&lt;/a&gt;&gt;&gt;";
-</span><span class='line'>    }return $str;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>echo displayCatePath(10);</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>二、全路径实现</h1>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>use imooc;
-</span><span class='line'>create table  likecate
-</span><span class='line'>(
-</span><span class='line'>id    int(11) not null  auto_increment primary key,
-</span><span class='line'>path  varchar(200)    not null,
-</span><span class='line'>catename  varchar(30) not null,
-</span><span class='line'>cateorder int(11) not null    default 0,
-</span><span class='line'>createtime    int(11) not null
-</span><span class='line'>);
-</span><span class='line'>
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('','手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1','功能手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2','老人手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2','儿童手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1','智能手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,5','andriod手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,5','ios手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,5','winphoto手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2,4','色盲手机',0,0);
-</span><span class='line'>insert into likecate(path,catename,cateorder,createtime)values('1,2,3','大字手机',0,0);
-</span><span class='line'>
-</span><span class='line'>select * from likecate;
-</span><span class='line'>
-</span><span class='line'>select id,catename,path,concat(path,',',id) as fullpath from likecate where 1 order by fullpath asc;
-</span><span class='line'>
-</span><span class='line'>#结果显示如图
-</span><span class='line'>+----+--------------+-------+----------+
-</span><span class='line'>| id | catename     | path  | fullpath |
-</span><span class='line'>+----+--------------+-------+----------+
-</span><span class='line'>|  1 | 手机         |       | ,1       |
-</span><span class='line'>|  2 | 功能手机     | 1     | 1,2      |
-</span><span class='line'>|  3 | 老人手机     | 1,2   | 1,2,3    |
-</span><span class='line'>| 10 | 大字手机     | 1,2,3 | 1,2,3,10 |
-</span><span class='line'>|  4 | 儿童手机     | 1,2   | 1,2,4    |
-</span><span class='line'>|  9 | 色盲手机     | 1,2,4 | 1,2,4,9  |
-</span><span class='line'>|  5 | 智能手机     | 1     | 1,5      |
-</span><span class='line'>|  6 | andriod手机  | 1,5   | 1,5,6    |
-</span><span class='line'>|  7 | ios手机      | 1,5   | 1,5,7    |
-</span><span class='line'>|  8 | winphoto手机 | 1,5   | 1,5,8    |
-</span><span class='line'>+----+--------------+-------+----------+</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>php代码实现</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
-</span><span class='line'>header("Content-Type:text/html;Charset=UTF-8");
-</span><span class='line'>//递归无限分类原理
-</span><span class='line'>include_once ('db.inc.php');
-</span><span class='line'> 
-</span><span class='line'>function likecate(){
-</span><span class='line'>    $sql="select id,catename,path,concat(path,',',id) as fullpath from likecate where 1 order by fullpath asc";
-</span><span class='line'>    $res=mysql_query($sql);
-</span><span class='line'>    $result=array();
-</span><span class='line'>    while($row=mysql_fetch_assoc($res)){
-</span><span class='line'>        $deep=count(explode(',',trim($row['fullpath'],',')));
-</span><span class='line'>         
-</span><span class='line'>        $row['catename']=str_repeat('&nbsp;&nbsp;',$deep*4).'|--'.$row['catename'];
-</span><span class='line'>        $result[]=$row;
-</span><span class='line'>    }
-</span><span class='line'>    return $result;
-</span><span class='line'>}
-</span><span class='line'> 
-</span><span class='line'> 
-</span><span class='line'>$res=likecate();
-</span><span class='line'>echo "&lt;select name='cate'&gt;";
-</span><span class='line'>foreach($res as $v){
-</span><span class='line'>    echo "&lt;option&gt;{$v['catename']}&lt;/option&gt;";
-</span><span class='line'>}
-</span><span class='line'>echo "&lt;/select&gt;";
-</span><span class='line'> 
-</span><span class='line'>echo "&lt;hr/&gt;&lt;hr/&gt;";
-</span><span class='line'>function getPathCate($cateid){
-</span><span class='line'>    $sql="select *,concat(path,',',id)fullpath from likecate where id=$cateid";
-</span><span class='line'>    $res=mysql_query($sql);
-</span><span class='line'>    $row=mysql_fetch_assoc($res);
-</span><span class='line'>    $ids=$row['fullpath'];
-</span><span class='line'>    $sql="select * from likecate where id in($ids) order by id asc";
-</span><span class='line'>    $res=mysql_query($sql);
-</span><span class='line'>    $result=array();
-</span><span class='line'>    while($row=mysql_fetch_assoc($res)){
-</span><span class='line'>        $result[]=$row;
-</span><span class='line'>    }
-</span><span class='line'>    return $result;
-</span><span class='line'>}
-</span><span class='line'> 
-</span><span class='line'>function displayCatePath($cateid,$link='likecate.php?cid='){
-</span><span class='line'>    $res=getPathCate($cateid);
-</span><span class='line'>    $str="";
-</span><span class='line'>    foreach($res as $v){
-</span><span class='line'>        $str.="&lt;a href='{$link}'&gt;{$v['catename']}&lt;/a&gt;&gt;";
-</span><span class='line'>    }
-</span><span class='line'>    return $str;
-</span><span class='line'>}  
-</span><span class='line'> 
-</span><span class='line'>echo displayCatePath(4,'likecate.php?p=1&cid=');</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>

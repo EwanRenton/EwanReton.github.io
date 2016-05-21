@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-19T17:27:47+08:00</updated>
+  <updated>2016-05-21T16:08:10+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,306 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Learn-more-PDO]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo/"/>
+    <updated>2016-05-19T18:47:27+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo</id>
+    <content type="html"><![CDATA[<blockquote><p>前段时间在做手机归属地查询的Demo时突然发现自己对PDO还是太生疏，一直都是用的以前的代码。很多都不太了解，于是重新系统的学习了一下PDO类。</p></blockquote>
+
+<h1>什么是PDO</h1>
+
+<p>PDO（PHP Data Object）数据库访问抽象层，统一各种数据库的访问接口。
+<strong>特性</strong>
+* 编码一致性
+* 灵活性
+* 高性能
+* 面向对象特性</p>
+
+<p>PDO的安装与配置，和PHP其他扩展的开启一样，只需要在<code>php.ini</code>里设置即可，这里就不多说了。</p>
+
+<h1>PDO连接数据库</h1>
+
+<pre><code class="php">&lt;?php 
+//通过参数形式连接数据库
+try{
+    $dsn='mysql:host=localhost;dbname=test';
+    $username='root';
+    $passwd='root';
+    $pdo=new PDO($dsn, $username, $passwd);
+    var_dump($pdo);
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<h1>PDO exec</h1>
+
+<blockquote><p>增删改，返回得是受影响的行数</p></blockquote>
+
+<pre><code class="php">&lt;?php 
+try{
+    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
+    //exec():执行一条sql语句并返回其受影响的记录的条数,如果没有受影响的记录，他返回0
+    //exec对于select没有作用
+    $sql=&lt;&lt;&lt;EOF
+        CREATE TABLE IF NOT EXISTS user(
+        id INT UNSIGNED AUTO_INCREMENT KEY,
+        username VARCHAR(20) NOT NULL UNIQUE,
+        password CHAR(32) NOT NULL,
+        email VARCHAR(30) NOT NULL
+        );
+EOF;
+    //$sql='INSERT user(username,password,email) VALUES("reton","reton","reton@qq.com")';
+    //$res=$pdo-&gt;exec($sql);
+    //echo '受影响的记录的条数为：'.$res,'&lt;br/&gt;';
+    //$pdo-&gt;lastInsertId():得到新插入记录的ID号
+    //echo '最后插入的ID号为'.$pdo-&gt;lastInsertId();
+    $res=$pdo-&gt;exec($sql);
+    var_dump($res); 
+    $sql='INSERT user(username,password,email) VALUES("reton","'.md5('reton').'","test@qq.com")';
+
+    //echo $sql;
+    $res=$pdo-&gt;exec($sql);
+    echo $res;
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<h1>PDO error 获取错误信息</h1>
+
+<blockquote><p>获取错误码和错误信息</p></blockquote>
+
+<pre><code class="php">&lt;?php 
+header('content-type:text/html;charset=utf-8');
+try{
+    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
+    $sql='delete from user12 where id=1';
+    $res=$pdo-&gt;exec($sql);
+    //echo $res.'条记录被影响';
+    //var_dump($res);
+    if($res===false){
+        //$pdo-&gt;errorCode():SQLSTATE的值
+        echo $pdo-&gt;errorCode();
+        echo '&lt;hr/&gt;';
+        //$pdo-&gt;errorInfo():返回的错误信息的数组，数组中包含3个单元
+        //0=&gt;SQLSTATE,1=&gt;CODE,2=&gt;INFO
+        $errInfo=$pdo-&gt;errorInfo();
+        print_r($errInfo);
+    }
+//  echo '&lt;hr/&gt;';
+//  echo $pdo-&gt;lastInsertId();
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<h1>PDO query</h1>
+
+<blockquote><p>执行查询，返回的是PDOStatement对象</p></blockquote>
+
+<pre><code class="php">&lt;?php 
+header('content-type:text/html;charset=utf-8');
+try{
+    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
+    //$sql='select * from user where id=2';
+    $sql='select id,username,email from user';
+    //$pdo-&gt;query($sql)，执行SQL语句，返回PDOStatement对象
+    $stmt=$pdo-&gt;query($sql);
+    var_dump($stmt);
+    echo '&lt;hr/&gt;';
+    foreach($stmt as $row){
+        //print_r($row);
+        echo '编号：'.$row['id'],'&lt;br/&gt;';
+        echo '用户名：'.$row['password'],'&lt;br/&gt;';
+        echo '邮箱：'.$row['email'],'&lt;br/&gt;';
+        echo '&lt;hr/&gt;';
+    }
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<h1>PDO prepare</h1>
+
+<blockquote><p>prepare 准备方法</p></blockquote>
+
+<pre><code class="php">header('content-type:text/html;charset=utf-8');
+try{
+    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
+    $sql='select * from user where username="reton"';
+    //prepare($sql):准备SQL语句
+    $stmt=$pdo-&gt;prepare($sql);
+    //execute():执行预处理语句
+    $res=$stmt-&gt;execute();
+    //var_dump($res);
+    //fetch():得到结果集中的一条记录
+    $row=$stmt-&gt;fetch();
+    print_r($row);
+
+    //var_dump($stmt);
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<pre><code class="php fetch.php">&lt;?php 
+header('content-type:text/html;charset=utf-8');
+try{
+    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
+    $sql='select * from user';
+    $stmt=$pdo-&gt;prepare($sql);
+    $res=$stmt-&gt;execute();
+//  if($res){
+//      while($row=$stmt-&gt;fetch()){
+//          print_r($row);
+//          echo '&lt;hr/&gt;';
+//      }
+//  }
+    $rows=$stmt-&gt;fetchAll();
+    print_r($rows);
+
+    //var_dump($stmt);
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<pre><code class="php setFetchMode.php">&lt;?php 
+header('content-type:text/html;charset=utf-8');
+try{
+    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
+    $sql='select * from user';
+    $stmt=$pdo-&gt;prepare($sql);
+    $res=$stmt-&gt;execute();
+//  if($res){
+//      while($row=$stmt-&gt;fetch(PDO::FETCH_OBJ)){//返回对象
+//          print_r($row);
+//          echo '&lt;hr/&gt;';
+//      }
+//  }
+//  $rows=$stmt-&gt;fetchAll(PDO::FETCH_ASSOC);//返回关联数组BOTH为数组加索引
+//  print_r($rows);
+    echo '&lt;hr/&gt;';
+    $stmt-&gt;setFetchMode(PDO::FETCH_ASSOC);//set了就不用传参了    
+    //var_dump($stmt);
+    $rows=$stmt-&gt;fetchAll();
+    print_r($rows);
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<h1>PDO getAttribute</h1>
+
+<blockquote><p>获得数据库连接属性</p></blockquote>
+
+<pre><code class="php">&lt;?php 
+header('content-type:text/html;charset=utf-8');
+try{
+    $dsn='mysql:host=localhost;dbname=test';
+    $username='root';
+    $passwd='root';
+    $pdo=new PDO($dsn, $username, $passwd);
+    echo '自动提交：'.$pdo-&gt;getAttribute(PDO::ATTR_AUTOCOMMIT);
+    echo '&lt;br/&gt;';
+    echo 'PDO默认的错误处理模式：'.$pdo-&gt;getAttribute(PDO::ATTR_ERRMODE);
+    $pdo-&gt;setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+    echo '&lt;br/&gt;';
+    echo '自动提交：'.$pdo-&gt;getAttribute(PDO::ATTR_AUTOCOMMIT);
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<p>获取常用属性 并不是所有环境都支持一下的属性
+<code>php
+&lt;?php
+header('content-type:text/html;charset=utf-8');
+try{
+    $dsn='mysql:host=localhost;dbname=test';
+    $username='root';
+    $passwd='root';
+    $pdo=new PDO($dsn, $username, $passwd);
+    $attrArr=array(
+        'AUTOCOMMIT','ERRMODE','CASE','PERSISTENT','TIMEOUT','ORACLE_NULLS',
+            'SERVER_INFO','SERVER_VERSION','CLIENT_VERSION','CONNECTION_STATUS'
+    );
+    foreach($attrArr as $attr){
+        echo "PDO::ATTR_$attr: ";
+        echo $pdo-&gt;getAttribute(constant("PDO::ATTR_$attr")),'&lt;br/&gt;';
+    }
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></p>
+
+<h1>PDO setAttribute</h1>
+
+<blockquote><p>设置数据库连接属性</p></blockquote>
+
+<pre><code class="php">&lt;?php 
+header('content-type:text/html;charset=utf-8');
+try{
+    $dsn='mysql:host=localhost;dbname=test';
+    $username='root';
+    $passwd='root';
+    $options=array(PDO::ATTR_AUTOCOMMIT=&gt;0,PDO::ATTR_ERRMODE=&gt;PDO::ERRMODE_EXCEPTION);
+    $pdo=new PDO($dsn, $username, $passwd, $options);
+    echo $pdo-&gt;getAttribute(PDO::ATTR_AUTOCOMMIT);
+    echo '&lt;br/&gt;';
+    echo $pdo-&gt;getAttribute(PDO::ATTR_ERRMODE);
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+
+<h1>PDOStatement 对象的使用</h1>
+
+<p><strong>quote防注入</strong>
+<code>html login.php
+ &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+&lt;title&gt;Insert title here&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form action='doAction2.php' method='post'&gt;
+用户名：&lt;input type='text' name='username' /&gt;&lt;br/&gt;
+密码：&lt;input type='password' name='password'/&gt;&lt;br/&gt;
+&lt;input type='submit' value='登陆'/&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code>
+<code>php  doAction2.php
+&lt;?php
+&lt;?php
+header('content-type:text/html;charset=utf-8');
+$username=$_POST['username'];
+$password=$_POST['password'];
+try{
+    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
+    //echo $pdo-&gt;quote($username);
+    //$sql="select * from user where username='{$username}' and password='{$password}'";
+    //echo $sql;
+    //通过quote():返回带引号的字符串，过滤字符串中的特殊字符
+    $username=$pdo-&gt;quote($username);
+    $sql="select * from user where username={$username} and password='{$password}'";
+    echo $sql;
+    $stmt=$pdo-&gt;query($sql);
+    //PDOStatement对象的方法：rouCount()：对于select操作返回的结果集中记录的条数，
+    //对于INSERT、UPDATE、DELETE返回受影响的记录的条数
+    echo $stmt-&gt;rowCount();
+}catch(PDOException $e){
+    echo $e-&gt;getMessage();
+}
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[php手机归属地查询Demo]]></title>
@@ -1201,136 +1501,6 @@ function checkstr($needle,$findstr){
 ```</p>
 
 <p>通过这个实战，感觉突然打开了一扇大门。要仔细研究下爬虫的相关知识了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[QQ登录Demo]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/15/qq-login/"/>
-    <updated>2016-05-15T16:12:15+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/15/qq-login</id>
-    <content type="html"><![CDATA[<blockquote><p>今天完成了一个QQ登录的小Deom</p></blockquote>
-
-<h1>前置条件</h1>
-
-<ul>
-<li>一个QQ号</li>
-<li>一台公网通过域名可访问的web服务器</li>
-</ul>
-
-
-<!--more-->
-
-
-<h1>申请AppID和AppKey</h1>
-
-<p><a href="http://connect.qq.com/">QQ开放平台</a></p>
-
-<p>如果是第一次登录，会跳转到管理中心，应用开发者注册
-<img src="http://d.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b43ea01c0d46f21fcd345e56c61f1a5d/7acb0a46f21fbe0908972df36c600c338644ad08.jpg?referer=6f234af490dda144831e58820b06&amp;x=.jpg" alt="开发者注册" />
-注册后悔跳转到管理中心，点击创建应用</p>
-
-<p><img src="http://c.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=7ab420c84634970a4373102aa5f1a0f5/fc1f4134970a304ef778481dd6c8a786c8175cfb.jpg?referer=ebbc6b2a5566d016270eaa189c99&amp;x=.jpg" alt="创建应用" />
-回调地址，可以和上面一样，在开发的时候再修改。
-<img src="http://f.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=f47f75cf902bd40746c7d3f84bb2ef6c/aa18972bd40735fa1b96a55e99510fb30e2408f7.jpg?referer=8ed677a03e12b31b9e7bf91968ae&amp;x=.jpg" alt="验证" />
-将下面这段代码，复制到服务器首页<code>&lt;head&gt;</code>标签中。
-<code>html
-&lt;meta property="qc:admins" content="43216566776571625476636" /&gt;
-</code></p>
-
-<h1>添加测试回调地址</h1>
-
-<p>在QQ开放平台应用详情中，选择信息管理，</p>
-
-<p>在回调地址中添加</p>
-
-<p><img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=2bafae5c4010b912bbc1f6fbf3c68d3e/738b4710b912c8fc25701f2afb039245d7882152.jpg?referer=37adaf2785025aaf8a254afb8f30&amp;x=.jpg" alt="添加回调地址" />
-其中的callback.php可以自定义。</p>
-
-<p>记得保存之前需要验证。</p>
-
-<h1>引入官方SDK</h1>
-
-<p><a href="http://wiki.connect.qq.com/">官方SDK</a></p>
-
-<p>找到PHP下载（有能力可以自己手工开发，造车轮。）</p>
-
-<p>放到站点根目录</p>
-
-<h1>SDK参数配置</h1>
-
-<p>访问<code>http://localhost/Connect2.1/install.php</code>
-<img src="http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b155c91931d3d539c53d0fc60abc986d/14ce36d3d539b600424ce650ee50352ac75cb753.jpg?referer=0353883031d12f2e97129a50f131&amp;x=.jpg" alt="参数配置" />
-配置成功后,保留API下的文件，其他的都可删除。</p>
-
-<h1>SDK解读</h1>
-
-<p><img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=440c3587322ac65c63056676cbc9c32c/e850352ac65c10382dc82725b5119313b17e89a7.jpg?referer=314909b58235e5ddc93b91eff77d&amp;x=.jpg" alt="" />
-<img src="http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=4c5e0d1fa086c9170c03523cf90601f2/d0c8a786c9177f3ebe9d15ea77cf3bc79e3d56a8.jpg?referer=4ebf08d032fae6cd55a39f519266&amp;x=.jpg" alt="" />
-<img src="http://h.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=327017c44e540923ae69637ba263a034/ca1349540923dd54e98f4e8fd609b3de9d82485d.jpg?referer=cd4a9bc7be12c8fcede4c2fda833&amp;x=.jpg" alt="" />
-<img src="http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=22750c750bf431adb8d2433c7b0ddd92/d1a20cf431adcbefe6cb97e1abaf2edda2cc9f5e.jpg?referer=bd373c299e25bc31724a35a8d934&amp;x=.jpg" alt="" />
-<img src="http://f.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=3ede9315d262853596e0d224a0d407fb/4ec2d5628535e5dd429f4c3871c6a7efcf1b62a2.jpg?referer=bc5660e9b63533faaca1a71ece60&amp;x=.jpg" alt="" />
-<img src="http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=9a446d86ff1986184547ef817ad65f4e/b151f8198618367af3eb973a29738bd4b21ce5f3.jpg?referer=7862fb405eee3d6d7bd1b3fb4391&amp;x=.jpg" alt="" />
-<img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=f77b76cf902bd40746c7d3f84bb2ef6c/aa18972bd40735fa1892a65e99510fb30e2408f3.jpg?referer=8dd274a03e12b31b9e7bf9196892&amp;x=.jpg" alt="" />
-<img src="http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=4d470c1fa086c9170c03523cf90601f2/d0c8a786c9177f3ebf8414ea77cf3bc79e3d56a1.jpg?referer=4fa609d032fae6cd55a39f51927f&amp;x=.jpg" alt="" /></p>
-
-<h1>将SDK整合到web中</h1>
-
-<p>Connect2.1
-放在同级目录下</p>
-
-<pre><code class="php index.php">&lt;?php
-require_once "Connect2.1/qqConnectAPI.php";
-?&gt;
-&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-      &lt;meta charset="utf-8"&gt;
-      &lt;title&gt;&lt;/title&gt;
-  &lt;/heda&gt;
-    &lt;body&gt;
-        &lt;?php if(!isset($_COOKIE['qq_accesstokebn'])||!isset($_COOKIE['qq_openid'])){?&gt;
-        &lt;a href="qqlogin.php"&gt;登录QQ&lt;/a&gt;
-        &lt;?php }else{?&gt;
-          &lt;a href="qqlogout.php"&gt;退出QQ&lt;/a&gt;
-          &lt;?php
-            $qc = new QC($_COOKIE['qq_accesstokebn'],$_COOKIE['qq_openid']);
-            $userinfo =$qc-&gt;get_user_info();
-            print_r($userinfo);
-                }
-          ?&gt;
-    &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-
-<pre><code class="php qqlogin.php">&lt;?php
-  require_once 'Connect2.1/qqConnectAPI.php';
-  //访问QQ页面
-  $oauth = new Oauth();
-  $oauth-&gt;qq_login();
- ?&gt;
-</code></pre>
-
-<pre><code class="php qqlogout.php">&lt;?php
-  setcookie('qq_accesstokebn',null);
-  setcookie('qq_openid',null);
-  header("Location:index.php");
-?&gt;
-</code></pre>
-
-<pre><code class="php callback.php">&lt;?php
-require_once 'Connect2.1/qqConnectAPI.php';
-  //echo $_GET['code'];
-  //请求accesstoken
-
-$oauth = new Oauth();
-$accesstoken = $oauth-&gt;qq_callback();
-$openid = $oauth-&gt;get_openid();
-setcookie("qq_accesstokebn",$accesstoken,time()+86400);
-setcookie("qq_openid",$openid,time()+86400);
-header("Location:index.php")
-?&gt;
-</code></pre>
 ]]></content>
   </entry>
   
