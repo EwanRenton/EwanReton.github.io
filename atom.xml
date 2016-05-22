@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-21T16:08:10+08:00</updated>
+  <updated>2016-05-22T16:17:22+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,11 +14,403 @@
 
   
   <entry>
+    <title type="html"><![CDATA[PDO实例-发送邮件激活账户]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/22/pdo-shi-li/"/>
+    <updated>2016-05-22T16:07:33+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/22/pdo-shi-li</id>
+    <content type="html"><![CDATA[<blockquote><p>实现注册发送邮件激活账户</p>
+
+<p>使用swiftmailer-master发送邮件</p></blockquote>
+
+<p>核心代码:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//1.包含所需文件</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;swiftmailer-master/lib/swift_required.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;PdoMySQL.class.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;config.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;pwd.php&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//2.接收信息</span>
+</span><span class='line'><span class="nv">$act</span><span class="o">=</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;act&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="nb">md5</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nv">$email</span><span class="o">=</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$table</span><span class="o">=</span><span class="s1">&#39;user&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//3.得到连接对象</span>
+</span><span class='line'><span class="nv">$PdoMySQL</span><span class="o">=</span><span class="k">new</span> <span class="nx">PdoMySQL</span><span class="p">();</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$act</span><span class="o">===</span><span class="s1">&#39;reg&#39;</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$regtime</span><span class="o">=</span><span class="nb">time</span><span class="p">();</span>
+</span><span class='line'>  <span class="c1">//完成注册的功能</span>
+</span><span class='line'>  <span class="nv">$token</span><span class="o">=</span><span class="nb">md5</span><span class="p">(</span><span class="nv">$username</span><span class="o">.</span><span class="nv">$password</span><span class="o">.</span><span class="nv">$regtime</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$token_exptime</span><span class="o">=</span><span class="nv">$regtime</span><span class="o">+</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">;</span><span class="c1">//过期时间</span>
+</span><span class='line'>  <span class="nv">$data</span><span class="o">=</span><span class="nb">compact</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">,</span><span class="s1">&#39;password&#39;</span><span class="p">,</span><span class="s1">&#39;email&#39;</span><span class="p">,</span><span class="s1">&#39;token&#39;</span><span class="p">,</span><span class="s1">&#39;token_exptime&#39;</span><span class="p">,</span><span class="s1">&#39;regtime&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$res</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="nv">$table</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$lastInsertId</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">getLastInsertId</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$res</span><span class="p">){</span>
+</span><span class='line'>      <span class="c1">//发送邮件，以QQ邮箱为例</span>
+</span><span class='line'>      <span class="c1">//配置邮件服务器，得到传输对象</span>
+</span><span class='line'>      <span class="nv">$transport</span><span class="o">=</span><span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="s1">&#39;smtp.qq.com&#39;</span><span class="p">,</span><span class="mi">25</span><span class="p">);</span>
+</span><span class='line'>      <span class="c1">//设置登陆帐号和密码</span>
+</span><span class='line'>      <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="s1">&#39;xxxxxxxxx@qq.com&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="nv">$emailPassword</span><span class="p">);</span>
+</span><span class='line'>      <span class="c1">//得到发送邮件对象Swift_Mailer对象</span>
+</span><span class='line'>      <span class="nv">$mailer</span><span class="o">=</span><span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transport</span><span class="p">);</span>
+</span><span class='line'>      <span class="c1">//得到邮件信息对象</span>
+</span><span class='line'>      <span class="nv">$message</span><span class="o">=</span><span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">();</span>
+</span><span class='line'>      <span class="c1">//设置管理员的信息</span>
+</span><span class='line'>      <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;xxxxxxxxx@qq.com&#39;</span><span class="o">=&gt;</span><span class="s1">&#39;Reton&#39;</span><span class="p">));</span>
+</span><span class='line'>      <span class="c1">//将邮件发给谁</span>
+</span><span class='line'>      <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$email</span><span class="o">=&gt;</span><span class="s1">&#39;reton&#39;</span><span class="p">));</span>
+</span><span class='line'>      <span class="c1">//设置邮件主题</span>
+</span><span class='line'>      <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="s1">&#39;激活邮件&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$url</span><span class="o">=</span><span class="s2">&quot;http://&quot;</span><span class="o">.</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="p">]</span><span class="o">.</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;PHP_SELF&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;?act=active&amp;token=</span><span class="si">{</span><span class="nv">$token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$urlencode</span><span class="o">=</span><span class="nb">urlencode</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>      <span class="nv">$str</span><span class="o">=&lt;&lt;&lt;</span><span class="nx">EOF</span>
+</span><span class='line'>      <span class="nx">亲爱的</span><span class="p">{</span><span class="nv">$username</span><span class="p">}</span><span class="nx">您好</span><span class="o">~</span><span class="nx">！感谢您注册我们网站</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
+</span><span class='line'>      <span class="nx">请点击此链接激活帐号即可登陆！</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$url</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="nv">$urlencode</span><span class="p">}</span><span class="o">&lt;/</span><span class="nx">a</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
+</span><span class='line'>      <span class="nx">如果点此链接无反映，可以将其复制到浏览器中来执行，链接的有效时间为24小时。</span>      
+</span><span class='line'><span class="nx">EOF</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s1">&#39;text/html&#39;</span><span class="p">,</span><span class="s1">&#39;utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">try</span><span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">)){</span>
+</span><span class='line'>              <span class="k">echo</span> <span class="s2">&quot;恭喜您</span><span class="si">{</span><span class="nv">$username</span><span class="si">}</span><span class="s2">注册成功，请到邮箱激活之后登陆&lt;br/&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>              <span class="k">echo</span> <span class="s1">&#39;3秒钟后跳转到登陆页面&#39;</span><span class="p">;</span>
+</span><span class='line'>              <span class="k">echo</span> <span class="s1">&#39;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;3;url=index.php#tologin&quot;/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>              <span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="nv">$table</span><span class="p">,</span><span class="s1">&#39;id=&#39;</span><span class="o">.</span><span class="nv">$lastInsertId</span><span class="p">);</span>
+</span><span class='line'>              <span class="k">echo</span> <span class="s1">&#39;注册失败，请重新注册&#39;</span><span class="p">;</span>
+</span><span class='line'>              <span class="k">echo</span> <span class="s1">&#39;3秒钟后跳转到注册页面&#39;</span><span class="p">;</span>
+</span><span class='line'>              <span class="k">echo</span> <span class="s1">&#39;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;3;url=index.php#toregister&quot;/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">Swift_ConnectionException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">echo</span> <span class="s1">&#39;邮件发送错误&#39;</span><span class="o">.</span><span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;用户注册失败,3秒钟后跳转到注册页面&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;3;url=index.php#toregister&quot;/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span><span class="k">elseif</span><span class="p">(</span><span class="nv">$act</span><span class="o">===</span><span class="s1">&#39;login&#39;</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">//完成登陆的功能</span>
+</span><span class='line'>  <span class="nv">$row</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="nv">$table</span><span class="p">,</span><span class="s2">&quot;username=&#39;</span><span class="si">{</span><span class="nv">$username</span><span class="si">}</span><span class="s2">&#39; AND password=&#39;</span><span class="si">{</span><span class="nv">$password</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span><span class="s1">&#39;status&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;请先激活在登陆&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;3;url=index.php#tologin&quot;/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;登陆成功,3秒钟后跳转到首页&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;3;url=http://www.imooc.com&quot;/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">}</span><span class="k">elseif</span><span class="p">(</span><span class="nv">$act</span><span class="o">===</span><span class="s1">&#39;active&#39;</span><span class="p">){</span>
+</span><span class='line'>  <span class="nv">$token</span><span class="o">=</span><span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">]);</span>
+</span><span class='line'>  <span class="nv">$row</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="nv">$table</span><span class="p">,</span><span class="s2">&quot;token=&#39;</span><span class="si">{</span><span class="nv">$token</span><span class="si">}</span><span class="s2">&#39; AND status=0&quot;</span><span class="p">,</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;token_exptime&#39;</span><span class="p">));</span>
+</span><span class='line'>  <span class="nv">$now</span><span class="o">=</span><span class="nb">time</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$now</span><span class="o">&gt;</span><span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;token_exptime&#39;</span><span class="p">]){</span>
+</span><span class='line'>      <span class="k">echo</span> <span class="s1">&#39;激活时间过期，请重新登陆激活&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>      <span class="nv">$res</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">update</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">),</span><span class="nv">$table</span><span class="p">,</span><span class="s1">&#39;id=&#39;</span><span class="o">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]);</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nv">$res</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">echo</span> <span class="s1">&#39;激活成功,3秒钟后跳转到登陆页面&#39;</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">echo</span> <span class="s1">&#39;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;3;url=index.php#tologin&quot;/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>          <span class="k">echo</span> <span class="s1">&#39;激活失败，请重新激活&#39;</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">echo</span> <span class="s1">&#39;&lt;meta http-equiv=&quot;refresh&quot; content=&quot;3;url=index.php&quot;/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>index.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="c">&lt;!--[if lt IE 7 ]&gt; &lt;html lang=&quot;en&quot; class=&quot;no-js ie6 lt8&quot;&gt; &lt;![endif]--&gt;</span>
+</span><span class='line'><span class="c">&lt;!--[if IE 7 ]&gt;    &lt;html lang=&quot;en&quot; class=&quot;no-js ie7 lt8&quot;&gt; &lt;![endif]--&gt;</span>
+</span><span class='line'><span class="c">&lt;!--[if IE 8 ]&gt;    &lt;html lang=&quot;en&quot; class=&quot;no-js ie8 lt8&quot;&gt; &lt;![endif]--&gt;</span>
+</span><span class='line'><span class="c">&lt;!--[if IE 9 ]&gt;    &lt;html lang=&quot;en&quot; class=&quot;no-js ie9&quot;&gt; &lt;![endif]--&gt;</span>
+</span><span class='line'><span class="c">&lt;!--[if (gt IE 9)|!(IE)]&gt;&lt;!--&gt;</span> <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span> <span class="na">class=</span><span class="s">&quot;no-js&quot;</span><span class="nt">&gt;</span> <span class="c">&lt;!--&lt;![endif]--&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;UTF-8&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="c">&lt;!-- &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge,chrome=1&quot;&gt;  --&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;title&gt;</span>Login and Registration Form with HTML5 and CSS3<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;description&quot;</span> <span class="na">content=</span><span class="s">&quot;Login and Registration Form with HTML5 and CSS3&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;keywords&quot;</span> <span class="na">content=</span><span class="s">&quot;html5, css3, form, switch, animation, :target, pseudo-class&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;author&quot;</span> <span class="na">content=</span><span class="s">&quot;Codrops&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;shortcut icon&quot;</span> <span class="na">href=</span><span class="s">&quot;../favicon.ico&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;css/demo.css&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;css/style.css&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;css/animate-custom.css&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;header&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;h1&gt;</span>It&#39;s Reton<span class="nt">&lt;span&gt;</span>This Is Reton<span class="nt">&lt;/span&gt;&lt;/h1&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">&quot;codrops-demos&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;span&gt;</span>Click <span class="nt">&lt;strong&gt;</span>&quot;Join us&quot;<span class="nt">&lt;/strong&gt;</span> to Register the reton<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/nav&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/header&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;section&gt;</span>               
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;container_demo&quot;</span> <span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">&quot;hiddenanchor&quot;</span> <span class="na">id=</span><span class="s">&quot;toregister&quot;</span><span class="nt">&gt;&lt;/a&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">&quot;hiddenanchor&quot;</span> <span class="na">id=</span><span class="s">&quot;tologin&quot;</span><span class="nt">&gt;&lt;/a&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;wrapper&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;login&quot;</span> <span class="na">class=</span><span class="s">&quot;animate form&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;form</span>  <span class="na">action=</span><span class="s">&quot;doAction.php?act=login&quot;</span> <span class="na">autocomplete=</span><span class="s">&quot;on&quot;</span> <span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;h1&gt;</span>Log in<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;username&quot;</span> <span class="na">class=</span><span class="s">&quot;uname&quot;</span> <span class="na">data-icon=</span><span class="s">&quot;u&quot;</span> <span class="nt">&gt;</span> Your username <span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;username&quot;</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">required=</span><span class="s">&quot;required&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;My Username&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;password&quot;</span> <span class="na">class=</span><span class="s">&quot;youpasswd&quot;</span> <span class="na">data-icon=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span> Your password <span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">required=</span><span class="s">&quot;required&quot;</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;*****&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;keeplogin&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                                  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">name=</span><span class="s">&quot;loginkeeping&quot;</span> <span class="na">id=</span><span class="s">&quot;loginkeeping&quot;</span> <span class="na">value=</span><span class="s">&quot;loginkeeping&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                                  <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;loginkeeping&quot;</span><span class="nt">&gt;</span>Keep me logged in<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>                              <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;login button&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;Login&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                              <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;change_link&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                                  Not a member yet ?
+</span><span class='line'>                                  <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#toregister&quot;</span> <span class="na">class=</span><span class="s">&quot;to_register&quot;</span><span class="nt">&gt;</span>Join us<span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>                              <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/form&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>                        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;register&quot;</span> <span class="na">class=</span><span class="s">&quot;animate form&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;form</span>  <span class="na">action=</span><span class="s">&quot;doAction.php?act=reg&quot;</span> <span class="na">autocomplete=</span><span class="s">&quot;on&quot;</span> <span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;h1&gt;</span> Sign up <span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;usernamesignup&quot;</span> <span class="na">class=</span><span class="s">&quot;uname&quot;</span> <span class="na">data-icon=</span><span class="s">&quot;u&quot;</span><span class="nt">&gt;</span>Your username<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;usernamesignup&quot;</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">required=</span><span class="s">&quot;required&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Mr.King&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;emailsignup&quot;</span> <span class="na">class=</span><span class="s">&quot;youmail&quot;</span> <span class="na">data-icon=</span><span class="s">&quot;e&quot;</span> <span class="nt">&gt;</span> Your email<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;emailsignup&quot;</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">required=</span><span class="s">&quot;required&quot;</span> <span class="na">type=</span><span class="s">&quot;email&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;xxxx@mail.com&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;passwordsignup&quot;</span> <span class="na">class=</span><span class="s">&quot;youpasswd&quot;</span> <span class="na">data-icon=</span><span class="s">&quot;p&quot;</span><span class="nt">&gt;</span>Your password <span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>                                    <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">&quot;passwordsignup&quot;</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="na">required=</span><span class="s">&quot;required&quot;</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;******&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;signin button&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                                  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;Sign up&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>                              <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;change_link&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                                  Already a member ?
+</span><span class='line'>                                  <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#tologin&quot;</span> <span class="na">class=</span><span class="s">&quot;to_register&quot;</span><span class="nt">&gt;</span> Go and log in <span class="nt">&lt;/a&gt;</span>
+</span><span class='line'>                              <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/form&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>                      
+</span><span class='line'>                    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/section&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Learn-more-PDO]]></title>
     <link href="http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo/"/>
     <updated>2016-05-19T18:47:27+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo</id>
     <content type="html"><![CDATA[<blockquote><p>前段时间在做手机归属地查询的Demo时突然发现自己对PDO还是太生疏，一直都是用的以前的代码。很多都不太了解，于是重新系统的学习了一下PDO类。</p></blockquote>
+
+<!--more-->
+
 
 <h1>什么是PDO</h1>
 
@@ -57,6 +449,8 @@
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p><img src="http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=d2ce6c87044f78f0840b9af6490a7b68/aa64034f78f0f73686e0bed20d55b319eac413c2.jpg?referer=c0077f7aae014c08402c1c955dc1&amp;x=.jpg" alt="" /></p>
 
 <h1>PDO exec</h1>
 
@@ -544,6 +938,1089 @@
 </span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
 </span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
 </span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>预处理语句的占位符</strong>
+第一种用：xxx</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>   
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;select * from user where username=:username and password=:password&quot;</span><span class="p">;</span> <span class="c1">//占位</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;:username&quot;</span><span class="o">=&gt;</span><span class="nv">$username</span><span class="p">,</span><span class="s2">&quot;:password&quot;</span><span class="o">=&gt;</span><span class="nv">$password</span><span class="p">));</span><span class="nx">赋值</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第二种用？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>   
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;select * from user where username=? and password=?&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$username</span><span class="p">,</span><span class="nv">$password</span><span class="p">));</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>bindParam()方法绑定参数到变量</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>   
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;INSERT user(username,password,email) VALUES(:username,:password,:email)&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>   
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="s2">&quot;:username&quot;</span><span class="p">,</span><span class="nv">$username</span><span class="p">,</span><span class="nx">PDO</span><span class="o">::</span><span class="na">PARAM_STR</span><span class="p">);</span><span class="c1">//绑定参数，被绑定的项，绑定的地址（不能直接写值），参数类型。如果是用的？第一个参数要写1,2,3。表示第几个占位符</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="s2">&quot;:password&quot;</span><span class="p">,</span><span class="nv">$password</span><span class="p">,</span><span class="nx">PDO</span><span class="o">::</span><span class="na">PARAM_STR</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="s2">&quot;:email&quot;</span><span class="p">,</span><span class="nv">$email</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="s1">&#39;imooc1&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$password</span><span class="o">=</span><span class="s1">&#39;imooc1&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$email</span><span class="o">=</span><span class="s1">&#39;imooc1@imooc.com&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="s1">&#39;MR.KING1&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$password</span><span class="o">=</span><span class="s1">&#39;MR.KING1&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$email</span><span class="o">=</span><span class="s1">&#39;MR.KING1@imooc.com&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>PDO错误处理模式</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> PDO::ERRMODE_SLIENT:默认模式，静默模式</span>
+</span><span class='line'><span class="cm"> PDO::ERRMODE_WARNING:警告模式</span>
+</span><span class='line'><span class="cm"> PDO::ERRMODE_EXCEPTION:异常模式</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">,</span><span class="s1">&#39;root&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">setAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_ERRMODE</span><span class="p">,</span> <span class="nx">PDO</span><span class="o">::</span><span class="na">ERRMODE_EXCEPTION</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;SELECT * FROM noneTable&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">errorCode</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;&lt;br/&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">errorInfo</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://d.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=d28d1e1ad02a60595610e11f180f45a6/d8f9d72a6059252d57a8efd7339b033b5ab5b9a2.jpg?referer=c8b46b4c29dda3cc52f38c100760&amp;x=.jpg" alt="" />
+<strong>PDO事务处理模式</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s1">&#39;content-type:text/html;charset=utf-8&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$dsn</span><span class="o">=</span><span class="s1">&#39;mysql:host=localhost;dbname=test&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$username</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$passwd</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$options</span><span class="o">=</span><span class="k">array</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_AUTOCOMMIT</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$passwd</span><span class="p">,</span> <span class="nv">$options</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">inTransaction</span><span class="p">());</span>
+</span><span class='line'>  <span class="c1">//开启事务</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">beginTransaction</span><span class="p">();</span>
+</span><span class='line'>  <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">inTransaction</span><span class="p">());</span>
+</span><span class='line'>  <span class="c1">//$sql=&#39;UPDATE userAccount SET money=money-2000 WHERE username=&quot;imooc&quot;&#39;;</span>
+</span><span class='line'>  <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;UPDATE userAccount SET money=money-2000 WHERE username=&quot;imooc&quot;&#39;</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nv">$res1</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$res1</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">throw</span> <span class="k">new</span> <span class="nx">PDOException</span><span class="p">(</span><span class="s1">&#39;imooc 转账失败&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nv">$res2</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="s1">&#39;UPDATE userAccount SET money=money+2000 WHERE username=&quot;king1&quot;&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$res2</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
+</span><span class='line'>      <span class="k">throw</span> <span class="k">new</span> <span class="nx">PDOException</span><span class="p">(</span><span class="s1">&#39;king 接收失败&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">//提交事务</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">commit</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">//回滚事务</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">rollBack</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>PDO操作类封装</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+<span class='line-number'>340</span>
+<span class='line-number'>341</span>
+<span class='line-number'>342</span>
+<span class='line-number'>343</span>
+<span class='line-number'>344</span>
+<span class='line-number'>345</span>
+<span class='line-number'>346</span>
+<span class='line-number'>347</span>
+<span class='line-number'>348</span>
+<span class='line-number'>349</span>
+<span class='line-number'>350</span>
+<span class='line-number'>351</span>
+<span class='line-number'>352</span>
+<span class='line-number'>353</span>
+<span class='line-number'>354</span>
+<span class='line-number'>355</span>
+<span class='line-number'>356</span>
+<span class='line-number'>357</span>
+<span class='line-number'>358</span>
+<span class='line-number'>359</span>
+<span class='line-number'>360</span>
+<span class='line-number'>361</span>
+<span class='line-number'>362</span>
+<span class='line-number'>363</span>
+<span class='line-number'>364</span>
+<span class='line-number'>365</span>
+<span class='line-number'>366</span>
+<span class='line-number'>367</span>
+<span class='line-number'>368</span>
+<span class='line-number'>369</span>
+<span class='line-number'>370</span>
+<span class='line-number'>371</span>
+<span class='line-number'>372</span>
+<span class='line-number'>373</span>
+<span class='line-number'>374</span>
+<span class='line-number'>375</span>
+<span class='line-number'>376</span>
+<span class='line-number'>377</span>
+<span class='line-number'>378</span>
+<span class='line-number'>379</span>
+<span class='line-number'>380</span>
+<span class='line-number'>381</span>
+<span class='line-number'>382</span>
+<span class='line-number'>383</span>
+<span class='line-number'>384</span>
+<span class='line-number'>385</span>
+<span class='line-number'>386</span>
+<span class='line-number'>387</span>
+<span class='line-number'>388</span>
+<span class='line-number'>389</span>
+<span class='line-number'>390</span>
+<span class='line-number'>391</span>
+<span class='line-number'>392</span>
+<span class='line-number'>393</span>
+<span class='line-number'>394</span>
+<span class='line-number'>395</span>
+<span class='line-number'>396</span>
+<span class='line-number'>397</span>
+<span class='line-number'>398</span>
+<span class='line-number'>399</span>
+<span class='line-number'>400</span>
+<span class='line-number'>401</span>
+<span class='line-number'>402</span>
+<span class='line-number'>403</span>
+<span class='line-number'>404</span>
+<span class='line-number'>405</span>
+<span class='line-number'>406</span>
+<span class='line-number'>407</span>
+<span class='line-number'>408</span>
+<span class='line-number'>409</span>
+<span class='line-number'>410</span>
+<span class='line-number'>411</span>
+<span class='line-number'>412</span>
+<span class='line-number'>413</span>
+<span class='line-number'>414</span>
+<span class='line-number'>415</span>
+<span class='line-number'>416</span>
+<span class='line-number'>417</span>
+<span class='line-number'>418</span>
+<span class='line-number'>419</span>
+<span class='line-number'>420</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">class</span> <span class="nc">PdoMySQL</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$config</span><span class="o">=</span><span class="k">array</span><span class="p">();</span><span class="c1">//设置链接参数，配置信息</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$link</span><span class="o">=</span><span class="k">null</span><span class="p">;</span><span class="c1">//保存链接标识符</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$pconnect</span><span class="o">=</span><span class="k">false</span><span class="p">;</span><span class="c1">//是否开启长链接</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$dbVersion</span><span class="o">=</span><span class="k">null</span><span class="p">;</span><span class="c1">//保存数据库版本</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$connected</span><span class="o">=</span><span class="k">false</span><span class="p">;</span><span class="c1">//是否链接成共</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$PDOStatement</span><span class="o">=</span><span class="k">null</span><span class="p">;</span><span class="c1">//保存ＰＤＯStatement对象</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$queryStr</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span><span class="c1">//保存最后执行的操作</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$error</span><span class="o">=</span><span class="k">null</span><span class="p">;</span><span class="c1">//保存错误信息</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$lastInsertId</span><span class="o">=</span><span class="k">null</span><span class="p">;</span><span class="c1">//最后插入记录的id</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="nv">$numRows</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="c1">//保存上一步影响的行数</span>
+</span><span class='line'>        <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$dbConfig</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">class_exists</span><span class="p">(</span><span class="s2">&quot;PDO&quot;</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="na">throw_excption</span><span class="p">(</span><span class="s2">&quot;不支持ＰＤＯ，请先开启&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$dbConfig</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nv">$dbConfig</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                    <span class="s2">&quot;hostname&quot;</span> <span class="o">=&gt;</span> <span class="nx">DB_HOST</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;username&quot;</span> <span class="o">=&gt;</span> <span class="nx">DB_USER</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;password&quot;</span> <span class="o">=&gt;</span> <span class="nx">DB_PWD</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;database&quot;</span> <span class="o">=&gt;</span> <span class="nx">DB_NAME</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;hostport&quot;</span> <span class="o">=&gt;</span> <span class="nx">DB_PORT</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;dbms&quot;</span>     <span class="o">=&gt;</span> <span class="nx">DB_TYPE</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;dsn&quot;</span> <span class="o">=&gt;</span><span class="nx">DB_TYPE</span><span class="o">.</span><span class="s2">&quot;:host=&quot;</span><span class="o">.</span><span class="nx">DB_HOST</span><span class="o">.</span><span class="s2">&quot;;dbname=&quot;</span><span class="o">.</span><span class="nx">DB_NAME</span>
+</span><span class='line'>                <span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$dbConfig</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]))</span><span class="nx">self</span><span class="o">::</span><span class="na">throw_excption</span><span class="p">(</span><span class="s2">&quot;没有定义数据库配置，请先定义。&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="nv">$config</span><span class="o">=</span><span class="nv">$dbConfig</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]))</span><span class="nx">self</span><span class="o">::</span><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">=</span><span class="k">array</span><span class="p">();</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nv">$configs</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$config</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">if</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$pconnect</span><span class="p">){</span>
+</span><span class='line'>                    <span class="c1">//开启长链接，添加到配置数组中</span>
+</span><span class='line'>                    <span class="nv">$configs</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="nb">constant</span><span class="p">(</span><span class="s2">&quot;PDO::ATTR_PERSISTENT&quot;</span><span class="p">)]</span><span class="o">=</span><span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$configs</span><span class="p">[</span><span class="s1">&#39;dsn&#39;</span><span class="p">],</span><span class="nv">$configs</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">],</span><span class="nv">$configs</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span><span class="nv">$configs</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]);</span>
+</span><span class='line'>                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nx">self</span><span class="o">::</span><span class="na">throw_excption</span><span class="p">(</span><span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">());</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">){</span>
+</span><span class='line'>                    <span class="nx">self</span><span class="o">::</span><span class="na">throw_excption</span><span class="p">(</span><span class="s2">&quot;PDO链接错误&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="s1">&#39;SET NAMES&#39;</span><span class="o">.</span><span class="nx">DB_CHARSET</span><span class="p">);</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="nv">$dbVersion</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="o">-&gt;</span><span class="na">getAttribute</span><span class="p">(</span><span class="nb">constant</span><span class="p">(</span><span class="s2">&quot;PDO::ATTR_SERVER_VERSION&quot;</span><span class="p">));</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="nv">$connected</span><span class="o">=</span><span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                <span class="nb">unset</span><span class="p">(</span><span class="nv">$configs</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 得到所有记录</span>
+</span><span class='line'><span class="sd">         * @param  [type] $sql [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]      [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>         <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">getAll</span><span class="p">(</span><span class="nv">$sql</span><span class="o">=</span><span class="k">null</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nv">$sql</span><span class="o">!=</span><span class="k">null</span><span class="p">){</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="nv">$result</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="o">-&gt;</span><span class="na">fetchAll</span><span class="p">(</span><span class="nb">constant</span><span class="p">(</span><span class="s2">&quot;PDO::FETCH_ASSOC&quot;</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 得到结果集中的一条记录</span>
+</span><span class='line'><span class="sd">         * @param  [type] $sql [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]      [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">getRow</span><span class="p">(</span><span class="nv">$sql</span><span class="o">=</span><span class="k">null</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nv">$sql</span><span class="o">!=</span><span class="k">null</span><span class="p">){</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="nv">$result</span> <span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="o">-&gt;</span><span class="na">fetch</span><span class="p">(</span><span class="nb">constant</span><span class="p">(</span><span class="s2">&quot;PDO::FETCH_ASSOC&quot;</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 解析字段</span>
+</span><span class='line'><span class="sd">         * @param  [type] $fields [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]         [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span>  <span class="k">static</span> <span class="k">function</span> <span class="nf">parseFields</span><span class="p">(</span><span class="nv">$fields</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$fields</span><span class="p">)){</span>
+</span><span class='line'>                    <span class="nb">array_walk</span><span class="p">(</span><span class="nv">$fields</span><span class="p">,</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;PdoMySQL&#39;</span><span class="p">,</span><span class="s1">&#39;addSpecilChar&#39;</span><span class="p">));</span>
+</span><span class='line'>                    <span class="nv">$fieldsStr</span><span class="o">=</span><span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="nv">$fields</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span><span class="k">elseif</span> <span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$fields</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$fields</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span><span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nv">$fields</span><span class="p">,</span><span class="s1">&#39;`&#39;</span><span class="p">)</span><span class="o">===</span><span class="k">false</span><span class="p">){</span>
+</span><span class='line'>                    <span class="nv">$fields</span><span class="o">=</span><span class="nb">explode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="nv">$fields</span><span class="p">);</span>
+</span><span class='line'>                    <span class="nb">array_walk</span><span class="p">(</span><span class="nv">$fields</span><span class="p">,</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;PdoMySQL&#39;</span><span class="p">,</span><span class="s1">&#39;addSpecilChar&#39;</span><span class="p">));</span>
+</span><span class='line'>                    <span class="nv">$fieldsStr</span><span class="o">=</span><span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="nv">$fields</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nv">$fieldsStr</span><span class="o">=</span><span class="nv">$fields</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$fieldsStr</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$fieldsStr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 通过反引号引用字段，</span>
+</span><span class='line'><span class="sd">         * @param [type] $value [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">addSpecilChar</span><span class="p">(</span><span class="o">&amp;</span><span class="nv">$value</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nv">$value</span><span class="o">===</span><span class="s1">&#39;*&#39;</span><span class="o">||</span><span class="nb">strpos</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">!==</span><span class="k">false</span><span class="o">||</span><span class="nb">strpos</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span><span class="s1">&#39;`&#39;</span><span class="p">)</span><span class="o">!==</span><span class="k">false</span><span class="p">){</span>
+</span><span class='line'>                <span class="c1">//不用做处理</span>
+</span><span class='line'>            <span class="p">}</span><span class="k">elseif</span> <span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span><span class="s1">&#39;`&#39;</span><span class="p">)</span><span class="o">===</span><span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="c1"># code...</span>
+</span><span class='line'>                <span class="nv">$value</span><span class="o">=</span><span class="s1">&#39;`&#39;</span><span class="o">.</span><span class="nb">trim</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;`&#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$value</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 根据主键查记录</span>
+</span><span class='line'><span class="sd">         * @param  [type] $tabName [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type] $priId   [description]</span>
+</span><span class='line'><span class="sd">         * @param  string $fields  [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]          [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span>  <span class="k">static</span> <span class="k">function</span> <span class="nf">findById</span><span class="p">(</span><span class="nv">$tabName</span><span class="p">,</span><span class="nv">$priId</span><span class="p">,</span><span class="nv">$fields</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;SELECT %s FROM %s WHERE id =%d&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="na">getRow</span><span class="p">(</span><span class="nb">sprintf</span><span class="p">(</span><span class="nv">$sql</span><span class="p">,</span><span class="nx">self</span><span class="o">::</span><span class="na">parseFields</span><span class="p">(</span><span class="nv">$fields</span><span class="p">),</span><span class="nv">$tabName</span><span class="p">,</span><span class="nv">$priId</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 执行普通查询，</span>
+</span><span class='line'><span class="sd">         * @param  [type] $tables [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type] $where  [description]</span>
+</span><span class='line'><span class="sd">         * @param  string $fields [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type] $group  [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type] $having [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type] $order  [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type] $limit  [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]         [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">find</span><span class="p">(</span><span class="nv">$tables</span><span class="p">,</span><span class="nv">$where</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$fields</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="nv">$group</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$having</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$order</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$limit</span><span class="o">=</span><span class="k">null</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;SELECT &#39;</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseFields</span><span class="p">(</span><span class="nv">$fields</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39; FROM &#39;</span><span class="o">.</span><span class="nv">$tables</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseWhere</span><span class="p">(</span><span class="nv">$where</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseGroup</span><span class="p">(</span><span class="nv">$group</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseHaving</span><span class="p">(</span><span class="nv">$having</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseOrder</span><span class="p">(</span><span class="nv">$order</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseLimit</span><span class="p">(</span><span class="nv">$limit</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$dataAll</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="na">getAll</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>            <span class="c1">// if(count($dataAll)==1){</span>
+</span><span class='line'>            <span class="c1">//     $rlt=$dataAll[0];</span>
+</span><span class='line'>            <span class="c1">// }else {</span>
+</span><span class='line'>            <span class="c1">//     $rlt=$dataAll;</span>
+</span><span class='line'>            <span class="c1">// }</span>
+</span><span class='line'>            <span class="c1">// return $rlt;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$dataAll</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="o">?</span><span class="nv">$dataAll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">:</span><span class="nv">$dataAll</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 添加记录</span>
+</span><span class='line'><span class="sd">         * array(</span>
+</span><span class='line'><span class="sd">         *</span>
+</span><span class='line'><span class="sd">         * )</span>
+</span><span class='line'><span class="sd">         * @param string $value [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span><span class="nv">$table</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$keys</span><span class="o">=</span><span class="nb">array_keys</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'>            <span class="nb">array_walk</span><span class="p">(</span><span class="nv">$keys</span><span class="p">,</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;PdoMySQL&#39;</span><span class="p">,</span><span class="s1">&#39;addSpecilChar&#39;</span><span class="p">));</span>
+</span><span class='line'>            <span class="nv">$fieldsStr</span><span class="o">=</span><span class="nb">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="nv">$keys</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$values</span><span class="o">=</span><span class="s2">&quot;&#39;&quot;</span><span class="o">.</span><span class="nb">join</span><span class="p">(</span><span class="s2">&quot;&#39;,&#39;&quot;</span><span class="p">,</span><span class="nb">array_values</span><span class="p">(</span><span class="nv">$data</span><span class="p">))</span><span class="o">.</span><span class="s2">&quot;&#39;&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;INSERT </span><span class="si">{</span><span class="nv">$table</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="nv">$fieldsStr</span><span class="si">}</span><span class="s2">) VALUES(</span><span class="si">{</span><span class="nv">$values</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="na">execute</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 更新记录</span>
+</span><span class='line'><span class="sd">         * @param  [array] $data  [description]</span>
+</span><span class='line'><span class="sd">         * @param  [string] $table [description]</span>
+</span><span class='line'><span class="sd">         * @param  [string] $where [description]</span>
+</span><span class='line'><span class="sd">         * @param  [string] $order [description]</span>
+</span><span class='line'><span class="sd">         * @param  [string] $limit [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]        [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span>  <span class="k">static</span> <span class="k">function</span> <span class="nf">update</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span><span class="nv">$table</span><span class="p">,</span><span class="nv">$where</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$order</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$limit</span><span class="o">=</span><span class="k">null</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="nv">$data</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$set</span><span class="o">.=</span><span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;=&#39;&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;&#39;,&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="nv">$sets</span><span class="o">=</span><span class="nb">rtrim</span><span class="p">(</span><span class="nv">$sets</span><span class="p">,</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;UPDATE </span><span class="si">{</span><span class="nv">$table</span><span class="si">}</span><span class="s2"> SET </span><span class="si">{</span><span class="nv">$sets</span><span class="si">}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseWhere</span><span class="p">(</span><span class="nv">$where</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseOrder</span><span class="p">(</span><span class="nv">$order</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseLimit</span><span class="p">(</span><span class="nv">$limit</span><span class="p">);</span>
+</span><span class='line'>             <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="na">execute</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 删除记录</span>
+</span><span class='line'><span class="sd">         * @param  [type]  $table [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type]  $where [description]</span>
+</span><span class='line'><span class="sd">         * @param  [type]  $order [description]</span>
+</span><span class='line'><span class="sd">         * @param  integer $limit [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]         [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">delete</span><span class="p">(</span><span class="nv">$table</span><span class="p">,</span><span class="nv">$where</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$order</span><span class="o">=</span><span class="k">null</span><span class="p">,</span><span class="nv">$limit</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;delete from </span><span class="si">{</span><span class="nv">$table</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseWhere</span><span class="p">(</span><span class="nv">$where</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseOrder</span><span class="p">(</span><span class="nv">$order</span><span class="p">)</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="na">parseLimit</span><span class="p">(</span><span class="nv">$limit</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="na">execute</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 得到最后执行的ＳＱＬ语句</span>
+</span><span class='line'><span class="sd">         * @return [type] [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">getLastSql</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$link</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$link</span><span class="p">){</span>
+</span><span class='line'>                <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$queryStr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 得到上一步插入操作的ＩＤ</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">getLsetInsertId</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$link</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$link</span><span class="p">)</span><span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$lastInsertId</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 得到数据库版本</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">getDbVersion</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$link</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$link</span><span class="p">)</span><span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$dbVersion</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 得到数据库有哪些表</span>
+</span><span class='line'><span class="sd">         * @return [type] [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span>  <span class="k">static</span> <span class="k">function</span> <span class="nf">showTables</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$tables</span><span class="o">=</span><span class="k">array</span><span class="p">();</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="na">query</span><span class="p">(</span><span class="s1">&#39;SHOW TABLES&#39;</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nv">$result</span> <span class="o">=</span> <span class="nx">self</span><span class="o">::</span><span class="na">getAll</span><span class="p">();</span>
+</span><span class='line'>                <span class="k">foreach</span> <span class="p">(</span><span class="nv">$result</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="c1"># code...</span>
+</span><span class='line'>                    <span class="nv">$tables</span><span class="p">[</span><span class="nv">$key</span><span class="p">]</span><span class="o">=</span><span class="nb">current</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$tables</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 解析ｗｈｅｒｅ条件</span>
+</span><span class='line'><span class="sd">         * @param  [type] $where [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]        [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">parseWhere</span><span class="p">(</span><span class="nv">$where</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$whereStr</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$where</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$where</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nv">$whereStr</span><span class="o">=</span><span class="nv">$where</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">empty</span><span class="p">(</span><span class="nv">$whereStr</span><span class="p">)</span><span class="o">?</span><span class="s1">&#39;&#39;</span><span class="o">:</span><span class="s1">&#39; WHERE &#39;</span><span class="o">.</span><span class="nv">$whereStr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 解析分组</span>
+</span><span class='line'><span class="sd">         * @param  [type] $group [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]        [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">parseGroup</span><span class="p">(</span><span class="nv">$group</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$groupStr</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$group</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nv">$groupStr</span><span class="o">.=</span><span class="s1">&#39; GROUP BY &#39;</span><span class="o">.</span><span class="nb">implode</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="nv">$group</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span><span class="k">elseif</span> <span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$group</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$group</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$groupStr</span><span class="o">.=</span><span class="s1">&#39; GROUP BY &#39;</span><span class="o">.</span><span class="nv">$group</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">empty</span><span class="p">(</span><span class="nv">$groupStr</span><span class="p">)</span><span class="o">?</span><span class="s1">&#39;&#39;</span><span class="o">:</span><span class="nv">$groupStr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 对分组结果通过Ｈａｖｉｎｇ子句进行二次删选</span>
+</span><span class='line'><span class="sd">         * @param  [type] $having [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]         [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">parseHaving</span><span class="p">(</span><span class="nv">$having</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$havingStr</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$having</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$having</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nv">$havingStr</span><span class="o">.=</span><span class="s1">&#39; HAVING &#39;</span><span class="o">.</span><span class="nv">$having</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$havingStr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 解析order by</span>
+</span><span class='line'><span class="sd">         * @param  [type] $order [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]        [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span>  <span class="k">static</span> <span class="k">function</span> <span class="nf">parseOrder</span><span class="p">(</span><span class="nv">$order</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$orderStr</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$order</span><span class="p">)){</span>
+</span><span class='line'>                <span class="nv">$orderStr</span><span class="o">.=</span><span class="s1">&#39; ORDER BY &#39;</span><span class="o">.</span><span class="nb">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="nv">$order</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span><span class="k">elseif</span> <span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$order</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$order</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$orderStr</span><span class="o">.=</span><span class="s1">&#39; ORDER BY &#39;</span><span class="o">.</span><span class="nv">$order</span><span class="p">;</span>
+</span><span class='line'>                <span class="c1"># code...</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$orderStr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 解析限制条数</span>
+</span><span class='line'><span class="sd">         * ｌｉｍｉｔ 3</span>
+</span><span class='line'><span class="sd">         * ｌｉｍｉｔ 0,3</span>
+</span><span class='line'><span class="sd">         * @param  [type] $limit [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]        [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span>  <span class="k">static</span> <span class="k">function</span> <span class="nf">parseLimit</span><span class="p">(</span><span class="nv">$limit</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$limitStr</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$limit</span><span class="p">)){</span>
+</span><span class='line'>                <span class="k">if</span><span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$limit</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'>                    <span class="nv">$limitStr</span><span class="o">.=</span><span class="s1">&#39; LIMIT &#39;</span><span class="o">.</span><span class="nv">$limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="nv">$limit</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>                <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nv">$limitStr</span><span class="o">.=</span><span class="s1">&#39; LIMIT &#39;</span><span class="o">.</span><span class="nv">$limit</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span><span class="k">elseif</span> <span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$limit</span><span class="p">)</span><span class="o">&amp;&amp;!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$limit</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nv">$limitStr</span><span class="o">.=</span><span class="s1">&#39; LIMIT &#39;</span><span class="o">.</span><span class="nv">$limit</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$limitStr</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 执行增删改，返回受影响的条数</span>
+</span><span class='line'><span class="sd">         * @param  [type] $sql [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]      [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">execute</span><span class="p">(</span><span class="nv">$sql</span><span class="o">=</span><span class="k">null</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$link</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$link</span><span class="p">)</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="nv">$queryStr</span><span class="o">=</span><span class="nv">$sql</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="p">))</span><span class="nx">self</span><span class="o">::</span><span class="na">free</span><span class="p">();</span>
+</span><span class='line'>            <span class="nv">$result</span><span class="o">=</span><span class="nv">$link</span><span class="o">-&gt;</span><span class="na">exec</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$queryStr</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="na">haveErrorThrowException</span><span class="p">();</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nv">$result</span><span class="p">){</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="nv">$lastInsertId</span><span class="o">=</span><span class="nv">$link</span><span class="o">-&gt;</span><span class="na">lastInsertId</span><span class="p">();</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="nv">$numRows</span><span class="o">=</span><span class="nv">$result</span><span class="p">;;</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$numRows</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         *释放结果集</span>
+</span><span class='line'><span class="sd">         * @return [type] [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span>  <span class="k">static</span> <span class="k">function</span> <span class="nf">free</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="o">=</span><span class="k">null</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 执行ｓｑｌ语句</span>
+</span><span class='line'><span class="sd">         * @param  string $sql [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]      [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$link</span><span class="o">=</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$link</span><span class="p">)</span><span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="c1">//判断之前是否有结果集，如果有的话，释放结果集</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="p">))</span> <span class="nx">self</span><span class="o">::</span><span class="na">free</span><span class="p">();</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="nv">$queryStr</span><span class="o">=</span><span class="nv">$sql</span><span class="p">;</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="o">=</span><span class="nv">$link</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$queryStr</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$res</span> <span class="o">=</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="na">haveErrorThrowException</span><span class="p">();</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$res</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 如果有错误，抛出</span>
+</span><span class='line'><span class="sd">         * @return [type] [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">haveErrorThrowException</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$obj</span><span class="o">=</span><span class="k">empty</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="p">)</span><span class="o">?</span><span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="o">:</span><span class="nx">self</span><span class="o">::</span><span class="nv">$PDOStatement</span><span class="p">;</span>
+</span><span class='line'>            <span class="nv">$arrError</span><span class="o">=</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">errorInfo</span><span class="p">();</span>
+</span><span class='line'>            <span class="c1">// print_r($arrError);</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nv">$arrError</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;00000&#39;</span><span class="p">){</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="nv">$error</span><span class="o">=</span><span class="s2">&quot;SQLSTATE&quot;</span><span class="o">.</span><span class="nv">$arrError</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;SQL Error&quot;</span><span class="o">.</span><span class="nv">$arrError</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;&lt;br/&gt;Error SQL&quot;</span><span class="o">.</span><span class="nx">self</span><span class="o">::</span><span class="nv">$queryStr</span><span class="p">;</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="na">throw_excption</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$error</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$queryStr</span><span class="o">==</span><span class="s2">&quot;&quot;</span><span class="p">){</span>
+</span><span class='line'>                <span class="nx">self</span><span class="o">::</span><span class="na">throw_excption</span><span class="p">(</span><span class="s1">&#39;没有执行的ＳＱＬ语句&#39;</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 自定义错误处理</span>
+</span><span class='line'><span class="sd">         * @param  [type] $errMsg [description]</span>
+</span><span class='line'><span class="sd">         * @return [type]         [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">function</span> <span class="nf">throw_excption</span><span class="p">(</span><span class="nv">$errMsg</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">echo</span> <span class="s2">&quot;&lt;div style=&#39;width:80%;background-color:#ABCDEF;colod:black;font-size:20px;padding:20px 0px;&#39;&gt;</span>
+</span><span class='line'><span class="s2">            &quot;</span><span class="o">.</span><span class="nv">$errMsg</span><span class="o">.</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="s2">            &lt;/div&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="sd">/**</span>
+</span><span class='line'><span class="sd">         * 销毁链接对象，关闭数据库。</span>
+</span><span class='line'><span class="sd">         * @return [type] [description]</span>
+</span><span class='line'><span class="sd">         */</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">close</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nx">self</span><span class="o">::</span><span class="nv">$link</span><span class="o">=</span><span class="k">null</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="k">require_once</span><span class="s2">&quot;config.php&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// $PdoMySQL=new PdoMySQL;</span>
+</span><span class='line'><span class="c1">// // var_dump($PdoMySQL);</span>
+</span><span class='line'><span class="c1">// // $sql=&quot;insert user (username,password,email) values(&#39;reane23&#39;,&#39;sdf&#39;,&#39;sdf&#39;)&quot;;</span>
+</span><span class='line'><span class="c1">// $tables=&#39;user&#39;;</span>
+</span><span class='line'><span class="c1">// $res=$PdoMySQL-&gt;find($tables,&#39;id&gt;=19&#39;,&#39;*&#39;,null,null,null,&#39;3&#39;);</span>
+</span><span class='line'><span class="c1">// var_dump($res);</span>
+</span><span class='line'><span class="c1">// echo $PdoMySQL::$lastInsertId;</span>
+</span><span class='line'><span class="c1">// print_r($res);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span>config.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s2">&quot;DB_HOST&quot;</span><span class="p">,</span><span class="s2">&quot;localhost&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s2">&quot;DB_USER&quot;</span><span class="p">,</span><span class="s2">&quot;root&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s2">&quot;DB_PWD&quot;</span><span class="p">,</span><span class="s2">&quot;123456&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s2">&quot;DB_NAME&quot;</span><span class="p">,</span><span class="s2">&quot;test&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s2">&quot;DB_PORT&quot;</span><span class="p">,</span><span class="s2">&quot;3306&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s2">&quot;DB_TYPE&quot;</span><span class="p">,</span><span class="s2">&quot;mysql&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nb">define</span><span class="p">(</span><span class="s2">&quot;DB_CHARSET&quot;</span><span class="p">,</span><span class="s2">&quot;utf8&quot;</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
@@ -5916,852 +7393,6 @@ ol.linenums li {
 <li>source/atom.xml</li>
 <li>source/_includes/custom/category_feed.xml</li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP高性能日志SeasLog]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/29/php-seaslog/"/>
-    <updated>2016-04-29T09:59:55+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/29/php-seaslog</id>
-    <content type="html"><![CDATA[<blockquote><p>PHP高性能日志SeasLog</p></blockquote>
-
-<h1>一、什么是SeasLog</h1>
-
-<p>SeasLog是一个C语言编写的PHP扩展，提供一组规范标准的功能函数，在PHP项目中方便、规范、高效地写日志，以及快速地读取和查询日志。</p>
-
-<!--more-->
-
-
-<h1>二、为什么需要日志系统</h1>
-
-<ol>
-<li>了解系统运行情况</li>
-<li>记录用户操作信息</li>
-<li>收集需要</li>
-</ol>
-
-
-<h1>三、为什么选择SeasLog</h1>
-
-<ol>
-<li>高性能 带有缓冲池功能。</li>
-<li>无需配置</li>
-<li>功能完善，使用简单
-
-<h1>四、SeasLog安装</h1>
-
-<p> 到<a href="http://pecl.php.net/">pecl</a>搜索seaslog并下载
- 解压后
- 可自行编译。</p></li>
-</ol>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd seaslog //进到解压目录
-</span><span class='line'>$ phpize
-</span><span class='line'>$ ./configure --with-php-config=/path/to/php-config //path to 为你的PHP安装目录
-</span><span class='line'>$ make && make install
-</span><span class='line'>当然，使用PECL管理工具会更方便：
-</span><span class='line'>$ pecl install seaslog</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>seaslog.ini的配置</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>; configuration for php SeasLog module 
-</span><span class='line'>extension = seaslog.so 
-</span><span class='line'>seaslog.default_basepath = /log/seaslog-test    ;默认log根目录 
-</span><span class='line'>seaslog.default_logger = default                ;默认logger目录 
-</span><span class='line'>seaslog.disting_type = 1                            ;是否以type分文件 1是 0否(默认) 
-</span><span class='line'>seaslog.disting_by_hour = 1                      ;是否每小时划分一个文件 1是 0否(默认) 
-</span><span class='line'>seaslog.use_buffer = 1                              ;是否启用buffer 1是 0否(默认) 
-</span><span class='line'>seaslog.buffer_size = 100                         ;buffer中缓冲数量 默认0(不使用buffer_size) 
-</span><span class='line'>seaslog.level = 0                                       ;记录日志级别 默认0(所有日志)</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>需要将这里面的数据写到php.ini中去</strong></p>
-
-<pre><code>seaslog.disting_type = 1 开启以type分文件，即log文件区分info\warn\erro
-seaslog.disting_by_hour = 1 开启每小时划分一个文件
-seaslog.use_buffer = 1 开启buffer。默认关闭。当开启此项时，日志预存于内存，当请求结束时(或异常退出时)一次写入文件。
-seaslog.buffer_size = 100 设置缓冲数量为100. 默认为0,即无缓冲数量限制.当buffer_size大于0时,缓冲量达到该值则写一次文件.
-seaslog.level = 3 记录的日志级别.默认为0,即所有日志均记录。当level为1时,关注debug以上级别(包括debug)，以此类推。level大于8时，所有日志均不记录。
-</code></pre>
-
-<h2>默认常量有哪些</h2>
-
-<p>遵循PSR-3标准，SeasLog 共将日志分成8个级别</p>
-
-<pre><code>SEASLOG_DEBUG "debug"
-SEASLOG_INFO "info"
-SEASLOG_NOTICE "notice"
-SEASLOG_WARNING "warning"
-SEASLOG_ERROR "error"
-SEASLOG_CRITICAL "critical"
-SEASLOG_ALERT "alert"
-SEASLOG_EMERGENCY "emergency"
-</code></pre>
-
-<h2>都提供哪些方法</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>
-</span><span class='line'>&lt;?php 
-</span><span class='line'>/** 
-</span><span class='line'> * @author neeke@php.net 云智慧 
-</span><span class='line'> */ 
-</span><span class='line'> 
-</span><span class='line'>class SeasLog 
-</span><span class='line'>{ 
-</span><span class='line'>    public function __construct() 
-</span><span class='line'>    { 
-</span><span class='line'>        #SeasLog init 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    public function __destruct() 
-</span><span class='line'>    { 
-</span><span class='line'>        #SeasLog distroy 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置basePath 
-</span><span class='line'>     * @param $basePath 
-</span><span class='line'>     * @return bool 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function setBasePath($basePath) 
-</span><span class='line'>    { 
-</span><span class='line'>        return TRUE; 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 获取basePath 
-</span><span class='line'>     * @return string 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function getBasePath() 
-</span><span class='line'>    { 
-</span><span class='line'>        return 'the base_path'; 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置模块目录 
-</span><span class='line'>     * @param $module 
-</span><span class='line'>     * @return bool 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function setLogger($module) 
-</span><span class='line'>    { 
-</span><span class='line'>        return TRUE; 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 获取最后一次设置的模块目录 
-</span><span class='line'>     * @return string 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function getLastLogger() 
-</span><span class='line'>    { 
-</span><span class='line'>        return 'the lastLogger'; 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 统计所有类型（或单个类型）行数 
-</span><span class='line'>     * @param string $level 
-</span><span class='line'>     * @param string $log_path 
-</span><span class='line'>     * @param null $key_word 
-</span><span class='line'>     * @return array | long 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function analyzerCount($level = 'all',$log_path = '*',$key_word = NULL) 
-</span><span class='line'>    { 
-</span><span class='line'>        return array(); 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 以数组形式，快速取出某类型log的各行详情 
-</span><span class='line'>     * @param $level 
-</span><span class='line'>     * @param string $log_path 
-</span><span class='line'>     * @param null $key_word 
-</span><span class='line'>     * @param int $start 
-</span><span class='line'>     * @param int $limit 
-</span><span class='line'>     * @return array 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function analyzerDetail($level = SEASLOG_INFO,$log_path = '*',$key_word = NULL, $start = 1,$limit = 20) 
-</span><span class='line'>    { 
-</span><span class='line'>        return array(); 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 获得当前日志buffer中的内容 
-</span><span class='line'>     * @return array 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function getBuffer() 
-</span><span class='line'>    { 
-</span><span class='line'>        return array(); 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录debug日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function debug($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_DEBUG 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录info日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function info($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_INFO 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录notice日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function notice($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_NOTICE 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录warning日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function warning($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_WARNING 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录error日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function error($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_ERROR 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录critical日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function critical($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_CRITICAL 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录alert日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function alert($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_ALERT 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 记录emergency日志 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function emergency($message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'>        #$level = SEASLOG_EMERGENCY 
-</span><span class='line'>    } 
-</span><span class='line'> 
-</span><span class='line'>    /** 
-</span><span class='line'>     * 通用日志方法 
-</span><span class='line'>     * @param $level 
-</span><span class='line'>     * @param $message 
-</span><span class='line'>     * @param array $content 
-</span><span class='line'>     * @param string $module 
-</span><span class='line'>     */ 
-</span><span class='line'>    static public function log($level,$message,array $content = array(),$module = '') 
-</span><span class='line'>    { 
-</span><span class='line'> 
-</span><span class='line'>    } 
-</span><span class='line'>} </span></code></pre></td></tr></table></div></figure>
-
-
-<h2>在项目中如何使用</h2>
-
-<blockquote><p>获取与设置basePatn</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>/**
-</span><span class='line'> *静态方法可以不实例化直接使用
-</span><span class='line'> *
-</span><span class='line'> */
-</span><span class='line'>$basePath_1 = SeasLog::getBasePath(); 
-</span><span class='line'> 
-</span><span class='line'>SeasLog::setBasePath('/log/base_test'); 
-</span><span class='line'>$basePath_2 = SeasLog::getBasePath(); 
-</span><span class='line'> 
-</span><span class='line'>var_dump($basePath_1,$basePath_2); 
-</span><span class='line'> 
-</span><span class='line'>/* 
-</span><span class='line'>string(19) "/log/seaslog-ciogao" 
-</span><span class='line'>string(14) "/log/base_test" 
-</span><span class='line'>*/ </span></code></pre></td></tr></table></div></figure>
-
-
-<p>直接使用 SeasLog::getBasePath()，将获取php.ini(seaslog.ini)中设置的seaslog.default_basepath 的值。</p>
-
-<p>使用 SeasLog::getBasePath() 函数，将改变 seaslog_get_basepath() 的取值。</p>
-
-<blockquote><p>设置logger与获取lastLogger</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$lastLogger_1 = SeasLog::getLastLogger(); 
-</span><span class='line'> 
-</span><span class='line'>SeasLog::setLogger('testModule/app1'); 
-</span><span class='line'>$lastLogger_2 = SeasLog::getLastLogger(); 
-</span><span class='line'> 
-</span><span class='line'>var_dump($lastLogger_1,$lastLogger_2); 
-</span><span class='line'>/* 
-</span><span class='line'>string(7) "default" 
-</span><span class='line'>string(15) "testModule/app1" 
-</span><span class='line'>*/ </span></code></pre></td></tr></table></div></figure>
-
-
-<p>与basePath相类似的，
-直接使用 SeasLog::getLastLogger()，将获取php.ini(seaslog.ini)中设置的seaslog.default_logger 的值。</p>
-
-<p>使用 SeasLog::setLogger() 函数，将改变 SeasLog::getLastLogger() 的取值。</p>
-
-<h2>SeasLog Logger的使用</h2>
-
-<blockquote><p>获取与设置basePath</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$basePath_1 = SeasLog::getBasePath();
-</span><span class='line'>
-</span><span class='line'>SeasLog::setBasePath('/log/base_test');
-</span><span class='line'>$basePath_2 = SeasLog::getBasePath();
-</span><span class='line'>
-</span><span class='line'>var_dump($basePath_1,$basePath_2);
-</span><span class='line'>
-</span><span class='line'>/*
-</span><span class='line'>string(19) "/log/seaslog-ciogao"
-</span><span class='line'>string(14) "/log/base_test"
-</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
-
-
-<p>直接使用 SeasLog::getBasePath()，将获取php.ini(seaslog.ini)中设置的 seaslog.default_basepath 的值。</p>
-
-<p>使用 SeasLog::setBasePath() 函数，将改变 SeasLog::getBasePath() 的取值。</p>
-
-<blockquote><p>设置logger与获取lastLogger</p></blockquote>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$lastLogger_1 = SeasLog::getLastLogger();
-</span><span class='line'>
-</span><span class='line'>SeasLog::setLogger('testModule/app1');
-</span><span class='line'>$lastLogger_2 = SeasLog::getLastLogger();
-</span><span class='line'>
-</span><span class='line'>var_dump($lastLogger_1,$lastLogger_2);
-</span><span class='line'>/*
-</span><span class='line'>string(7) "default"
-</span><span class='line'>string(15) "testModule/app1"
-</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
-
-
-<p>与basePath相类似的，</p>
-
-<p>直接使用 SeasLog::getLastLogger()，将获取php.ini(seaslog.ini)中设置的 seaslog.default_logger 的值。</p>
-
-<p>使用 SeasLog::setLogger() 函数，将改变 SeasLog::getLastLogger() 的取值。
-快速写入log</p>
-
-<p>上面已经设置过了basePath与logger，于是log记录的目录已经产生了，</p>
-
-<p>log记录目录 = basePath / logger / {fileName}.log log文件名，以 年月日 分文件，如今天是2014年02月18日期，那么 {fileName} = 20140218;
-还记得 php.ini 中设置的 seaslog.disting_type 吗？</p>
-
-<p>默认的 seaslog.disting_type = 0，如果今天我使用了 SeasLog ，那么将产生最终的log文件：</p>
-
-<p>*　LogFile = basePath / logger / 20140218.log
-如果 seaslog.disting_type = 1，则最终的log文件将是这样的三个文件</p>
-
-<ul>
-<li><p>infoLogFile = basePath / logger / INFO.20140218.log</p></li>
-<li><p>warnLogFile = basePath / logger / WARN.20140218.log</p></li>
-<li><p>erroLogFile = basePath / logger / ERRO.20140218.log</p></li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>SeasLog::log(SEASLOG_ERROR,'this is a error test by ::log');
-</span><span class='line'>
-</span><span class='line'>SeasLog::debug('this is a {userName} debug',array('{userName}' =&gt; 'neeke'));
-</span><span class='line'>
-</span><span class='line'>SeasLog::info('this is a info log');
-</span><span class='line'>
-</span><span class='line'>SeasLog::notice('this is a notice log');
-</span><span class='line'>
-</span><span class='line'>SeasLog::warning('your {website} was down,please {action} it ASAP!',array('{website}' =&gt; 'github.com','{action}' =&gt; 'rboot'));
-</span><span class='line'>
-</span><span class='line'>SeasLog::error('a error log');
-</span><span class='line'>
-</span><span class='line'>SeasLog::critical('some thing was critical');
-</span><span class='line'>
-</span><span class='line'>SeasLog::alert('yes this is a {messageName}',array('{messageName}' =&gt; 'alertMSG'));
-</span><span class='line'>
-</span><span class='line'>SeasLog::emergency('Just now, the house next door was completely burnt out! {note}',array('{note}' =&gt; 'it`s a joke'));
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>/*
-</span><span class='line'>这些函数同时也接受第3个参数为logger的设置项
-</span><span class='line'>注意，当last_logger == 'default'时等同于:
-</span><span class='line'>SeasLog::setLogger('test/new/path');
-</span><span class='line'>SeasLog::error('test error 3');
-</span><span class='line'>如果已经在前文使用过SeasLog::setLogger()函数，第3个参数的log只在此处临时使用，不影响下文。
-</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>log格式统一为： {type} | {pid} | {timeStamp} |{dateTime} | {logInfo}</p></blockquote>
-
-<pre><code>error | 23625 | 1406422432.786 | 2014:07:27 08:53:52 | this is a error test by log
-debug | 23625 | 1406422432.786 | 2014:07:27 08:53:52 | this is a neeke debug
-info | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | this is a info log
-notice | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | this is a notice log
-warning | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | your github.com was down,please rboot it ASAP!
-error | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | a error log
-critical | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | some thing was critical
-emergency | 23625 | 1406422432.787 | 2014:07:27 08:53:52 | Just now, the house next door was completely burnt out! it is a joke
-</code></pre>
-
-<h2>SeasLog Analyzer的使用</h2>
-
-<blockquote><p>快速统计某类型log的count值</p></blockquote>
-
-<p>SeasLog在扩展中使用管道调用shell命令 grep -wc快速地取得count值，并返回值(array || int)给PHP。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$countResult_1 = SeasLog::analyzerCount();
-</span><span class='line'>$countResult_2 = SeasLog::analyzerCount(SEASLOG_WARNING);
-</span><span class='line'>$countResult_3 = SeasLog::analyzerCount(SEASLOG_ERROR,date('Ymd',time()));
-</span><span class='line'>
-</span><span class='line'>var_dump($countResult_1,$countResult_2,$countResult_3);
-</span><span class='line'>/*
-</span><span class='line'>array(8) {
-</span><span class='line'>  ["debug"]=&gt;
-</span><span class='line'>  int(3)
-</span><span class='line'>  ["info"]=&gt;
-</span><span class='line'>  int(3)
-</span><span class='line'>  ["notice"]=&gt;
-</span><span class='line'>  int(3)
-</span><span class='line'>  ["warning"]=&gt;
-</span><span class='line'>  int(3)
-</span><span class='line'>  ["error"]=&gt;
-</span><span class='line'>  int(6)
-</span><span class='line'>  ["critical"]=&gt;
-</span><span class='line'>  int(3)
-</span><span class='line'>  ["alert"]=&gt;
-</span><span class='line'>  int(3)
-</span><span class='line'>  ["emergency"]=&gt;
-</span><span class='line'>  int(3)
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>int(7)
-</span><span class='line'>
-</span><span class='line'>int(1)
-</span><span class='line'>
-</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>获取某类型log列表</p></blockquote>
-
-<p>SeasLog在扩展中使用管道调用shell命令 grep -w快速地取得列表，并返回array给PHP。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$detailErrorArray_inAll   = SeasLog::analyzerDetail(SEASLOG_ERROR);
-</span><span class='line'>$detailErrorArray_today   = SeasLog::analyzerDetail(SEASLOG_ERROR,date('Ymd',time()));
-</span><span class='line'>
-</span><span class='line'>var_dump($detailErrorArray_inAll,$detailErrorArray_today);
-</span><span class='line'>
-</span><span class='line'>/*
-</span><span class='line'>SeasLog::analyzerDetail(SEASLOG_ERROR) == SeasLog::analyzerDetail(SEASLOG_ERROR,'*');
-</span><span class='line'>取当前模块下所有level为 SEASLOG_ERROR 的信息列表:
-</span><span class='line'>array(6) {
-</span><span class='line'> [0] =&gt;
-</span><span class='line'>  string(66) "error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 "
-</span><span class='line'>  [1] =&gt;
-</span><span class='line'>  string(66) "error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 "
-</span><span class='line'>  [2] =&gt;
-</span><span class='line'>  string(66) "error | 8620 | 1393172044.862 | 2014:02:24 00:14:04 | test error 3 "
-</span><span class='line'>  [3] =&gt;
-</span><span class='line'>  string(66) "error | 8646 | 1393172045.989 | 2014:02:24 00:14:05 | test error 3 "
-</span><span class='line'>  [4] =&gt;
-</span><span class='line'>  string(66) "error | 8672 | 1393172047.882 | 2014:02:24 00:14:07 | test error 3 "
-</span><span class='line'>  [5] =&gt;
-</span><span class='line'>  string(66) "error | 8698 | 1393172048.736 | 2014:02:24 00:14:08 | test error 3 "
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>SeasLog::analyzerDetail(SEASLOG_ERROR,date('Ymd',time()));
-</span><span class='line'>只取得当前模块下，当前一天内,level为SEASLOG_ERROR 的信息列表:
-</span><span class='line'>array(2) {
-</span><span class='line'>  [0] =&gt;
-</span><span class='line'>  string(66) "error | 8568 | 1393172042.717 | 2014:02:24 00:14:02 | test error 3 "
-</span><span class='line'>  [1] =&gt;
-</span><span class='line'>  string(66) "error | 8594 | 1393172044.104 | 2014:02:24 00:14:04 | test error 3 "
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>同理，取当月
-</span><span class='line'>$detailErrorArray_mouth = SeasLog::analyzerDetail(SEASLOG_ERROR,date('Ym',time()));
-</span><span class='line'>
-</span><span class='line'>*/</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>
