@@ -9,37 +9,13 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php PDO实例-发送邮件激活账户 实现注册发送邮件激活账户 使用swiftmailer-master发送邮件 核心代码: 1
+	<meta name="description" content="mysql 数据库优化 SQL及索引优化 如何发现有问题的SQL？ 使用MySQL慢查日志对有效率问题的SQL进行监控 1
 2
 3
 4
 5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31 &hellip;">
+show varilables like &#39;show_query_log&#39; //查看是否开启慢查日志
+set global &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,7 +81,7 @@
   <ul id="categories">
     <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/linux/'>linux (5)</a></li>
-<li class='category'><a href='/blog/categories/mysql/'>mysql (2)</a></li>
+<li class='category'><a href='/blog/categories/mysql/'>mysql (3)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
 <li class='category'><a href='/blog/categories/php/'>php (14)</a></li>
@@ -151,6 +127,167 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-05-23T12:57:08+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/mysql/'>mysql</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/05/23/mysql-you-hua/" itemprop="url">数据库优化</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h1>SQL及索引优化</h1>
+
+<p><strong>如何发现有问题的SQL？</strong></p>
+
+<p>使用MySQL慢查日志对有效率问题的SQL进行监控</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">show</span> <span class="nx">varilables</span> <span class="nx">like</span> <span class="s1">&#39;show_query_log&#39;</span> <span class="c1">//查看是否开启慢查日志</span>
+</span><span class='line'><span class="nx">set</span> <span class="k">global</span> <span class="nx">slow_query_log</span><span class="o">=</span><span class="nx">on</span><span class="p">;</span><span class="c1">//开启慢查日志</span>
+</span><span class='line'><span class="nx">set</span> <span class="k">global</span> <span class="nx">slow_query_log_file</span><span class="o">=</span><span class="s1">&#39;/home/mysql/sql_log/mysql-show.log&#39;</span> <span class="c1">//设置保存位置</span>
+</span><span class='line'><span class="nx">set</span> <span class="k">global</span> <span class="nx">log_queries_not_using_indexes</span><span class="o">=</span><span class="nx">on</span><span class="p">;</span> <span class="c1">//记录没有索引的SQL</span>
+</span><span class='line'><span class="nx">set</span> <span class="k">global</span> <span class="nx">long_query_time</span><span class="o">=</span><span class="mi">1</span> <span class="c1">//记录大于1s的SQL</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>慢查日志分析工具</strong></p>
+
+<ul>
+<li><p>mysqldumoslow mysql自带的分析工具</p></li>
+<li><p>pt-query-digest 比上一种更详细</p></li>
+</ul>
+
+
+<p><img src="http://f.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=44ebfc52d7a20cf44290feda46323a0b/b3b7d0a20cf431add68638ec4c36acaf2fdd988a.jpg?referer=27406310e7fe9925921b5d60d888&amp;x=.jpg" alt="" /></p>
+
+<p><strong>发现有问题的SQL</strong></p>
+
+<p><img src="http://d.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=c1319fecb4de9c82a265f98a5cbaf137/d009b3de9c82d1589fd62264870a19d8bd3e428a.jpg?referer=af6adca0d188d43fa9bea5c2ae88&amp;x=.jpg" alt="" /></p>
+
+<p><strong>如何分析SQL查询</strong></p>
+
+<p>使用<code>explain</code>查询SQL的执行计划</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">explain</span> <span class="nx">select</span> <span class="o">*</span> <span class="nx">from</span> <span class="nx">test</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://c.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=9f740fd1900a304e5622a0ffe1f3d6bb/4034970a304e251ff7a19f2da086c9177e3e5394.jpg?referer=d4961c83d71609248532962b9d8a&amp;x=.jpg" alt="" />
+<img src="http://e.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b640bc36502c11dfdad1bf26531c13ed/f3d3572c11dfa9ec5e8a2dc265d0f703908fc1bb.jpg?referer=8596971cd02a60590b07d52a2f59&amp;x=.jpg" alt="" />
+<strong>Count()和Max()的优化</strong></p>
+
+<pre class="prettyprint">
+Max():添加索引
+Count()：在使用时注意查询具体列和*，查询某一列的时候不会包含为NULL的项
+</pre>
+
+
+<p><strong>子查询优化</strong></p>
+
+<pre class="prettyprint">
+通常情况下需要把子查询优化为join查询，但在优化时要注意关联建是否有一对多的关系，要注意重复数据。
+select * from t where t.id in (select t1.tid from t1);
+select t.id from t join t1 on t.id=t1.tid;
+当出现一对多的关系需要使用distinct去重
+select  distinct t.id from t join t1 on t.id=t1.tid;
+</pre>
+
+
+<p><strong>group by 优化</strong></p>
+
+<pre class="prettyprint linenums">
+explain select actor.first_name,actor.last_name,COUNT(*) FROM sakila.file_actor 
+INNER JOIN sakila.actor USING(actor_id) 
+GROUP BY film_actor.actor.id;
+优化后：
+SELECT actor.first_name,actor.last_name,c.cnt
+FROM sakila.actor INNER JOIN (
+SELECT actor_id,COUNT(*) AS cnt FROM sakila.film_actor GROUP BY actor_id
+)AS c USING(actor_id);
+</pre>
+
+
+<p><strong>limit 优化</strong></p>
+
+<pre class="prettyprint">
+limit 常用于分页处理，时常会伴随order by使用，因此大多时候会使用Filesorts这样会造成大量IO问题
+SELECT  film_id,description FROM sakila.film ORDER BY title LIMIT 50,5;
+优化1:使用有索引的列或主键进行Order by
+SELECT film_id,description FROM sakila.film ORDER BY film_id LIMIT 50,5;
+优化2:记录上次返回的主键，在下次查询时使用主键过滤
+SELECT film_id,description FROM sakila.film WHERE film_id>55 and film_id<60 ORDER BY film_id LIMIT 1,5;
+</pre>
+
+
+<h1>索引优化</h1>
+
+<ul>
+<li>在离散度较大的列上建立联合索引</li>
+<li>过多的索引会减小查询效率。</li>
+<li>删除重复和多于的索引
+<img src="http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=3ebc9bdcb1003af349badc650511b761/d439b6003af33a87e13f7bcfc15c10385243b590.jpg?referer=3ebe61cbbe389b5061e8d462f38e&amp;x=.jpg" alt="" /></li>
+</ul>
+
+
+<p><strong>查找重复和冗余索引</strong></p>
+
+<p><img src="http://e.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=5cde47c1ac18972ba73a00cfd6f60ab4/0824ab18972bd407b932a8287c899e510eb30969.jpg?referer=7acb3d68ae7739129d31b1517728&amp;x=.jpg" alt="" /></p>
+
+<p>需要在 <code>information_schema</code>库下运行</p>
+
+<ul>
+<li>使用pt-duplicate-key-checker 工具检查重复及冗余索引</li>
+<li>pt-duplicate-key-checker -uroot -p &lsquo;xxxx&rsquo; -h 127.0.0.1</li>
+</ul>
+
+
+<h1>数据库结构优化</h1>
+
+<p><strong>选择合适的数据类型</strong></p>
+
+<ul>
+<li>使用可以存下你的数据的最小的数据类型</li>
+<li>使用简单的数据类型，Int要比varchar类型在mysql处理上简单</li>
+<li>尽可能使用not null 定义字段</li>
+<li>尽量少使用text类型，非用不可以时最好考虑分表</li>
+<li>使用bigint来存放ip</li>
+</ul>
+
+
+<p><strong>表的范式化和反范式化</strong></p>
+
+<p>范式化一般是指第三设计范式，也就是要求数据表中不存在飞关键字段对任意候选关键字的传递函数依赖则符合第三范式。</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -994,50 +1131,6 @@ spl_autoload会把类名转化为小写进行文件搜索，
 
 		
 		<a href="/blog/2016/05/16/nginx-virtualhost/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-15T16:12:15+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/15/qq-login/" itemprop="url">QQ登录Demo</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天完成了一个QQ登录的小Deom</p></blockquote>
-
-<h1>前置条件</h1>
-
-<ul>
-<li>一个QQ号</li>
-<li>一台公网通过域名可访问的web服务器</li>
-</ul>
-
-
-
-		
-		<a href="/blog/2016/05/15/qq-login/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>
