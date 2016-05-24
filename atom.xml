@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-05-23T16:59:34+08:00</updated>
+  <updated>2016-05-24T12:14:07+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,11 +14,218 @@
 
   
   <entry>
+    <title type="html"><![CDATA[php加密]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/24/php-jia-mi/"/>
+    <updated>2016-05-24T10:38:59+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/24/php-jia-mi</id>
+    <content type="html"><![CDATA[<h1>PHP中几种常见的加密方式</h1>
+
+<ul>
+<li>Md5()加密算法</li>
+<li>Crypt()加密算法</li>
+<li>Sha1()加密算法</li>
+<li>URL编码加密</li>
+<li>Base64编码加密</li>
+</ul>
+
+
+<hr />
+
+<p><strong>MD5()</strong></p>
+
+<ul>
+<li>单向加密算法，不可逆</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">string</span> <span class="nb">md5</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$str</span><span class="p">[,</span><span class="nx">bool</span> <span class="nv">$raw</span><span class="o">=</span><span class="nx">output</span> <span class="o">=</span> <span class="k">false</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>单向加密，不可逆</p>
+
+<p>$str:原始字符串</p>
+
+<p>$raw_output：一般不用，如果被设置为true，那么md5报文摘要将以16字节长度的原始二进制格式返回。否则返回以32为字符十六进制数字形式返回散列值。
+使用过程中最好使用多次md5</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s1">&#39;EwanReton&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$code</span><span class="o">=</span><span class="nb">md5</span><span class="p">(</span><span class="nb">md5</span><span class="p">(</span><span class="nv">$str</span><span class="p">,</span><span class="k">true</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Crypt()</strong></p>
+
+<ul>
+<li>单向加密算法，不可逆</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">string</span> <span class="nb">crypt</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$str</span><span class="p">[,</span><span class="nx">string</span> <span class="nv">$salt</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>$str:需要加密的字符串</p>
+
+<p>$salt：盐值。加密时的干扰串，使编码更安全 DES算法标准长度为2 MD5为12
+若没有传$salt 将随机生成 否则每次刷新密文不变</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nb">crypt</span><span class="p">(</span><span class="s1">&#39;EwanReton&#39;</span><span class="p">,</span><span class="s1">&#39;ly&#39;</span><span class="p">);</span><span class="c1">//EDS根据盐值的长度自动选用</span>
+</span><span class='line'><span class="nx">输出</span><span class="o">:</span><span class="nx">lyxxxxxxxxx</span>
+</span><span class='line'><span class="nb">crypt</span><span class="p">(</span><span class="s1">&#39;EwanReton&#39;</span><span class="p">,</span><span class="s1">&#39;$1$ly6661$&#39;</span><span class="p">);</span><span class="c1">//MD5盐值的格式 最多12位</span>
+</span><span class='line'><span class="nx">输出：</span><span class="err">$</span><span class="mi">1</span><span class="nv">$ly6661$xxxxxxx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当盐值超过了长度限制会截取相应长度，如EDS中<code>test</code>
+会截取成<code>te</code></p>
+
+<p><strong>Sha1()</strong></p>
+
+<ul>
+<li>单向加密算法，不可逆</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">string</span> <span class="nb">sha1</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$str</span><span class="p">[,</span><span class="nx">bool</span> <span class="nv">$raw</span><span class="o">=</span><span class="nx">output</span> <span class="o">=</span> <span class="k">false</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>和md5类似使用也和md5类似多次sha1</p>
+
+<p>$str:原始字符串</p>
+
+<p>$raw_output：一般不用，如果被设置为true，那么sha1摘要将以20字节长度的原始二进制格式返回。否则返回以40为字符十六进制数字形式返回散列值。</p>
+
+<p><strong>URL编码加密</strong></p>
+
+<ul>
+<li>urlencode(string $str) //编码字符串</li>
+<li>urldecode(string $str) //解码</li>
+<li>rawurlencode(string $str) //按照RFC1738进行编码
+
+<ul>
+<li>解码也可以用urldecode(string $str)</li>
+</ul>
+</li>
+<li>rawurldecode(string $str)</li>
+</ul>
+
+
+<p>编码规范：除了<code>-_.</code>之外所有非字母数字字符都被替换成百分号（%）后跟两位十六进制数，空格则编码为加号（+）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s1">&#39;Ewan Reton&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">echo</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;hr/&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;Ewan Reton.php?act=test&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">echo</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出</p>
+
+<pre claee="prettyprint linenums">
+Ewan+Reton
+Ewan+Reton.php%3Fact%3Dtest
+</pre>
+
+
+<p>常见的编码：</p>
+
+<pre class="prettyprint linenums">
+? %3F
+= %3D
+空格 + 按照RFC1738进行编码 为%20
+% %25
+& %26
+\ %5C
++ %2B
+</pre>
+
+
+<p>应用：</p>
+
+<hr />
+
+<p>在使用<code>get</code>方式传值时格式为<code>?key1=vaule&amp;key2=value2</code></p>
+
+<p>但是当我们<code>key1</code>的<code>value</code>为<code>Ewan&amp;Reton</code>在解析时会把Reton也解析成一个传的变量并且值为<code>null</code></p>
+
+<p>为了解决这个问题可以这样处理:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$value</span><span class="o">=</span><span class="s2">&quot;Ewan&amp;Reton&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;key1=&quot;</span><span class="o">.</span><span class="nx">urlcode</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span><span class="o">.</span><span class="s2">&quot;&amp;key2=value2&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;a href=&quot;</span><span class="nx">test</span><span class="o">.</span><span class="nx">php</span><span class="o">?</span><span class="s1">&#39;{$str}&#39;</span><span class="o">&gt;</span><span class="nx">test</span><span class="o">&lt;/</span><span class="nx">a</span><span class="o">&gt;</span><span class="s2">&quot;;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意：</p>
+
+<p>这里不需要解码，在识别时会自动识别成<code>key1=Ewan&amp;Reton&amp;key2=value2</code></p>
+
+<hr />
+
+<p><strong>base64编码加密</strong></p>
+
+<ul>
+<li>base64_encode(string $data)</li>
+<li>base64_decode(string $data[,bool $strict=false])
+
+<ul>
+<li>//如果输出的数据超出了base64字母表则返回false</li>
+</ul>
+</li>
+</ul>
+
+
+<p>将任何2进制字符编码到一个可打印的64字符中，中文和图片都可编码。解决早起邮件网关只能识别ASCII。</p>
+
+<p>主要作用将非ASCII码的数据转换成ASCII，其实是一个数据编码并算不上加密算法。</p>
+
+<h1>加密技术分类</h1>
+
+<p><strong>单向散列加密</strong></p>
+
+<p>通过对不同输入长度的信息进行散列计算，得到固定长度的输出，这个散列计算过程是单向的，即不能通过输出反推输入。</p>
+
+<p><strong>对称加密技术</strong></p>
+
+<p>加密和解密使用的密钥是同一个密钥或者可以相互推算。</p>
+
+<p><strong>非对称加密技术</strong></p>
+
+<p>加密和解密使用的密钥不是同一个，其中一个对外公开，被称为公钥，另一个只有拥有者知道。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[数据库优化]]></title>
     <link href="http://ewanreton.github.io/blog/2016/05/23/mysql-you-hua/"/>
     <updated>2016-05-23T12:57:08+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/23/mysql-you-hua</id>
-    <content type="html"><![CDATA[<h1>SQL及索引优化</h1>
+    <content type="html"><![CDATA[<blockquote><p>在面试的时候被问到数据库优化问题，结果一下没反应过来理解为了PHP性能优化（懵逼脸）一顿BB，然后就GG了</p></blockquote>
+
+<!--more-->
+
+
+<h1>SQL及索引优化</h1>
 
 <p><strong>如何发现有问题的SQL？</strong></p>
 
@@ -156,6 +363,9 @@ SELECT film_id,description FROM sakila.film WHERE film_id>55 and film_id<60 ORDE
     <content type="html"><![CDATA[<blockquote><p>实现注册发送邮件激活账户</p>
 
 <p>使用swiftmailer-master发送邮件</p></blockquote>
+
+<!--more-->
+
 
 <p>核心代码:</p>
 
@@ -7176,329 +7386,6 @@ email: liukedi001@gmail.com
 </span><span class='line'><span class="nx">flag_counter</span><span class="o">:</span> <span class="k">true</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Octopress代码高亮问题（Windows10）]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/04/30/octopress-code-highlight/"/>
-    <updated>2016-04-30T00:57:01+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/04/30/octopress-code-highlight</id>
-    <content type="html"><![CDATA[<blockquote><p>首先我要用祭出一段代码。。</p></blockquote>
-
-<!--more-->
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nv">$i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;Octopress 的代码高亮真的真的有坑！！！&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>之前在写博客的时候就有发现，我的用markdown语法写出来的代码好像是和别人的不一样。后来发现是我的代码没有用高亮。人家也是一个有追求的PHPer（尴尬脸）。我就查markdown语法啊。
-语法是这样给我说的</p>
-
-<p><strong>markdown 语法实现代码高亮有两种方法</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="mi">1</span>  <span class="sb">```[language] [title] [url] [link text]</span>
-</span><span class='line'><span class="sb">  code snippet</span>
-</span><span class='line'><span class="sb">   ```</span>
-</span><span class='line'><span class="mi">2</span> <span class="p">{</span><span class="nx">\</span><span class="o">%</span> <span class="nx">codeblock</span> <span class="p">[</span><span class="nx">title</span><span class="p">]</span> <span class="p">[</span><span class="nx">lang</span><span class="o">:</span><span class="nx">language</span><span class="p">]</span> <span class="p">[</span><span class="nx">url</span><span class="p">]</span> <span class="p">[</span><span class="nb">link</span> <span class="nx">text</span><span class="p">]</span> <span class="nx">\</span><span class="o">%</span><span class="p">}</span>
-</span><span class='line'>  <span class="nx">code</span> <span class="nx">snippet</span>
-</span><span class='line'><span class="p">{</span><span class="nx">\</span><span class="o">%</span> <span class="nx">endcodeblock</span> <span class="nx">\</span><span class="o">%</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>唉，原来这么简单。改代码走起->rake generate ->reke deploy</p>
-
-<p>去看看我可爱的带颜色的代码呢。</p>
-
-<p>！！！！！
-为什么我的博客一片空白了！！！</p>
-
-<p>然后我去度娘，去google。。</p>
-
-<p>终于找到跟我一样懵逼的小伙伴<a href="http://www.tuicool.com/articles/myqIba">戳过去同情他</a></p>
-
-<hr />
-
-<blockquote><p>按照这个小伙伴的思路我开始装Python</p></blockquote>
-
-<p>我装的是<a href="https://www.python.org/downloads/release/python-2711/">Python2.7.11</a> 选择 Windows x86-64 MSI installer下载。然后一直下一步安装。</p>
-
-<blockquote><p>安装完成后添加环境变量
-<a href="http://www.blogjava.net/lishunli/archive/2012/03/18/372115.html">这个博客可以参考</a>
-鼠标右击我的电脑，选择属性，再选择高级系统设置，右下角有一个环境变量，点进去</p></blockquote>
-
-<p><img src="https://pic1.zhimg.com/6afe9ded178646e6c71e0c3fd908bdb8_b.jpg" alt="1" /></p>
-
-<p>找到path项，选择编辑，把你的Python安装路径(如：C:\Python27)输入进去，注意要用一个 ; 符号与前面的路径分开，再点确定就可以了。完事后可以运行cmd，输入python，如下显示就是成功了
-<img src="https://pic4.zhimg.com/7c56fca865253473857066067a0c053b_b.jpg" alt="2" /></p>
-
-<blockquote><p>这个时候突然发现了另一篇博文</p></blockquote>
-
-<p>这个博文看起来要简单点<a href="http://www.cnblogs.com/oec2003/archive/2013/05/27/3100896.html">传送门</a></p>
-
-<blockquote><p>按照下一篇博文的方法</p></blockquote>
-
-<pre class="prettyprint linenums">
-安装Python
-安装Python,也是一路next就可以，博客的代码高亮用到了Python的Pygments模块，在Python中安装第三方库需要使用easy_install，在下面地址下载跟Python相对应的安装程序安装后就可以使用easy_install了。
-
-https://pypi.python.org/pypi/setuptools
-easy_install会安装在Python安装目录的Scripts目录中，例如我的Python目录是C:\Python27，所以需要将C:\Python27\Scripts目录加入到环境变量中才能在命令提示符中使用easy_install命令。
-
-在命令提示符中输入如下命令就可以安装Pygments了。
-
-easy_install pygments
-</pre>
-
-
-<p><a href="https://pypi.python.org/pypi/setuptools">https://pypi.python.org/pypi/setuptools</a>去找到Windows (simplified)又懵逼了。它给了一段代码需要自己编译运行<a href="https://bootstrap.pypa.io/ez_setup.py">ez_setup.py</a>新建文本文档将网页上的代码全部粘贴下来，保存重命名为ez_setup.py</p>
-
-<pre class="prettyprint linenums">
- Win+R
- cmd
- 进到你刚刚保存的那文件的路径
- python ez_setup.py //安装easy_install
- 等到安装完成过后
- 将C:\Python27\Scripts目录加入到环境变量中前面的C:\Python27\和你之前添加的Python的环境变量一样
- easy_install pygments
- 等到这一步完成后，基本就算大工告成了
-</pre>
-
-
-<p> 如果你还是出现相同问题的话，那请找网管重启机器。</p>
-
-<hr />
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">echo</span><span class="s2">&quot;不出意外的话你的问题也应该解决了。</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="k">echo</span><span class="s2">&quot;你看我是不是一段有颜色的代码啊！&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>后记</h1>
-
-<blockquote><p>在解决上述问题的过程中，了解到另一种代码高亮的方法</p></blockquote>
-
-<p><a href="http://jingyan.baidu.com/article/67508eb4e660ed9cca1ce4ec.html">请戳这里</a></p>
-
-<p>使用google-code-prettify可以用来很方便地对网页中的程序代码进行高亮显示,从而在视觉上使得网页上的代码看得比较舒服,这对网站站长来说是很重要的。</p>
-
-<p>有两种方法来启用google-code-prettify,下面简要介绍一下步骤。</p>
-
-<blockquote><p>方法一</p></blockquote>
-
-<p>(1) 从<a href="https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953">https://code.google.com/p/google-code-prettify/downloads/list%E4%B8%AD%E4%B8%8B%E8%BD%BD%E6%88%96%E8%80%85%E4%BB%8Ehttp://www.colafile.com/file/145953</a> 中打包下载pretty.css以及pretty.js,并保存到本地服务器的相应目录中来引用</p>
-
-<p>(2) 引用pretty.css以及pretty.js,然后在网页中引用,引用方法为</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nb">link</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;你保存的目录/prettify.css&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;你保存的目录/prettify.js&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">script</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span><span class="nx">标签改为</span><span class="o">&lt;</span><span class="nx">body</span> <span class="nx">onload</span><span class="o">=</span><span class="s2">&quot;prettyPrint()&quot;</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(4) 将源代码用标签</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span><span class="nx">这是你的代码</span><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>包含起来,例如</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">#include &quot;x.h&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">main</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>       <span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>相应的显示效果为:</p>
-
-<h2><img src="http://hiphotos.baidu.com/exp/pic/item/0fb505d5ad6eddc4ef4d78d73bdbb6fd52663331.jpg" alt="3" /></h2>
-
-<blockquote><p>方法二</p></blockquote>
-
-<p>(1) 到网址 <a href="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js">https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js</a> 中或者从<a href="http://www.colafile.com/file/145957">http://www.colafile.com/file/145957</a> 下载run_prettify.js文件</p>
-
-<p>(2) 引用run_prettify.js文件,方法为</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">script</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;你保存的目录/run_prettify.js&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">script</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3) 将源代码用标签</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span><span class="nx">这是你的代码</span><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>包含起来,例如</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">#include &quot;x.h&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">main</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>相应的显示效果为:</p>
-
-<p><img src="http://hiphotos.baidu.com/exp/pic/item/72ccb7773912b31b40ea01058418367adbb4e1de.jpg" alt="4" /></p>
-
-<p>如果你有更高的使用要求，可以到<a href="https://code.google.com/p/google-code-prettify/wiki/GettingStarted">https://code.google.com/p/google-code-prettify/wiki/GettingStarted</a>这个网页中看更高级的使用方法</p>
-
-<hr />
-
-<p>5/17/2016 8:28:40 PM  更新</p>
-
-<blockquote><p>设置显示行号</p></blockquote>
-
-<pre class="prettyprint linenums">
-1、删掉prettify里的这两个样式。  
-li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}  
-  
-2、替换以下内容，已经存在的替换，不存在的新增。  
-pre.prettyprint {  
- padding: 8px;  
- background-color: #f7f7f9;  
- border: 1px solid #e1e1e8;  
-}  
-.prettyprint.linenums {  
- -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
- -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
- box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;  
-}  
-  
-/* Specify class=linenums on a pre to get line numbering */  
-ol.linenums {  
- margin: 0 0 0 33px; /* IE indents via margin-left */  
-}   
-ol.linenums li {  
- padding-left: 12px;  
- color: #bebec5;  
- line-height: 18px;  
- text-shadow: 0 1px 0 #fff;  
-}  
-3、在pre标签里面一定不能有br/标签,要换行直接回车.  
-</pre>
-
-
-<hr />
-
-<h1>但是</h1>
-
-<p>这种方法在使用过程中，当是PHP代码时：如</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint linenums&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;test!&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;/pre&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样在实际的显示过程中只有块黑色的代码块，代码并没解析出来。</p>
-
-<p>改成如下格式就能正常实现代码高亮效果。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'>  <span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;prettyprint php&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="c1">//去掉了PHP的开始和结束符</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;test!&quot;</span><span class="p">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="o">&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我没有去具体研究这个原理，不过我推测是因为PHP的开始副 &lt;?  和pre的开始结束符产生了混乱不能正确匹配，从而导致解析失败。</p>
 ]]></content>
   </entry>
   
