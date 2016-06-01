@@ -9,7 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="JS-DOM-ying-yong JS进阶之DOM 这段时间开始实习，拿到手一个项目。都没什么时间写博客了，在写这个项目的实际过程中，发现对JS还是很陌生了。所以决定在空余时间提升下JS。在过了一遍基本的之后看到DOM的时候发现这个东西不太好懂，就觉得写个博文。 阅读全文&rarr; php &hellip;">
+	<meta name="description" content="JS-DOM-操作 DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下 JS进阶之DOM 这段时间开始实习，拿到手一个项目。都没什么时间写博客了，在写这个项目的实际过程中，发现对JS还是很陌生了。所以决定在空余时间提升下JS。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -143,9 +143,9 @@
 </div>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/06/01/js-dom-ying-yong/" itemprop="url">JS-DOM-ying-yong</a></h1>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/01/js-dom-ying-yong/" itemprop="url">JS-DOM-操作</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		
+		<blockquote><p>DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下</p></blockquote>
 
 		
 		
@@ -225,190 +225,9 @@
 
 <hr />
 
-<p><strong>MD5()</strong></p>
-
-<ul>
-<li>单向加密算法，不可逆</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">string</span> <span class="nb">md5</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$str</span><span class="p">[,</span><span class="nx">bool</span> <span class="nv">$raw</span><span class="o">=</span><span class="nx">output</span> <span class="o">=</span> <span class="k">false</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>单向加密，不可逆</p>
-
-<p>$str:原始字符串</p>
-
-<p>$raw_output：一般不用，如果被设置为true，那么md5报文摘要将以16字节长度的原始二进制格式返回。否则返回以32为字符十六进制数字形式返回散列值。
-使用过程中最好使用多次md5</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s1">&#39;EwanReton&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$code</span><span class="o">=</span><span class="nb">md5</span><span class="p">(</span><span class="nb">md5</span><span class="p">(</span><span class="nv">$str</span><span class="p">,</span><span class="k">true</span><span class="p">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Crypt()</strong></p>
-
-<ul>
-<li>单向加密算法，不可逆</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">string</span> <span class="nb">crypt</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$str</span><span class="p">[,</span><span class="nx">string</span> <span class="nv">$salt</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>$str:需要加密的字符串</p>
-
-<p>$salt：盐值。加密时的干扰串，使编码更安全 DES算法标准长度为2 MD5为12
-若没有传$salt 将随机生成 否则每次刷新密文不变</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nb">crypt</span><span class="p">(</span><span class="s1">&#39;EwanReton&#39;</span><span class="p">,</span><span class="s1">&#39;ly&#39;</span><span class="p">);</span><span class="c1">//EDS根据盐值的长度自动选用</span>
-</span><span class='line'><span class="nx">输出</span><span class="o">:</span><span class="nx">lyxxxxxxxxx</span>
-</span><span class='line'><span class="nb">crypt</span><span class="p">(</span><span class="s1">&#39;EwanReton&#39;</span><span class="p">,</span><span class="s1">&#39;$1$ly6661$&#39;</span><span class="p">);</span><span class="c1">//MD5盐值的格式 最多12位</span>
-</span><span class='line'><span class="nx">输出：</span><span class="err">$</span><span class="mi">1</span><span class="nv">$ly6661$xxxxxxx</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当盐值超过了长度限制会截取相应长度，如EDS中<code>test</code>
-会截取成<code>te</code></p>
-
-<p><strong>Sha1()</strong></p>
-
-<ul>
-<li>单向加密算法，不可逆</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">string</span> <span class="nb">sha1</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$str</span><span class="p">[,</span><span class="nx">bool</span> <span class="nv">$raw</span><span class="o">=</span><span class="nx">output</span> <span class="o">=</span> <span class="k">false</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>和md5类似使用也和md5类似多次sha1</p>
-
-<p>$str:原始字符串</p>
-
-<p>$raw_output：一般不用，如果被设置为true，那么sha1摘要将以20字节长度的原始二进制格式返回。否则返回以40为字符十六进制数字形式返回散列值。</p>
-
-<p><strong>URL编码加密</strong></p>
-
-<ul>
-<li>urlencode(string $str) //编码字符串</li>
-<li>urldecode(string $str) //解码</li>
-<li>rawurlencode(string $str) //按照RFC1738进行编码
-
-<ul>
-<li>解码也可以用urldecode(string $str)</li>
-</ul>
-</li>
-<li>rawurldecode(string $str)</li>
-</ul>
-
-
-<p>编码规范：除了<code>-_.</code>之外所有非字母数字字符都被替换成百分号（%）后跟两位十六进制数，空格则编码为加号（+）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s1">&#39;Ewan Reton&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">echo</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;hr/&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;Ewan Reton.php?act=test&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="k">echo</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>输出</p>
-
-<pre claee="prettyprint linenums">
-Ewan+Reton
-Ewan+Reton.php%3Fact%3Dtest
-</pre>
-
-
-<p>常见的编码：</p>
-
-<pre class="prettyprint linenums">
-? %3F
-= %3D
-空格 + 按照RFC1738进行编码 为%20
-% %25
-& %26
-\ %5C
-+ %2B
-</pre>
-
-
-<p>应用：</p>
-
-<hr />
-
-<p>在使用<code>get</code>方式传值时格式为<code>?key1=vaule&amp;key2=value2</code></p>
-
-<p>但是当我们<code>key1</code>的<code>value</code>为<code>Ewan&amp;Reton</code>在解析时会把Reton也解析成一个传的变量并且值为<code>null</code></p>
-
-<p>为了解决这个问题可以这样处理:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$value</span><span class="o">=</span><span class="s2">&quot;Ewan&amp;Reton&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$str</span><span class="o">=</span><span class="s2">&quot;key1=&quot;</span><span class="o">.</span><span class="nx">urlcode</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span><span class="o">.</span><span class="s2">&quot;&amp;key2=value2&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;a href=&quot;</span><span class="nx">test</span><span class="o">.</span><span class="nx">php</span><span class="o">?</span><span class="s1">&#39;{$str}&#39;</span><span class="o">&gt;</span><span class="nx">test</span><span class="o">&lt;/</span><span class="nx">a</span><span class="o">&gt;</span><span class="s2">&quot;;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意：</p>
-
-<p>这里不需要解码，在识别时会自动识别成<code>key1=Ewan&amp;Reton&amp;key2=value2</code></p>
-
-<hr />
-
-<p><strong>base64编码加密</strong></p>
-
-<ul>
-<li>base64_encode(string $data)</li>
-<li>base64_decode(string $data[,bool $strict=false])
-
-<ul>
-<li>//如果输出的数据超出了base64字母表则返回false</li>
-</ul>
-</li>
-</ul>
-
-
-<p>将任何2进制字符编码到一个可打印的64字符中，中文和图片都可编码。解决早起邮件网关只能识别ASCII。</p>
-
-<p>主要作用将非ASCII码的数据转换成ASCII，其实是一个数据编码并算不上加密算法。</p>
-
-<h1>加密技术分类</h1>
-
-<p><strong>单向散列加密</strong></p>
-
-<p>通过对不同输入长度的信息进行散列计算，得到固定长度的输出，这个散列计算过程是单向的，即不能通过输出反推输入。</p>
-
-<p><strong>对称加密技术</strong></p>
-
-<p>加密和解密使用的密钥是同一个密钥或者可以相互推算。</p>
-
-<p><strong>非对称加密技术</strong></p>
-
-<p>加密和解密使用的密钥不是同一个，其中一个对外公开，被称为公钥，另一个只有拥有者知道。</p>
 
 		
-		
+		<a href="/blog/2016/05/24/php-jia-mi/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

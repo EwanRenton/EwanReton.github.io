@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-01T23:49:18+08:00</updated>
+  <updated>2016-06-01T23:51:41+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,11 +14,11 @@
 
   
   <entry>
-    <title type="html"><![CDATA[JS-DOM-ying-yong]]></title>
+    <title type="html"><![CDATA[JS-DOM-操作]]></title>
     <link href="http://ewanreton.github.io/blog/2016/06/01/js-dom-ying-yong/"/>
     <updated>2016-06-01T23:45:06+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/06/01/js-dom-ying-yong</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<blockquote><p>DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下</p></blockquote>
 ]]></content>
   </entry>
   
@@ -131,18 +131,6 @@
 
 <p><strong>nodeType 属性:</strong>节点的类型，是只读的。以下常用的几种结点类型:</p>
 
-<p>元素类型    节点类型</p>
-
-<p>  元素          1</p>
-
-<p>  属性          2</p>
-
-<p>  文本          3</p>
-
-<p>  注释          8</p>
-
-<p>  文档          9</p>
-
 <table>
 <thead>
 <tr>
@@ -194,6 +182,9 @@
 
 
 <hr />
+
+<!--more-->
+
 
 <p><strong>MD5()</strong></p>
 
