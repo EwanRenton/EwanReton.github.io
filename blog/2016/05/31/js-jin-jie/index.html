@@ -5,11 +5,11 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>js-jin-jie - Ewan Reton</title>
+	<title>JS进阶之DOM - Ewan Reton</title>
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content=" Js-jin-jie Comments ">
+	<meta name="description" content="JS进阶之DOM 这段时间开始实习，拿到手一个项目。都没什么时间写博客了，在写这个项目的实际过程中，发现对JS还是很陌生了。所以决定在空余时间提升下JS。在过了一遍基本的之后看到DOM的时候发现这个东西不太好懂，就觉得写个博文。 认识DOM 文档对象模型DOM（Document Object &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,8 +120,154 @@
 			
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-	<h1 class="title" itemprop="name">Js-jin-jie</h1>
-	<div class="entry-content" itemprop="articleBody">
+	<h1 class="title" itemprop="name">JS进阶之DOM</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>这段时间开始实习，拿到手一个项目。都没什么时间写博客了，在写这个项目的实际过程中，发现对JS还是很陌生了。所以决定在空余时间提升下JS。在过了一遍基本的之后看到DOM的时候发现这个东西不太好懂，就觉得写个博文。</p></blockquote>
+
+<!--more-->
+
+
+<h1>认识DOM</h1>
+
+<p>文档对象模型DOM（Document Object Model）定义访问和处理HTML文档的标准方法。DOM 将HTML文档呈现为带有元素、属性和文本的树结构（节点树）。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;title&gt;</span>style样式<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;h2</span> <span class="na">id=</span><span class="s">&quot;con&quot;</span><span class="nt">&gt;</span>I love JavaScript<span class="nt">&lt;/H2&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;p&gt;</span> JavaScript使网页显示动态效果并实现与用户交互功能。<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   <span class="kd">var</span> <span class="nx">myh2</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;con&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">myh2</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">myh2</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">backgroundColor</span><span class="o">=</span><span class="s2">&quot;#CCC&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">myh2</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="nt">&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将HTML代码分解为DOM节点层次图：
+<img src="http://img.mukewang.com/5375ca7e0001dd8d04830279.jpg" alt="" /></p>
+
+<p><strong>HTML文档可以说由节点构成的集合，DOM节点有:</strong></p>
+
+<ol>
+<li><em>元素节点：</em> 上图中<code>&lt;html&gt;、&lt;body&gt;、&lt;p&gt;</code>等都是元素节点，即标签。</li>
+<li><em>文本节点:</em>向用户展示的内容，如<code>&lt;li&gt;...&lt;/li&gt;</code>中的JavaScript、DOM、CSS等文本。</li>
+<li><em>属性节点:</em>元素属性，如<code>&lt;a&gt;</code>标签的链接属性<code>href="http://www.imooc.com"</code>。</li>
+</ol>
+
+
+<p><strong>节点属性:</strong></p>
+
+<p><img src="http://img.mukewang.com/5375c953000117ee05240129.jpg" alt="" /></p>
+
+<p><strong>遍历节点树：</strong></p>
+
+<p><img src="http://img.mukewang.com/53f17a6400017d2905230219.jpg" alt="" /></p>
+
+<p>以上图ul为例，它的父级节点body,它的子节点3个li,它的兄弟结点h2、P。</p>
+
+<p><strong>DOM操作:</strong></p>
+
+<p><img src="http://img.mukewang.com/538d29da000152db05360278.jpg" alt="" /></p>
+
+<h1>节点属性</h1>
+
+<p>在文档对象模型 (DOM) 中，每个节点都是一个对象。DOM 节点有三个重要的属性 ：</p>
+
+<ol>
+<li>nodeName : 节点的名称</li>
+<li>nodeValue ：节点的值</li>
+<li>nodeType ：节点的类型</li>
+</ol>
+
+
+<p><strong>nodeName 属性: </strong>节点的名称，是只读的。</p>
+
+<ul>
+<li>元素节点的 nodeName 与标签名相同</li>
+<li>属性节点的 nodeName 是属性的名称</li>
+<li>文本节点的 nodeName 永远是 #text</li>
+<li>文档节点的 nodeName 永远是 #document</li>
+</ul>
+
+
+<p><strong>nodeValue 属性：</strong>节点的值</p>
+
+<ul>
+<li>元素节点的 nodeValue 是 undefined 或 null</li>
+<li>文本节点的 nodeValue 是文本自身</li>
+<li>属性节点的 nodeValue 是属性的值</li>
+</ul>
+
+
+<p><strong>nodeType 属性:</strong>节点的类型，是只读的。以下常用的几种结点类型:</p>
+
+<p>元素类型    节点类型</p>
+
+<p>  元素          1</p>
+
+<p>  属性          2</p>
+
+<p>  文本          3</p>
+
+<p>  注释          8</p>
+
+<p>  文档          9</p>
+
+<table>
+<thead>
+<tr>
+<th> 元素类型  </th>
+<th style="text-align:center;"> 节点类型      </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 元素      </td>
+<td style="text-align:center;"> 1       </td>
+</tr>
+<tr>
+<td> 属性      </td>
+<td style="text-align:center;"> 2      </td>
+</tr>
+<tr>
+<td> 文本      </td>
+<td style="text-align:center;"> 3      </td>
+</tr>
+<tr>
+<td> 注释      </td>
+<td style="text-align:center;"> 8     </td>
+</tr>
+<tr>
+<td> 文档      </td>
+<td style="text-align:center;"> 9      </td>
+</tr>
+</tbody>
+</table>
+
 </div>
 
 </article>
@@ -152,7 +298,7 @@
   <section>
     <h1>Comments</h1>
     <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="/blog/2016/05/31/js-jin-jie" data-title="js-jin-jie" data-url="http://ewanreton.github.io/blog/2016/05/31/js-jin-jie/"></div>
+	<div class="ds-thread" data-thread-key="/blog/2016/05/31/js-jin-jie" data-title="JS进阶之DOM" data-url="http://ewanreton.github.io/blog/2016/05/31/js-jin-jie/"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
