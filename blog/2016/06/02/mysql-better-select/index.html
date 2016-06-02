@@ -1,0 +1,670 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>MySQL高级查询 - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="MySQL高级查询 前段时间了解了点数据库优化的内容，但是发现自己对很多数据库的高级查询还不是很数据。 下面就整理下最近看的一些高级查询： +&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;& &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/06/02/mysql-better-select/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>	<link type="text/css" rel="stylesheet" href='/prettify/prettify.css' >
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
+	<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+
+<body onload="prettyPrint()">
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="main-nav"><section>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (2)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>linux (5)</a></li>
+<li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
+<li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (15)</a></li>
+<li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
+
+  </ul>
+</section></nav> 
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">MySQL高级查询</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>前段时间了解了点数据库优化的内容，但是发现自己对很多数据库的高级查询还不是很数据。</p></blockquote>
+
+<p>下面就整理下最近看的一些高级查询：</p>
+
+<p>+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+| emp_id | emp_name | emp_age | emp_sal | emp_bir | emp_sex |
++&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+| 100001 | 红枫 | 29 | 9000 | 1977-01-01 | male |
+| 100002 | 丽鹃 | 27 | 8000 | 1979-12-31 | fmale |
+| 100005 | 啸天 | 27 | 4000 | 1979-07-10 | male |
++&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+</p>
+
+<p><strong>查询结果的字段联合和重新命名</strong></p>
+
+<ul>
+<li><code>select concat(emp_id," ",emp_name) from emp;</code></li>
+</ul>
+
+
+<p>查询结果：</p>
+
+<p>+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| concat(emp_id,&ldquo; &rdquo;,emp_name) |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| 100005 啸天 |
+| 100001 红枫 |
+| 100002 丽鹃 |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+</p>
+
+<p>用AS关键字重新给输出结果命名标题</p>
+
+<ul>
+<li><code>select concat(emp_id," ",emp_name) as info from emp;</code></li>
+</ul>
+
+
+<p>查询结果：</p>
+
+<p>+&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| info |
++&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| 100005 啸天 |
+| 100001 红枫 |
+| 100002 丽鹃 |
++&mdash;&mdash;&mdash;&mdash;&mdash;-+</p>
+
+<hr />
+
+<p><strong>GROUP BY</strong></p>
+
+<blockquote><p>group by语法可以根据给定数据列的每个成员对查询结果进行分组统计，最终得到一个分组汇总表。</p>
+
+<p>SELECT子句中的列名必须为分组列或列函数。列函数对于GROUP BY子句定义的每个组各返回一个结果。</p></blockquote>
+
+<ul>
+<li><code>select emp_sex,count(*) from emp group by emp_sex;</code></li>
+</ul>
+
+
+<p>查询结果如下：</p>
+
+<p>+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+
+| emp_sex | count(*) |
++&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+
+| fmale | 1 |
+| male | 2 |
++&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+</p>
+
+<ol>
+<li>满足“SELECT子句中的列名必须为分组列或列函数”，因为SELECT有GROUP BY emp_sex中包含的列emp_sex。</li>
+<li>“列函数对于GROUP BY子句定义的每个组各返回一个结果”，根据性别分组，对每个性别返回一个结果，就是每个性别人人数。</li>
+</ol>
+
+
+<p><strong>从多个数据表中检索信息</strong></p>
+
+<ul>
+<li><code>select emp.emp_name,dept.dept_name from emp,dept
+-&gt; where emp.emp_id=dept.dept_id;</code></li>
+</ul>
+
+
+<p><strong>UNIN 用法</strong></p>
+
+<p>union:联合的意思，即把两次或多次查询结果合并起来。</p>
+
+<ul>
+<li>要求：两次查询的列数必须一致</li>
+<li>推荐：列的类型可以不一样，但推荐查询的每一列，相对应的类型一样</li>
+<li>可以来自多张表的数据：多次sql语句取出的列名可以不一致，此时以第一个sql语句的列名为准。</li>
+</ul>
+
+
+<p> 如果不同的语句中取出的行，有完全相同(这里表示的是每个列的值都相同)，那么<code>union</code>会将相同的行合并，最终只保留一行。也可以这样理解，<code>union</code>会去掉重复的行。</p>
+
+<p>如果不想去掉重复的行，可以使用<code>union all``。
+ 如果子句中有</code>order by,limit```，需用括号()包起来。推荐放到所有子句之后，即对最终合并的结果来排序或筛选。</p>
+
+<p>如：(select * from a order by id) union (select * from b order id);</p>
+
+<p>在子句中，order by 需要配合limit使用才有意义。如果不配合limit使用，会被语法分析器优化分析时去除。</p>
+
+<p>注意一点表项的结构必须相同，比如两个表的<code>id int(10)</code>   如果其中一个换成<code>id int(9)</code> 也不行，查询将会报错。但可以有不同的名称（不推荐），查询结果列将以SQL收到的第一份列名为准输出</p>
+
+<pre class="prettyprint linenums">
+$hotnews=mysql_query("SELECT id,title,pageview,tablenm FROM News   
+UNION  
+SELECT id,title,pageview,tablenm FROM Informs  
+UNION  
+SELECT id,title,pageview,tablenm FROM Article  
+UNION  
+SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$conn);//获取在四个表中按浏览数高低排序的前15个文章
+</pre>
+
+
+<hr />
+
+<h1>Join</h1>
+
+<blockquote><p>join 用于多表中字段之间的联系，语法如下：</p></blockquote>
+
+<p>from table1 INNER|LEFT|RIGHT JOIN table2 ON conditiona</p>
+
+<p>table1:左表；table2:右表。</p>
+
+<p>join按照功能大致分为如下三类：</p>
+
+<p>inner join（内连接,或等值连接）：取得两个表中存在连接匹配关系的记录。</p>
+
+<p>LEFT JOIN（左连接）：取得左表（table1）完全记录，即是右表（table2）并无对应匹配记录。</p>
+
+<p>RIGHT JOIN（右连接）：与 LEFT JOIN 相反，取得右表（table2）完全记录，即是左表（table1）并无匹配对应记录。</p>
+
+<p>注意：mysql不支持Full join,不过可以通过UNION 关键字来合并 LEFT JOIN 与 RIGHT JOIN来模拟FULL join.</p>
+
+<p>接下来给出一个列子用于解释下面几种分类。如下两个表(A,B)</p>
+
+<p>mysql> select A.id,A.name,B.name from A,B where A.id=B.id;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
+| id | name       | name             |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
+|  1 | Pirate       | Rutabaga      |
+|  2 | Monkey    | Pirate            |
+|  3 | Ninja         | Darth Vader |
+|  4 | Spaghetti  | Ninja             |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
+4 rows in set (0.00 sec)</p>
+
+<p><strong>Inner join</strong></p>
+
+<blockquote><p>内连接，也叫等值连接，inner join产生同时符合A和B的一组数据。</p></blockquote>
+
+<p>mysql> select * from A inner join B on A.name = B.name;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+
+| id | name   | id | name   |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+
+|  1 | Pirate |  2 | Pirate |
+|  3 | Ninja  |  4 | Ninja  |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+</p>
+
+<p><strong>Left join</strong></p>
+
+<p>mysql> select * from A left join B on A.name = B.name;</p>
+
+<p>或者：select * from A left outer join B on A.name = B.name;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+| id | name      | id   | name   |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+|  1 | Pirate    |    2 | Pirate |
+|  2 | Monkey    | NULL | NULL   |
+|  3 | Ninja     |    4 | Ninja  |
+|  4 | Spaghetti | NULL | NULL   |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+4 rows in set (0.00 sec)</p>
+
+<p>left join,（或left outer join:在Mysql中两者等价，推荐使用left join.）左连接从左表(A)产生一套完整的记录,与匹配的记录(右表(B)) .如果没有匹配,右侧将包含null。</p>
+
+<p>如果想只从左表(A)中产生一套记录，但不包含右表(B)的记录，可以通过设置where语句来执行，如下：</p>
+
+<p>mysql> select * from A left join B on A.name=B.name where A.id is null or B.id is null;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
+| id | name      | id   | name |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
+|  2 | Monkey    | NULL | NULL |
+|  4 | Spaghetti | NULL | NULL |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
+2 rows in set (0.00 sec)</p>
+
+<p>同理，还可以模拟inner join. 如下：</p>
+
+<p>mysql> select * from A left join B on A.name=B.name where A.id is not null and B.id is not null;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+| id | name   | id   | name   |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+|  1 | Pirate |    2 | Pirate |
+|  3 | Ninja  |    4 | Ninja  |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+2 rows in set (0.00 sec)</p>
+
+<p>求差集：</p>
+
+<p>根据上面的例子可以求差集，如下：</p>
+
+<p>SELECT * FROM A LEFT JOIN B ON A.name = B.name
+WHERE B.id IS NULL
+union</p>
+
+<p>SELECT * FROM A right JOIN B ON A.name = B.name
+WHERE A.id IS NULL;</p>
+
+<p> 结果</p>
+
+<p>+&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+
+| id   | name      | id   | name        |
++&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+
+|    2 | Monkey    | NULL | NULL        |
+|    4 | Spaghetti | NULL | NULL        |
+| NULL | NULL      |    1 | Rutabaga    |
+| NULL | NULL      |    3 | Darth Vader |
++&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+</p>
+
+<p><strong>Right join</strong></p>
+
+<p>mysql> select * from A right join B on A.name = B.name;</p>
+
+<p>+&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
+| id   | name   | id | name        |
++&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
+| NULL | NULL   |  1 | Rutabaga    |
+|    1 | Pirate |  2 | Pirate      |
+| NULL | NULL   |  3 | Darth Vader |
+|    3 | Ninja  |  4 | Ninja       |
++&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
+4 rows in set (0.00 sec)</p>
+
+<p><strong>USING(column_list)子句</strong>
+用于为一系列的列进行命名，这些列必须同时在两个表中存在
+SELECT java.<em>,mysql.</em> FROM java LEFT JOIN mysql USING (name);</p>
+
+<p>关于join的一个小测试：</p>
+
+<p>有这样两个表：</p>
+
+<p>message:</p>
+
+<table>
+<thead>
+<tr>
+<th>id </th>
+<th style="text-align:center;">   username </th>
+<th>message </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1  </td>
+<td style="text-align:center;">ewan   </td>
+<td>123</td>
+</tr>
+<tr>
+<td>2  </td>
+<td style="text-align:center;">wean2</td>
+<td> 123</td>
+</tr>
+<tr>
+<td>3  </td>
+<td style="text-align:center;">1  </td>
+<td>??</td>
+</tr>
+<tr>
+<td>4  </td>
+<td style="text-align:center;">1  </td>
+<td>2343</td>
+</tr>
+<tr>
+<td>5  </td>
+<td style="text-align:center;">1  </td>
+<td>sdfjkl</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>user:</p>
+
+<table>
+<thead>
+<tr>
+<th>id </th>
+<th style="text-align:center;">   username </th>
+<th>password </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1  </td>
+<td style="text-align:center;">1</td>
+<td>22</td>
+</tr>
+<tr>
+<td>2  </td>
+<td style="text-align:center;">2</td>
+<td> 111</td>
+</tr>
+<tr>
+<td>3  </td>
+<td style="text-align:center;">Ewan2  </td>
+<td>22</td>
+</tr>
+<tr>
+<td>4  </td>
+<td style="text-align:center;">Ewan5  </td>
+<td>22</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>测试如下:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$dsn</span><span class="o">=</span><span class="s2">&quot;mysql:host=127.0.0.1;dbname=test&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span> <span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span><span class="nv">$username</span><span class="p">,</span><span class="nv">$password</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;SELECT * FROM message LEFT JOIN user ON message.id=user.id&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$back</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$back</span><span class="o">=</span><span class="nv">$back</span><span class="o">-&gt;</span><span class="na">fetchAll</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">FETCH_ASSOC</span><span class="p">);</span>
+</span><span class='line'><span class="nb">print_r</span><span class="p">(</span><span class="nv">$back</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果：</p>
+
+<pre><code>Array
+(
+[0] =&gt; Array
+    (
+        [id] =&gt; 1
+        [username] =&gt; 1
+        [message] =&gt; 123
+        [password] =&gt; 22
+    )
+
+[1] =&gt; Array
+    (
+        [id] =&gt; 2
+        [username] =&gt; 2
+        [message] =&gt; 123
+        [password] =&gt; 111
+    )
+
+[2] =&gt; Array
+    (
+        [id] =&gt; 3
+        [username] =&gt; Ewan2
+        [message] =&gt; ??
+        [password] =&gt; 22
+    )
+
+[3] =&gt; Array
+    (
+        [id] =&gt; 
+        [username] =&gt; 
+        [message] =&gt; 2343
+        [password] =&gt; 
+    )
+
+[4] =&gt; Array
+    (
+        [id] =&gt; 
+        [username] =&gt; 
+        [message] =&gt; sdfjkl
+        [password] =&gt; 
+    )
+
+)
+</code></pre>
+
+<p><strong>可以看到在两个表都有username的情况下只取了前面的那个username而舍弃了后一个。</strong></p>
+
+<hr />
+
+<p><strong>HAVING</strong></p>
+
+<blockquote><p>HAVING 子句对 GROUP BY 子句设置条件的方式与 WHERE 和 SELECT 的交互方式类似。WHERE 搜索条件在进行分组操作之前应用；而 HAVING 搜索条件在进行分组操作之后应用。HAVING 语法与 WHERE 语法类似，但 HAVING 可以包含聚合函数。HAVING 子句可以引用选择列表中显示的任意项。</p></blockquote>
+
+<p>显示每个地区的总人口数和总面积．仅显示那些面积超过1000000的地区。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">SELECT</span> <span class="nx">region</span><span class="p">,</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">population</span><span class="p">),</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">area</span><span class="p">)</span>
+</span><span class='line'><span class="nx">FROM</span> <span class="nx">bbc</span>
+</span><span class='line'><span class="nx">GROUP</span> <span class="nx">BY</span> <span class="nx">region</span>
+</span><span class='line'><span class="nx">HAVING</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">area</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1000000</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这里，我们不能用where来筛选超过1000000的地区，因为表中不存在这样一条记录。</p>
+
+<p>我们在写sql语句的时候,经常会使用where语句,很少会用到having,其实在mysql中having子句也是设定条件的语句与where有相似之处但也有区别。having子句在查询过程中慢于聚合语句(sum,min,max,avg,count).而where子句在查询过程中则快于聚合语句(sum,min,max,avg,count)。</p>
+
+<p>简单说来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">where子句：</span>
+</span><span class='line'><span class="nx">select</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">num</span><span class="p">)</span> <span class="k">as</span> <span class="nx">rmb</span> <span class="nx">from</span> <span class="nx">order</span> <span class="nx">where</span> <span class="nx">id</span><span class="o">&gt;</span><span class="mi">10</span>
+</span><span class='line'><span class="c1">//先查询出id大于10的记录才能进行聚合语句  </span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">having子句</span><span class="o">:</span>
+</span><span class='line'><span class="nx">select</span> <span class="nx">reportsto</span> <span class="k">as</span> <span class="nx">manager</span><span class="p">,</span> <span class="nb">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">as</span> <span class="nx">reports</span> <span class="nx">from</span> <span class="nx">employees</span>
+</span><span class='line'><span class="nx">group</span> <span class="nx">by</span> <span class="nx">reportsto</span> <span class="nx">having</span> <span class="nb">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>having条件表达示为聚合语句。肯定的说having子句查询过程慢于聚合语句。<br/>
+再换句说话说把上面的having换成where则会出错。统计分组数据时用到聚合语句。</p>
+
+<p>对分组数据再次判断时要用having。如果不用这些关系就不存在使用having。直接使用where就行了。<br/>
+having就是来弥补where在分组数据判断时的不足。因为where要快于聚合语句。</p>
+
+<p><strong>这几个关键字执行的顺序</strong></p>
+
+<p>关键字是按照如下顺序进行执行的：</p>
+
+<ul>
+<li>Where</li>
+<li>Group By</li>
+<li>Having</li>
+<li>Order by</li>
+</ul>
+
+
+<p>首先where将最原始记录中不满足条件的记录删除(所以应该在where语句中尽量的将不符合条件的记录筛选掉，这样可以减少分组的次数)</p>
+
+<p>然后通过Group By关键字后面指定的分组条件将筛选得到的视图进行分组
+接着系统根据Having关键字后面指定的筛选条件，将分组视图后不满足条件的记录筛选掉</p>
+
+<p>最后按照Order By语句对视图进行排序，这样最终的结果就产生了。</p>
+
+<p>注意：</p>
+
+<p>凡是在group by后面出现的字段，必须同时在select后面出现；</p>
+
+<p>凡是在select后面出现的、同时未在聚合函数中出现的字段，必须同时出现在group by后面.</p>
+
+<p>having 子句被限制子已经在SELECT语句中定义的列和聚合表达式上。</p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	 
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+  
+</div>
+
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="/blog/2016/06/02/mysql-better-select" data-title="MySQL高级查询" data-url="http://ewanreton.github.io/blog/2016/06/02/mysql-better-select/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"ewanreton"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end --></div>
+  </section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+<!--
+-->
+
+
+</body>
+</html>

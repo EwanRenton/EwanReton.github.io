@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-02T10:14:44+08:00</updated>
+  <updated>2016-06-02T17:57:21+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,491 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[MySQL高级查询]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/02/mysql-better-select/"/>
+    <updated>2016-06-02T11:14:38+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/02/mysql-better-select</id>
+    <content type="html"><![CDATA[<blockquote><p>前段时间了解了点数据库优化的内容，但是发现自己对很多数据库的高级查询还不是很数据。</p></blockquote>
+
+<p>下面就整理下最近看的一些高级查询：</p>
+
+<p>+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+| emp_id | emp_name | emp_age | emp_sal | emp_bir | emp_sex |
++&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
+| 100001 | 红枫 | 29 | 9000 | 1977-01-01 | male |
+| 100002 | 丽鹃 | 27 | 8000 | 1979-12-31 | fmale |
+| 100005 | 啸天 | 27 | 4000 | 1979-07-10 | male |
++&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+</p>
+
+<p><strong>查询结果的字段联合和重新命名</strong></p>
+
+<ul>
+<li><code>select concat(emp_id," ",emp_name) from emp;</code></li>
+</ul>
+
+
+<p>查询结果：</p>
+
+<p>+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| concat(emp_id,&ldquo; &rdquo;,emp_name) |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| 100005 啸天 |
+| 100001 红枫 |
+| 100002 丽鹃 |
++&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+</p>
+
+<p>用AS关键字重新给输出结果命名标题</p>
+
+<ul>
+<li><code>select concat(emp_id," ",emp_name) as info from emp;</code></li>
+</ul>
+
+
+<p>查询结果：</p>
+
+<p>+&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| info |
++&mdash;&mdash;&mdash;&mdash;&mdash;-+
+| 100005 啸天 |
+| 100001 红枫 |
+| 100002 丽鹃 |
++&mdash;&mdash;&mdash;&mdash;&mdash;-+</p>
+
+<hr />
+
+<p><strong>GROUP BY</strong></p>
+
+<blockquote><p>group by语法可以根据给定数据列的每个成员对查询结果进行分组统计，最终得到一个分组汇总表。</p>
+
+<p>SELECT子句中的列名必须为分组列或列函数。列函数对于GROUP BY子句定义的每个组各返回一个结果。</p></blockquote>
+
+<ul>
+<li><code>select emp_sex,count(*) from emp group by emp_sex;</code></li>
+</ul>
+
+
+<p>查询结果如下：</p>
+
+<p>+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+
+| emp_sex | count(*) |
++&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+
+| fmale | 1 |
+| male | 2 |
++&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+</p>
+
+<ol>
+<li>满足“SELECT子句中的列名必须为分组列或列函数”，因为SELECT有GROUP BY emp_sex中包含的列emp_sex。</li>
+<li>“列函数对于GROUP BY子句定义的每个组各返回一个结果”，根据性别分组，对每个性别返回一个结果，就是每个性别人人数。</li>
+</ol>
+
+
+<p><strong>从多个数据表中检索信息</strong></p>
+
+<ul>
+<li><code>select emp.emp_name,dept.dept_name from emp,dept
+-&gt; where emp.emp_id=dept.dept_id;</code></li>
+</ul>
+
+
+<p><strong>UNIN 用法</strong></p>
+
+<p>union:联合的意思，即把两次或多次查询结果合并起来。</p>
+
+<ul>
+<li>要求：两次查询的列数必须一致</li>
+<li>推荐：列的类型可以不一样，但推荐查询的每一列，相对应的类型一样</li>
+<li>可以来自多张表的数据：多次sql语句取出的列名可以不一致，此时以第一个sql语句的列名为准。</li>
+</ul>
+
+
+<p> 如果不同的语句中取出的行，有完全相同(这里表示的是每个列的值都相同)，那么<code>union</code>会将相同的行合并，最终只保留一行。也可以这样理解，<code>union</code>会去掉重复的行。</p>
+
+<p>如果不想去掉重复的行，可以使用<code>union all``。
+ 如果子句中有</code>order by,limit```，需用括号()包起来。推荐放到所有子句之后，即对最终合并的结果来排序或筛选。</p>
+
+<p>如：(select * from a order by id) union (select * from b order id);</p>
+
+<p>在子句中，order by 需要配合limit使用才有意义。如果不配合limit使用，会被语法分析器优化分析时去除。</p>
+
+<p>注意一点表项的结构必须相同，比如两个表的<code>id int(10)</code>   如果其中一个换成<code>id int(9)</code> 也不行，查询将会报错。但可以有不同的名称（不推荐），查询结果列将以SQL收到的第一份列名为准输出</p>
+
+<pre class="prettyprint linenums">
+$hotnews=mysql_query("SELECT id,title,pageview,tablenm FROM News   
+UNION  
+SELECT id,title,pageview,tablenm FROM Informs  
+UNION  
+SELECT id,title,pageview,tablenm FROM Article  
+UNION  
+SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$conn);//获取在四个表中按浏览数高低排序的前15个文章
+</pre>
+
+
+<hr />
+
+<h1>Join</h1>
+
+<blockquote><p>join 用于多表中字段之间的联系，语法如下：</p></blockquote>
+
+<p>from table1 INNER|LEFT|RIGHT JOIN table2 ON conditiona</p>
+
+<p>table1:左表；table2:右表。</p>
+
+<p>join按照功能大致分为如下三类：</p>
+
+<p>inner join（内连接,或等值连接）：取得两个表中存在连接匹配关系的记录。</p>
+
+<p>LEFT JOIN（左连接）：取得左表（table1）完全记录，即是右表（table2）并无对应匹配记录。</p>
+
+<p>RIGHT JOIN（右连接）：与 LEFT JOIN 相反，取得右表（table2）完全记录，即是左表（table1）并无匹配对应记录。</p>
+
+<p>注意：mysql不支持Full join,不过可以通过UNION 关键字来合并 LEFT JOIN 与 RIGHT JOIN来模拟FULL join.</p>
+
+<p>接下来给出一个列子用于解释下面几种分类。如下两个表(A,B)</p>
+
+<p>mysql> select A.id,A.name,B.name from A,B where A.id=B.id;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
+| id | name       | name             |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
+|  1 | Pirate       | Rutabaga      |
+|  2 | Monkey    | Pirate            |
+|  3 | Ninja         | Darth Vader |
+|  4 | Spaghetti  | Ninja             |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
+4 rows in set (0.00 sec)</p>
+
+<p><strong>Inner join</strong></p>
+
+<blockquote><p>内连接，也叫等值连接，inner join产生同时符合A和B的一组数据。</p></blockquote>
+
+<p>mysql> select * from A inner join B on A.name = B.name;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+
+| id | name   | id | name   |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+
+|  1 | Pirate |  2 | Pirate |
+|  3 | Ninja  |  4 | Ninja  |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+</p>
+
+<p><strong>Left join</strong></p>
+
+<p>mysql> select * from A left join B on A.name = B.name;</p>
+
+<p>或者：select * from A left outer join B on A.name = B.name;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+| id | name      | id   | name   |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+|  1 | Pirate    |    2 | Pirate |
+|  2 | Monkey    | NULL | NULL   |
+|  3 | Ninja     |    4 | Ninja  |
+|  4 | Spaghetti | NULL | NULL   |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+4 rows in set (0.00 sec)</p>
+
+<p>left join,（或left outer join:在Mysql中两者等价，推荐使用left join.）左连接从左表(A)产生一套完整的记录,与匹配的记录(右表(B)) .如果没有匹配,右侧将包含null。</p>
+
+<p>如果想只从左表(A)中产生一套记录，但不包含右表(B)的记录，可以通过设置where语句来执行，如下：</p>
+
+<p>mysql> select * from A left join B on A.name=B.name where A.id is null or B.id is null;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
+| id | name      | id   | name |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
+|  2 | Monkey    | NULL | NULL |
+|  4 | Spaghetti | NULL | NULL |
++&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
+2 rows in set (0.00 sec)</p>
+
+<p>同理，还可以模拟inner join. 如下：</p>
+
+<p>mysql> select * from A left join B on A.name=B.name where A.id is not null and B.id is not null;</p>
+
+<p>+&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+| id | name   | id   | name   |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+|  1 | Pirate |    2 | Pirate |
+|  3 | Ninja  |    4 | Ninja  |
++&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
+2 rows in set (0.00 sec)</p>
+
+<p>求差集：</p>
+
+<p>根据上面的例子可以求差集，如下：</p>
+
+<p>SELECT * FROM A LEFT JOIN B ON A.name = B.name
+WHERE B.id IS NULL
+union</p>
+
+<p>SELECT * FROM A right JOIN B ON A.name = B.name
+WHERE A.id IS NULL;</p>
+
+<p> 结果</p>
+
+<p>+&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+
+| id   | name      | id   | name        |
++&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+
+|    2 | Monkey    | NULL | NULL        |
+|    4 | Spaghetti | NULL | NULL        |
+| NULL | NULL      |    1 | Rutabaga    |
+| NULL | NULL      |    3 | Darth Vader |
++&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+</p>
+
+<p><strong>Right join</strong></p>
+
+<p>mysql> select * from A right join B on A.name = B.name;</p>
+
+<p>+&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
+| id   | name   | id | name        |
++&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
+| NULL | NULL   |  1 | Rutabaga    |
+|    1 | Pirate |  2 | Pirate      |
+| NULL | NULL   |  3 | Darth Vader |
+|    3 | Ninja  |  4 | Ninja       |
++&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
+4 rows in set (0.00 sec)</p>
+
+<p><strong>USING(column_list)子句</strong>
+用于为一系列的列进行命名，这些列必须同时在两个表中存在
+SELECT java.<em>,mysql.</em> FROM java LEFT JOIN mysql USING (name);</p>
+
+<p>关于join的一个小测试：</p>
+
+<p>有这样两个表：</p>
+
+<p>message:</p>
+
+<table>
+<thead>
+<tr>
+<th>id </th>
+<th style="text-align:center;">   username </th>
+<th>message </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1  </td>
+<td style="text-align:center;">ewan   </td>
+<td>123</td>
+</tr>
+<tr>
+<td>2  </td>
+<td style="text-align:center;">wean2</td>
+<td> 123</td>
+</tr>
+<tr>
+<td>3  </td>
+<td style="text-align:center;">1  </td>
+<td>??</td>
+</tr>
+<tr>
+<td>4  </td>
+<td style="text-align:center;">1  </td>
+<td>2343</td>
+</tr>
+<tr>
+<td>5  </td>
+<td style="text-align:center;">1  </td>
+<td>sdfjkl</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>user:</p>
+
+<table>
+<thead>
+<tr>
+<th>id </th>
+<th style="text-align:center;">   username </th>
+<th>password </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1  </td>
+<td style="text-align:center;">1</td>
+<td>22</td>
+</tr>
+<tr>
+<td>2  </td>
+<td style="text-align:center;">2</td>
+<td> 111</td>
+</tr>
+<tr>
+<td>3  </td>
+<td style="text-align:center;">Ewan2  </td>
+<td>22</td>
+</tr>
+<tr>
+<td>4  </td>
+<td style="text-align:center;">Ewan5  </td>
+<td>22</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>测试如下:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$dsn</span><span class="o">=</span><span class="s2">&quot;mysql:host=127.0.0.1;dbname=test&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span> <span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span><span class="nv">$username</span><span class="p">,</span><span class="nv">$password</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;SELECT * FROM message LEFT JOIN user ON message.id=user.id&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$back</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$back</span><span class="o">=</span><span class="nv">$back</span><span class="o">-&gt;</span><span class="na">fetchAll</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">FETCH_ASSOC</span><span class="p">);</span>
+</span><span class='line'><span class="nb">print_r</span><span class="p">(</span><span class="nv">$back</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果：</p>
+
+<pre><code>Array
+(
+[0] =&gt; Array
+    (
+        [id] =&gt; 1
+        [username] =&gt; 1
+        [message] =&gt; 123
+        [password] =&gt; 22
+    )
+
+[1] =&gt; Array
+    (
+        [id] =&gt; 2
+        [username] =&gt; 2
+        [message] =&gt; 123
+        [password] =&gt; 111
+    )
+
+[2] =&gt; Array
+    (
+        [id] =&gt; 3
+        [username] =&gt; Ewan2
+        [message] =&gt; ??
+        [password] =&gt; 22
+    )
+
+[3] =&gt; Array
+    (
+        [id] =&gt; 
+        [username] =&gt; 
+        [message] =&gt; 2343
+        [password] =&gt; 
+    )
+
+[4] =&gt; Array
+    (
+        [id] =&gt; 
+        [username] =&gt; 
+        [message] =&gt; sdfjkl
+        [password] =&gt; 
+    )
+
+)
+</code></pre>
+
+<p><strong>可以看到在两个表都有username的情况下只取了前面的那个username而舍弃了后一个。</strong></p>
+
+<hr />
+
+<p><strong>HAVING</strong></p>
+
+<blockquote><p>HAVING 子句对 GROUP BY 子句设置条件的方式与 WHERE 和 SELECT 的交互方式类似。WHERE 搜索条件在进行分组操作之前应用；而 HAVING 搜索条件在进行分组操作之后应用。HAVING 语法与 WHERE 语法类似，但 HAVING 可以包含聚合函数。HAVING 子句可以引用选择列表中显示的任意项。</p></blockquote>
+
+<p>显示每个地区的总人口数和总面积．仅显示那些面积超过1000000的地区。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">SELECT</span> <span class="nx">region</span><span class="p">,</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">population</span><span class="p">),</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">area</span><span class="p">)</span>
+</span><span class='line'><span class="nx">FROM</span> <span class="nx">bbc</span>
+</span><span class='line'><span class="nx">GROUP</span> <span class="nx">BY</span> <span class="nx">region</span>
+</span><span class='line'><span class="nx">HAVING</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">area</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1000000</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这里，我们不能用where来筛选超过1000000的地区，因为表中不存在这样一条记录。</p>
+
+<p>我们在写sql语句的时候,经常会使用where语句,很少会用到having,其实在mysql中having子句也是设定条件的语句与where有相似之处但也有区别。having子句在查询过程中慢于聚合语句(sum,min,max,avg,count).而where子句在查询过程中则快于聚合语句(sum,min,max,avg,count)。</p>
+
+<p>简单说来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">where子句：</span>
+</span><span class='line'><span class="nx">select</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">num</span><span class="p">)</span> <span class="k">as</span> <span class="nx">rmb</span> <span class="nx">from</span> <span class="nx">order</span> <span class="nx">where</span> <span class="nx">id</span><span class="o">&gt;</span><span class="mi">10</span>
+</span><span class='line'><span class="c1">//先查询出id大于10的记录才能进行聚合语句  </span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">having子句</span><span class="o">:</span>
+</span><span class='line'><span class="nx">select</span> <span class="nx">reportsto</span> <span class="k">as</span> <span class="nx">manager</span><span class="p">,</span> <span class="nb">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">as</span> <span class="nx">reports</span> <span class="nx">from</span> <span class="nx">employees</span>
+</span><span class='line'><span class="nx">group</span> <span class="nx">by</span> <span class="nx">reportsto</span> <span class="nx">having</span> <span class="nb">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>having条件表达示为聚合语句。肯定的说having子句查询过程慢于聚合语句。<br/>
+再换句说话说把上面的having换成where则会出错。统计分组数据时用到聚合语句。</p>
+
+<p>对分组数据再次判断时要用having。如果不用这些关系就不存在使用having。直接使用where就行了。<br/>
+having就是来弥补where在分组数据判断时的不足。因为where要快于聚合语句。</p>
+
+<p><strong>这几个关键字执行的顺序</strong></p>
+
+<p>关键字是按照如下顺序进行执行的：</p>
+
+<ul>
+<li>Where</li>
+<li>Group By</li>
+<li>Having</li>
+<li>Order by</li>
+</ul>
+
+
+<p>首先where将最原始记录中不满足条件的记录删除(所以应该在where语句中尽量的将不符合条件的记录筛选掉，这样可以减少分组的次数)</p>
+
+<p>然后通过Group By关键字后面指定的分组条件将筛选得到的视图进行分组
+接着系统根据Having关键字后面指定的筛选条件，将分组视图后不满足条件的记录筛选掉</p>
+
+<p>最后按照Order By语句对视图进行排序，这样最终的结果就产生了。</p>
+
+<p>注意：</p>
+
+<p>凡是在group by后面出现的字段，必须同时在select后面出现；</p>
+
+<p>凡是在select后面出现的、同时未在聚合函数中出现的字段，必须同时出现在group by后面.</p>
+
+<p>having 子句被限制子已经在SELECT语句中定义的列和聚合表达式上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JS-DOM-操作]]></title>
@@ -6674,408 +7159,6 @@ LD_PRELOAD=/lib64/libc-2.15.so ln -s/lib64/libc-2.15.so  lib64/libc.so.6</p>
 下次更新东西别再一个版本一个版本的往上装了，耿直过头啊！！！
 </pre>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linx下安装Git]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/09/linux-git/"/>
-    <updated>2016-05-09T23:25:34+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/09/linux-git</id>
-    <content type="html"><![CDATA[<blockquote><p>考试季过去了，准备开始将日常使用迁移到Linux下，今天想在Linux下装Git，开始觉得这应该是个很简单的事，谁知道这个花了好多时间。</p></blockquote>
-
-<!--more-->
-
-
-<p>首先在网上找了一个博文作为参考，<a href="http://blog.csdn.net/naola2001/article/details/43228769">传送门</a></p>
-
-<p>服务器端：</p>
-
-<pre class="prettyprint linenums">
-yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-devel
-wget https://github.com/git/git/archive/v2.2.0.tar.gz
-tar zxvf git-2.2.0.tar.gz
-cd git-2.2.0
-make prefix=/usr/local all
-make prefix=/usr/local install  root用户运行
-</pre>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">如果编译时提示错误：</span>
-</span><span class='line'><span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">credential</span><span class="o">-</span><span class="nx">store</span>
-</span><span class='line'><span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span><span class="p">(</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span> <span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">reencode_string_iconv’</span><span class="o">:</span>
-</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">530</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="sb">`libiconv’</span>
-</span><span class='line'><span class="sb">libgit.a(utf8.o): In function `</span><span class="nx">reencode_string_len’</span><span class="o">:</span>
-</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">569</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="sb">`libiconv_open’</span>
-</span><span class='line'><span class="sb">/opt/git-master/utf8.c:588: undefined reference to `</span><span class="nx">libiconv_close’</span>
-</span><span class='line'><span class="o">/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">utf8</span><span class="o">.</span><span class="nx">c</span><span class="o">:</span><span class="mi">582</span><span class="o">:</span> <span class="nx">undefined</span> <span class="nx">reference</span> <span class="nx">to</span> <span class="err">`</span><span class="nx">libiconv_open’</span>
-</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">返回</span> <span class="mi">1</span>
-</span><span class='line'><span class="nx">make</span><span class="o">:</span> <span class="o">***</span> <span class="p">[</span><span class="nx">git</span><span class="o">-</span><span class="nx">credential</span><span class="o">-</span><span class="nx">store</span><span class="p">]</span> <span class="nx">错误</span> <span class="mi">1</span>
-</span><span class='line'><span class="nx">解决办法：</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span>
-</span><span class='line'><span class="nx">wget</span> <span class="nx">http</span><span class="o">://</span><span class="nx">ftp</span><span class="o">.</span><span class="nx">gnu</span><span class="o">.</span><span class="nx">org</span><span class="o">/</span><span class="nx">pub</span><span class="o">/</span><span class="nx">gnu</span><span class="o">/</span><span class="nx">libiconv</span><span class="o">/</span><span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
-</span><span class='line'><span class="nx">tar</span> <span class="o">-</span><span class="nx">zxvf</span> <span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span><span class="o">.</span><span class="nx">tar</span><span class="o">.</span><span class="nx">gz</span>
-</span><span class='line'><span class="nx">cd</span> <span class="nx">libiconv</span><span class="o">-</span><span class="mf">1.14</span>
-</span><span class='line'><span class="o">./</span><span class="nx">configure</span> <span class="o">-</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">libiconv</span>  <span class="o">&amp;&amp;</span>  <span class="nx">make</span>  <span class="o">&amp;&amp;</span> <span class="nx">sudo</span>  <span class="nx">make</span> <span class="nx">install</span>
-</span><span class='line'><span class="nx">然后回到git继续编译：</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mi">5</span>
-</span><span class='line'><span class="nx">make</span> <span class="nx">configure</span>
-</span><span class='line'><span class="o">./</span><span class="nx">configure</span> <span class="o">--</span><span class="nx">prefix</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span> <span class="o">-</span><span class="nx">with</span><span class="o">-</span><span class="nb">iconv</span><span class="o">=/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">libiconv</span>
-</span><span class='line'><span class="nx">make</span>
-</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># git --version</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">version</span> <span class="mf">2.2</span><span class="o">.</span><span class="mi">0</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>按照教程，到这里应该就成功了。
-但是在解决了lib的错误后在回来执行 make 时遇到了错误</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">init_gettext_charset</span><span class="s1">&#39;: </span>
-</span><span class='line'><span class="s1">/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset&#39;</span>
-</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">returned</span> <span class="mi">1</span> <span class="k">exit</span> <span class="nx">status</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>解决方法：<a href="http://mono.1490590.n4.nabble.com/Can-t-compile-git-for-a-long-time-td3336232.html#a4312244">传送门</a>
-其中一个corey_yan的回答成功解决了问题</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">I</span> <span class="nx">encounter</span> <span class="nx">the</span> <span class="nx">same</span> <span class="nx">problem</span> <span class="nx">in</span> <span class="nx">centos</span> <span class="mf">5.2</span> <span class="k">and</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">solve</span> <span class="nx">it</span> <span class="k">for</span> <span class="nx">a</span> <span class="nx">long</span> <span class="nb">time</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span><span class="p">(</span><span class="nb">gettext</span><span class="o">.</span><span class="nx">o</span><span class="p">)</span><span class="o">:</span> <span class="nx">In</span> <span class="k">function</span> <span class="err">`</span><span class="nf">init_gettext_charset</span><span class="s1">&#39;: </span>
-</span><span class='line'><span class="s1">/root/soft/git-2012-01-19/gettext.c:115: undefined reference to `locale_charset&#39;</span>
-</span><span class='line'><span class="nx">collect2</span><span class="o">:</span> <span class="nx">ld</span> <span class="nx">returned</span> <span class="mi">1</span> <span class="k">exit</span> <span class="nx">status</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nx">After</span> <span class="nx">checking</span> <span class="nx">the</span> <span class="nx">detail</span> <span class="nx">Link</span> <span class="nx">command</span>
-</span><span class='line'><span class="nx">make</span> <span class="o">-</span><span class="nx">n</span> <span class="o">|</span> <span class="nx">grep</span> <span class="s2">&quot;git-daemon&quot;</span>
-</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;   &#39;</span> <span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span><span class="p">;</span>
-</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">I</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">change</span> <span class="nx">to</span>
-</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcharset</span> <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Link</span> <span class="nx">error</span> <span class="nx">is</span> <span class="nx">missing</span><span class="o">:</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">I</span> <span class="k">try</span> <span class="nx">to</span> <span class="nx">modify</span> <span class="nx">Makefile</span>
-</span><span class='line'>        <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span> <span class="o">-</span><span class="nx">lcharset</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">then</span>
-</span><span class='line'><span class="nx">make</span> <span class="nx">successfully</span><span class="o">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Hope</span> <span class="nx">it</span> <span class="nx">can</span> <span class="nx">help</span> <span class="nx">you</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>步骤为:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">make</span> <span class="o">-</span><span class="nx">n</span> <span class="o">|</span> <span class="nx">grep</span> <span class="s2">&quot;git-daemon&quot;</span>
-</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;   &#39;</span> <span class="nx">LINK</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span><span class="p">;</span>
-</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
-</span><span class='line'><span class="c1">//会报一个link错误</span>
-</span><span class='line'><span class="nx">cc</span>  <span class="o">-</span><span class="nx">g</span> <span class="o">-</span><span class="nx">O2</span> <span class="o">-</span><span class="nx">I</span><span class="o">.</span> <span class="o">-</span><span class="nx">pthread</span> <span class="o">-</span><span class="nx">DHAVE_PATHS_H</span> <span class="o">-</span><span class="nx">DHAVE_LIBCHARSET_H</span> <span class="o">-</span><span class="nx">DHAVE_DEV_TTY</span> <span class="o">-</span><span class="nx">DSHA1_HEADER</span><span class="o">=</span><span class="s1">&#39;&lt;openssl/sha.h&gt;&#39;</span>  <span class="o">-</span><span class="nx">DNO_STRLCPY</span> <span class="o">-</span><span class="nx">DNO_MKSTEMPS</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">git</span><span class="o">-</span><span class="nx">daemon</span>   <span class="nx">daemon</span><span class="o">.</span><span class="nx">o</span> <span class="nx">libgit</span><span class="o">.</span><span class="nx">a</span> <span class="nx">xdiff</span><span class="o">/</span><span class="nx">lib</span><span class="o">.</span><span class="nx">a</span>  <span class="o">-</span><span class="nx">lz</span>  <span class="o">-</span><span class="nx">liconv</span>  <span class="o">-</span><span class="nx">lcharset</span> <span class="o">-</span><span class="nx">lcrypto</span> <span class="o">-</span><span class="nx">pthread</span>
-</span><span class='line'><span class="c1">//Link error is missing:) </span>
-</span><span class='line'><span class="nx">vim</span> <span class="nx">Makefile</span>
-</span><span class='line'><span class="nx">找到</span> <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span>
-</span><span class='line'><span class="nx">改为</span> <span class="nx">EXTLIBS</span> <span class="o">+=</span> <span class="err">$</span><span class="p">(</span><span class="nx">ICONV_LINK</span><span class="p">)</span> <span class="o">-</span><span class="nx">liconv</span> <span class="o">-</span><span class="nx">lcharset</span>  <span class="c1">//保存退出</span>
-</span><span class='line'><span class="nx">重新make</span>
-</span><span class='line'><span class="nx">make</span> <span class="nx">install</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>成功解决问题。</p>
-
-<hr />
-
-<h1>在原博文下面还有一些功能的安装，现在还没设计到，不过也先贴出来</h1>
-
-<p><strong>下面来安装 gitosis</strong></p>
-
-<blockquote><p>gitosis为Git用户权限管理系统,通过管理服务端的authorized_key文件来执行对用户权限的管理，是一个Python模块包</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">yum</span> <span class="nx">install</span> <span class="nx">python</span> <span class="nx">python</span><span class="o">-</span><span class="nx">setuptools</span>
-</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">local</span><span class="o">/</span><span class="nx">src</span>
-</span><span class='line'><span class="nx">git</span> <span class="k">clone</span> <span class="nx">git</span><span class="o">://</span><span class="nx">github</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">res0nat0r</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">.</span><span class="nx">git</span>
-</span><span class='line'><span class="nx">cd</span> <span class="nx">gitosis</span>
-</span><span class='line'><span class="nx">python</span> <span class="nx">setup</span><span class="o">.</span><span class="nx">py</span> <span class="nx">install</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">OK</span> <span class="nx">gitosis</span> <span class="nx">安装成功！</span>
-</span><span class='line'>
-</span><span class='line'> <span class="nx">配置服务器git：</span>
-</span><span class='line'><span class="mf">0.1</span> <span class="nx">输入以下两条命令</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user</span><span class="o">.</span><span class="nx">name</span> <span class="s2">&quot;Your Name Here&quot;</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">config</span> <span class="o">--</span><span class="k">global</span> <span class="nx">user</span><span class="o">.</span><span class="nx">email</span> <span class="s2">&quot;your_email@example.com&quot;</span>
-</span><span class='line'><span class="nx">可以再输入git</span> <span class="nx">config</span> <span class="o">-</span><span class="nx">l查看上面两个是否设置</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>在开发机上生成密钥并上传到服务器上</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">rsa</span>   <span class="c1">#一路回车，不需要设置密码</span>
-</span><span class='line'><span class="nx">scp</span> <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>   <span class="c1">#上传公钥到服务器(默认SSH端口22)</span>
-</span><span class='line'><span class="nx">或</span>
-</span><span class='line'><span class="nx">scp</span> <span class="o">-</span><span class="nx">P</span> <span class="mi">3600</span>  <span class="o">~/.</span><span class="nx">ssh</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span> <span class="nx">root</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">103.10</span><span class="o">:/</span><span class="nx">tmp</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="mi">5</span><span class="nx">、服务器上生成git用户，使用git用户并初始化gitosis</span>
-</span><span class='line'><span class="nx">adduser</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">git</span>
-</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">git</span>
-</span><span class='line'><span class="nx">gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&lt;</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
-</span><span class='line'><span class="c1">#显示以下信息即表示成功</span>
-</span><span class='line'><span class="c1">#Initialized empty Git repository in /home/git/repositories/gitosis-admin.git/</span>
-</span><span class='line'><span class="c1">#Reinitialized existing Git repository in /home/git/repositories/gitosis-admin.git/</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">#删除密钥</span>
-</span><span class='line'><span class="nx">su</span> <span class="nx">–</span> <span class="nx">root</span>
-</span><span class='line'><span class="nx">rm</span> <span class="o">-</span><span class="nx">rf</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
-</span><span class='line'><span class="nx">禁用shell登录</span>
-</span><span class='line'><span class="nx">注，出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑</span><span class="o">/</span><span class="nx">etc</span><span class="o">/</span><span class="nx">passwd文件完成。找到类似下面的一行：</span>
-</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="nx">\</span><span class="p">]</span><span class="c1"># cat /etc/passwd | grep git</span>
-</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">改为：</span>
-</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">root</span><span class="o">@</span><span class="nx">git</span> <span class="o">~</span><span class="nx">\</span><span class="p">]</span><span class="c1"># vim /etc/passwd</span>
-</span><span class='line'><span class="nx">git</span><span class="o">:</span><span class="nx">x</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="mi">1001</span><span class="o">:</span><span class="nx">git</span> <span class="nx">version</span> <span class="nx">control</span><span class="o">:/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">:/</span><span class="nx">usr</span><span class="o">/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">git</span><span class="o">-</span><span class="nx">shell</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nx">这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git</span><span class="o">-</span><span class="nx">shell每次一登录就自动退出。</span>
-</span><span class='line'>
-</span><span class='line'><span class="mi">2</span><span class="nx">，在git用户下，生成私钥和公钥。</span>
-</span><span class='line'><span class="nv">$ssh</span><span class="o">-</span><span class="nx">keygen</span> <span class="nx">–t</span> <span class="nx">rsa</span>
-</span><span class='line'><span class="mi">3</span><span class="nx">，在git用户下，拷入id_rsa</span><span class="o">.</span><span class="nx">pub文件。</span>
-</span><span class='line'><span class="nv">$gitosis</span><span class="o">-</span><span class="nx">init</span> <span class="o">&lt;</span> <span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span>
-</span><span class='line'><span class="nx">这样在git用户目录下生成了一些目录，gitosis，repositories。</span>
-</span><span class='line'><span class="nx">至此，安装工作完成。</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>添加开发者</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git服务器管理人员需要把所有的开发者公钥保存到authorized_keys文件中。</span>
-</span><span class='line'><span class="nv">$cat</span> <span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">id_rsa</span><span class="o">.</span><span class="nx">pub</span><span class="o">.</span><span class="nx">ubuntu</span> <span class="o">&gt;&gt;</span> <span class="nx">authorized_keys</span>
-</span><span class='line'><span class="nx">创建项目仓库</span>
-</span><span class='line'><span class="nx">git管理人员操作：</span>
-</span><span class='line'><span class="nv">$mkdir</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">gitproject</span>
-</span><span class='line'><span class="nv">$cd</span> <span class="nx">gitproject</span>
-</span><span class='line'><span class="nv">$git</span> <span class="o">--</span><span class="nx">bare</span> <span class="nx">init</span> <span class="nx">（创建一个空项目）</span>
-</span><span class='line'><span class="nx">开发者提交项目</span>
-</span><span class='line'><span class="nx">ubuntu开发者操作：</span>
-</span><span class='line'><span class="nv">$git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">gitserver</span><span class="o">:/</span><span class="nx">opt</span><span class="o">/</span><span class="nx">git</span><span class="o">/</span><span class="nx">project</span><span class="o">.</span><span class="nx">git</span>
-</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
-</span><span class='line'><span class="nx">这样其他开发者的工作也比较简单了：</span>
-</span><span class='line'><span class="nv">$git</span> <span class="k">clone</span> <span class="nx">…</span>
-</span><span class='line'><span class="nv">$git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span><span class="o">/</span><span class="nx">gitosis</span><span class="o">-</span><span class="nx">admin</span>
-</span><span class='line'><span class="nx">vim</span> <span class="nx">gitosis</span><span class="o">.</span><span class="nx">conf</span>
-</span><span class='line'><span class="nx">在文件尾增加以下内容</span>
-</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">group</span> <span class="nx">test\</span><span class="p">]</span>  <span class="nx">组名称</span>
-</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>  <span class="nx">项目名称</span>
-</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">密钥用户名</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">#提交修改</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>初始，增加及使用项目test-git</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">cd</span> <span class="o">/</span><span class="nx">repo</span>
-</span><span class='line'><span class="nb">mkdir</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git</span>
-</span><span class='line'><span class="nx">cd</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">inti</span>
-</span><span class='line'><span class="nb">touch</span> <span class="nx">readme</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“init</span> <span class="nx">test</span><span class="o">-</span><span class="nx">git”</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="nx">origin</span> <span class="nx">git</span><span class="o">@</span><span class="nx">xxx</span><span class="o">:</span><span class="nx">test</span><span class="o">.</span><span class="nx">git</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">push</span> <span class="nx">origin</span> <span class="nx">master</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>在 test 项目新增用户</strong>
-①在新增用户的本机输入ssh-keygen -t rsa生成私钥公钥；
-②把生成的公钥id_rsa.pub上传或复制到 gitosis-admin/keydir文件夹下，并重名，如：jankerli.pub；
-③vim gitosis.conf</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">在文件尾增加以下内容</span>
-</span><span class='line'><span class="nx">\</span><span class="p">[</span><span class="nx">group</span> <span class="nx">test\</span><span class="p">]</span>
-</span><span class='line'><span class="nx">writable</span> <span class="o">=</span> <span class="nx">test</span>
-</span><span class='line'><span class="nx">members</span> <span class="o">=</span> <span class="nx">jankerli</span> <span class="nx">（此处增加新用户的名称，名称必须与上面重名的jankerli</span><span class="o">.</span><span class="nx">pub一致，去掉</span><span class="o">.</span><span class="nx">pub）</span>
-</span><span class='line'><span class="nx">④提交修改</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">add</span> <span class="o">.</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">a</span> <span class="o">-</span><span class="nx">m</span> <span class="nx">“add</span> <span class="nx">test</span> <span class="nx">repo”</span>
-</span><span class='line'><span class="nx">git</span> <span class="nx">push</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>⑤新用户便可通过 git clone git@xxx:test.git 克隆代码到本机了。</p>
 ]]></content>
   </entry>
   
