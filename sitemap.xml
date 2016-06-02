@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://ewanreton.github.io/blog/2016/06/02/git-branch/</loc>
+<lastmod>2016-06-02T21:29:24+08:00</lastmod>
+</url>
+<url>
+<loc>http://ewanreton.github.io/blog/2016/06/02/git-remote/</loc>
+<lastmod>2016-06-02T20:37:22+08:00</lastmod>
+</url>
+<url>
 <loc>http://ewanreton.github.io/blog/2016/06/02/mysql-better-select/</loc>
 <lastmod>2016-06-02T11:14:38+08:00</lastmod>
 </url>
