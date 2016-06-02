@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-02T18:05:50+08:00</updated>
+  <updated>2016-06-02T18:11:58+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -22,13 +22,45 @@
 
 <p>下面就整理下最近看的一些高级查询：</p>
 
-<p>+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
-| emp_id | emp_name | emp_age | emp_sal | emp_bir | emp_sex |
-+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
-| 100001 | 红枫 | 29 | 9000 | 1977-01-01 | male |
-| 100002 | 丽鹃 | 27 | 8000 | 1979-12-31 | fmale |
-| 100005 | 啸天 | 27 | 4000 | 1979-07-10 | male |
-+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+</p>
+<table>
+<thead>
+<tr>
+<th> emp_id </th>
+<th style="text-align:center;"> emp_name </th>
+<th style="text-align:center;"> emp_age </th>
+<th style="text-align:center;"> emp_sal </th>
+<th style="text-align:center;"> emp_bir </th>
+<th style="text-align:left;"> emp_sex </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100001 </td>
+<td style="text-align:center;"> 红枫 </td>
+<td style="text-align:center;"> 29 </td>
+<td style="text-align:center;"> 9000 </td>
+<td style="text-align:center;"> 1977-01-01 </td>
+<td style="text-align:left;"> male </td>
+</tr>
+<tr>
+<td> 100002 </td>
+<td style="text-align:center;"> 丽鹃 </td>
+<td style="text-align:center;"> 27 </td>
+<td style="text-align:center;"> 8000 </td>
+<td style="text-align:center;"> 1979-12-31 </td>
+<td style="text-align:left;"> fmale </td>
+</tr>
+<tr>
+<td> 100005 </td>
+<td style="text-align:center;"> 啸天 </td>
+<td style="text-align:center;"> 27 </td>
+<td style="text-align:center;"> 4000 </td>
+<td style="text-align:center;"> 1979-07-10 </td>
+<td style="text-align:left;"> male </td>
+</tr>
+</tbody>
+</table>
+
 
 <p><strong>查询结果的字段联合和重新命名</strong></p>
 
@@ -39,11 +71,25 @@
 
 <p>查询结果：</p>
 
-<p>| concat(emp_id,&ldquo; &rdquo;,emp_name) |
-| ：&mdash;&mdash;&ndash;：|
-| 100005 啸天 |
-| 100001 红枫 |
-| 100002 丽鹃 |</p>
+<table>
+<thead>
+<tr>
+<th> concat(emp_id,&ldquo; &rdquo;,emp_name) </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100005 啸天 </td>
+</tr>
+<tr>
+<td> 100001 红枫 </td>
+</tr>
+<tr>
+<td> 100002 丽鹃 </td>
+</tr>
+</tbody>
+</table>
+
 
 <p>用AS关键字重新给输出结果命名标题</p>
 
@@ -54,11 +100,25 @@
 
 <p>查询结果：</p>
 
-<p>| info |
-| ：&mdash;&mdash;&ndash;：|
-| 100005 啸天 |
-| 100001 红枫 |
-| 100002 丽鹃 |</p>
+<table>
+<thead>
+<tr>
+<th> info </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100005 啸天 </td>
+</tr>
+<tr>
+<td> 100001 红枫 </td>
+</tr>
+<tr>
+<td> 100002 丽鹃 </td>
+</tr>
+</tbody>
+</table>
+
 
 <hr />
 
@@ -166,15 +226,40 @@ SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$con
 
 <p>mysql> select A.id,A.name,B.name from A,B where A.id=B.id;</p>
 
-<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
-| id | name       | name             |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
-|  1 | Pirate       | Rutabaga      |
-|  2 | Monkey    | Pirate            |
-|  3 | Ninja         | Darth Vader |
-|  4 | Spaghetti  | Ninja             |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
-4 rows in set (0.00 sec)</p>
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name       </th>
+<th style="text-align:left;"> name             </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate       </td>
+<td style="text-align:left;"> Rutabaga      </td>
+</tr>
+<tr>
+<td>  2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:left;"> Pirate            </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja         </td>
+<td style="text-align:left;"> Darth Vader </td>
+</tr>
+<tr>
+<td>  4 </td>
+<td style="text-align:center;"> Spaghetti  </td>
+<td style="text-align:left;"> Ninja             </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>4 rows in set (0.00 sec)</p>
 
 <p><strong>Inner join</strong></p>
 
@@ -661,6 +746,9 @@ having就是来弥补where在分组数据判断时的不足。因为where要快�
     <updated>2016-06-01T23:45:06+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/06/01/js-dom-ying-yong</id>
     <content type="html"><![CDATA[<blockquote><p>DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下</p></blockquote>
+
+<!--more-->
+
 
 <p><strong>访问子结点childNodes</strong></p>
 

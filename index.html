@@ -9,7 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="mysql MySQL高级查询 前段时间了解了点数据库优化的内容，但是发现自己对很多数据库的高级查询还不是很数据。 下面就整理下最近看的一些高级查询： +&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+& &hellip;">
+	<meta name="description" content="mysql MySQL高级查询 前段时间了解了点数据库优化的内容，但是发现自己对很多数据库的高级查询还不是很数据。 下面就整理下最近看的一些高级查询： emp_id emp_name emp_age emp_sal emp_bir emp_sex 100001 红枫 29 9000 1977- &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -154,13 +154,45 @@
 
 <p>下面就整理下最近看的一些高级查询：</p>
 
-<p>+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
-| emp_id | emp_name | emp_age | emp_sal | emp_bir | emp_sex |
-+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+
-| 100001 | 红枫 | 29 | 9000 | 1977-01-01 | male |
-| 100002 | 丽鹃 | 27 | 8000 | 1979-12-31 | fmale |
-| 100005 | 啸天 | 27 | 4000 | 1979-07-10 | male |
-+&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;+</p>
+<table>
+<thead>
+<tr>
+<th> emp_id </th>
+<th style="text-align:center;"> emp_name </th>
+<th style="text-align:center;"> emp_age </th>
+<th style="text-align:center;"> emp_sal </th>
+<th style="text-align:center;"> emp_bir </th>
+<th style="text-align:left;"> emp_sex </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100001 </td>
+<td style="text-align:center;"> 红枫 </td>
+<td style="text-align:center;"> 29 </td>
+<td style="text-align:center;"> 9000 </td>
+<td style="text-align:center;"> 1977-01-01 </td>
+<td style="text-align:left;"> male </td>
+</tr>
+<tr>
+<td> 100002 </td>
+<td style="text-align:center;"> 丽鹃 </td>
+<td style="text-align:center;"> 27 </td>
+<td style="text-align:center;"> 8000 </td>
+<td style="text-align:center;"> 1979-12-31 </td>
+<td style="text-align:left;"> fmale </td>
+</tr>
+<tr>
+<td> 100005 </td>
+<td style="text-align:center;"> 啸天 </td>
+<td style="text-align:center;"> 27 </td>
+<td style="text-align:center;"> 4000 </td>
+<td style="text-align:center;"> 1979-07-10 </td>
+<td style="text-align:left;"> male </td>
+</tr>
+</tbody>
+</table>
+
 
 <p><strong>查询结果的字段联合和重新命名</strong></p>
 
@@ -171,11 +203,25 @@
 
 <p>查询结果：</p>
 
-<p>| concat(emp_id,&ldquo; &rdquo;,emp_name) |
-| ：&mdash;&mdash;&ndash;：|
-| 100005 啸天 |
-| 100001 红枫 |
-| 100002 丽鹃 |</p>
+<table>
+<thead>
+<tr>
+<th> concat(emp_id,&ldquo; &rdquo;,emp_name) </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100005 啸天 </td>
+</tr>
+<tr>
+<td> 100001 红枫 </td>
+</tr>
+<tr>
+<td> 100002 丽鹃 </td>
+</tr>
+</tbody>
+</table>
+
 
 <p>用AS关键字重新给输出结果命名标题</p>
 
@@ -186,11 +232,25 @@
 
 <p>查询结果：</p>
 
-<p>| info |
-| ：&mdash;&mdash;&ndash;：|
-| 100005 啸天 |
-| 100001 红枫 |
-| 100002 丽鹃 |</p>
+<table>
+<thead>
+<tr>
+<th> info </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100005 啸天 </td>
+</tr>
+<tr>
+<td> 100001 红枫 </td>
+</tr>
+<tr>
+<td> 100002 丽鹃 </td>
+</tr>
+</tbody>
+</table>
+
 
 <hr />
 
@@ -298,15 +358,40 @@ SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$con
 
 <p>mysql> select A.id,A.name,B.name from A,B where A.id=B.id;</p>
 
-<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
-| id | name       | name             |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
-|  1 | Pirate       | Rutabaga      |
-|  2 | Monkey    | Pirate            |
-|  3 | Ninja         | Darth Vader |
-|  4 | Spaghetti  | Ninja             |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;-+
-4 rows in set (0.00 sec)</p>
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name       </th>
+<th style="text-align:left;"> name             </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate       </td>
+<td style="text-align:left;"> Rutabaga      </td>
+</tr>
+<tr>
+<td>  2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:left;"> Pirate            </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja         </td>
+<td style="text-align:left;"> Darth Vader </td>
+</tr>
+<tr>
+<td>  4 </td>
+<td style="text-align:center;"> Spaghetti  </td>
+<td style="text-align:left;"> Ninja             </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>4 rows in set (0.00 sec)</p>
 
 <p><strong>Inner join</strong></p>
 
@@ -820,459 +905,9 @@ having就是来弥补where在分组数据判断时的不足。因为where要快�
 	<div class="entry-content" itemprop="articleBody">
 		<blockquote><p>DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下</p></blockquote>
 
-<p><strong>访问子结点childNodes</strong></p>
-
-<blockquote><p>访问选定元素节点下的所有子节点的列表，返回的值可以看作是一个数组，他具有length属性。</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;title&gt;</span>无标题文档<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'><span class="nt">&lt;div&gt;</span>
-</span><span class='line'>  javascript
-</span><span class='line'>  <span class="nt">&lt;p&gt;</span>javascript<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>jQuery<span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;h5&gt;</span>PHP<span class="nt">&lt;/h5&gt;</span>
-</span><span class='line'><span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'> <span class="kd">var</span> <span class="nx">divs</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
-</span><span class='line'> <span class="kd">var</span> <span class="nx">child</span><span class="o">=</span><span class="nx">divs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">childNodes</span><span class="p">;</span>
-</span><span class='line'> <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">child</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
-</span><span class='line'>     <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">child</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">nodeType</span><span class="p">);</span>
-</span><span class='line'>     <span class="p">}</span>
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行结果:</p>
-
-<p>IE:</p>
-
-<pre><code>ul子节点个数:3
-节点类型:1
-</code></pre>
-
-<p>其它浏览器:</p>
-
-<pre><code>ul子节点个数:7
-节点类型:3
-</code></pre>
-
-<p>注意:</p>
-
-<ol>
-<li><p>IE全系列、firefox、chrome、opera、safari兼容问题</p></li>
-<li><p>节点之间的空白符，在firefox、chrome、opera、safari浏览器是文本节点，所以IE是3，其它浏览器是7，如下图所示:</p></li>
-</ol>
-
-
-<p><img src="http://img.mukewang.com/538d2b8a000163e303430127.jpg" alt="" /></p>
-
-<p>代码改成这样：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ul&gt;&lt;li&gt;</span>javascript<span class="nt">&lt;/li&gt;&lt;li&gt;</span>jQuery<span class="nt">&lt;/li&gt;&lt;li&gt;</span>PHP<span class="nt">&lt;/li&gt;&lt;/ul&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>就一样了</p>
-
-<p><strong>访问子结点的第一和最后项</strong></p>
-
-<ul>
-<li><code>irstChild</code> 属性返回‘childNodes’数组的第一个子节点。如果选定的节点没有子节点，则该属性返回 NULL。</li>
-<li><code>lastChild</code> 属性返回‘childNodes’数组的最后一个子节点。如果选定的节点没有子节点，则该属性返回 NULL。</li>
-</ul>
-
-
-<p><strong>访问父节点parentNode</strong></p>
-
-<ul>
-<li><code>elementNode.parentNode</code> 访问父节点
-
-<ul>
-<li>注意:父节点只能有一个</li>
-</ul>
-</li>
-</ul>
-
-
-<p><strong>访问兄弟节点</strong></p>
-
-<ul>
-<li><code>nextSibling</code>
-
-<ul>
-<li>属性可返回某个节点之后紧跟的节点（处于同一树层级中）。</li>
-</ul>
-</li>
-<li><code>previousSibling</code>
-
-<ul>
-<li>属性可返回某个节点之前紧跟的节点（处于同一树层级中）。</li>
-</ul>
-</li>
-</ul>
-
-
-<p><strong>插入节点appendChild()</strong></p>
-
-<blockquote><p>在指定节点的最后一个子节点列表之后添加一个新的子节点</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;title&gt;</span>无标题文档<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;test&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;li&gt;</span>JavaScript<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;li&gt;</span>HTML<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">otest</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">newnode</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">newnode</span><span class="p">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="s2">&quot;PHP&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">otest</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">newnode</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>插入节点insertBefore()</strong></p>
-
-<blockquote><p>insertBefore() 方法可在已有的子节点前插入一个新的子节点。</p></blockquote>
-
-<ul>
-<li><code>insertBefore(newnode,node);</code>
-
-<ul>
-<li>newnode: 要插入的新节点。</li>
-<li>node: 指定此节点前插入节点。</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;title&gt;</span>无标题文档<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;test&quot;</span><span class="nt">&gt;&lt;li&gt;</span>JavaScript<span class="nt">&lt;/li&gt;&lt;li&gt;</span>HTML<span class="nt">&lt;/li&gt;&lt;/ul&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">otest</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">newnode</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">newnode</span><span class="p">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="s2">&quot;php&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">otest</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="nx">newnode</span><span class="p">,</span><span class="nx">otest</span><span class="p">.</span><span class="nx">lastChild</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除节点removeChild()</strong></p>
-
-<blockquote><p><code>removeChild()</code> 方法从子节点列表中删除某个节点。如删除成功，此方法可返回被删除的节点，如失败，则返回 NULL。</p></blockquote>
-
-<p>注意: 把删除的子节点赋值给 x，这个子节点不在DOM树中，但是还存在内存中，可通过 x 操作。如果要完全删除对象，给 x 赋 null 值，代码如下:</p>
-
-<p><img src="http://img.mukewang.com/539975a800017c8e04790082.jpg" alt="" /></p>
-
-<p><strong>替换元素节点replaceChild()</strong></p>
-
-<blockquote><p>replaceChild 实现子节点(对象)的替换。返回被替换对象的引用。</p></blockquote>
-
-<ul>
-<li>node.replaceChild (newnode,oldnew )
-
-<ul>
-<li>newnode : 必需，用于替换 oldnew 的对象。</li>
-<li>oldnew : 必需，被 newnode 替换的对象。</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;title&gt;</span>无标题文档<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;div&gt;&lt;b</span> <span class="na">id=</span><span class="s">&quot;oldnode&quot;</span><span class="nt">&gt;</span>JavaScript<span class="nt">&lt;/b&gt;</span>是一个很常用的技术，为网页添加动态效果。<span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;javascript:replaceMessage()&quot;</span><span class="nt">&gt;</span> 将加粗改为斜体<span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="kd">function</span> <span class="nx">replaceMessage</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="kd">var</span> <span class="nx">oldnode</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;oldnode&quot;</span><span class="p">);</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">newnode</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">newnode</span><span class="p">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="nx">oldnode</span><span class="p">.</span><span class="nx">innerHTML</span>
-</span><span class='line'>        <span class="nx">oldnode</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">replaceChild</span><span class="p">(</span><span class="nx">newnode</span><span class="p">,</span><span class="nx">oldnode</span><span class="p">);</span>
-</span><span class='line'>       <span class="p">}</span>
-</span><span class='line'>  <span class="nt">&lt;/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'> <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>创建元素节点createElement</strong></p>
-
-<blockquote><p>createElement()方法可创建元素节点。此方法可返回一个 Element 对象。</p></blockquote>
-
-<ul>
-<li>document.createElement(tagName)
-
-<ul>
-<li>tagName：字符串值，这个字符串用来指明创建元素的类型。</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;title&gt;</span>无标题文档<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">main</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
-</span><span class='line'><span class="c1">//创建链接</span>
-</span><span class='line'><span class="kd">function</span> <span class="nx">createa</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="nx">text</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">alink</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">alink</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">,</span><span class="nx">url</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">alink</span><span class="p">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="nx">text</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">alink</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="c1">// 调用函数创建链接</span>
-</span><span class='line'><span class="nx">main</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">createa</span><span class="p">(</span><span class="s2">&quot;http://www.imooc.com&quot;</span><span class="p">,</span><span class="s2">&quot;慕课网&quot;</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>创建文本节点createTextNode</strong></p>
-
-<blockquote><p>createTextNode() 方法创建新的文本节点，返回新创建的 Text 节点。</p></blockquote>
-
-<ul>
-<li><code>document.createTextNode(data)</code>
-
-<ul>
-<li>data : 字符串值，可规定此节点的文本。</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;title&gt;</span>无标题文档<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;style </span><span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nc">.message</span><span class="p">{</span>
-</span><span class='line'>  <span class="k">width</span><span class="o">:</span><span class="m">200px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">height</span><span class="o">:</span><span class="m">100px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">background-color</span><span class="o">:</span><span class="m">#CCC</span><span class="p">;}</span>
-</span><span class='line'>  
-</span><span class='line'><span class="nt">&lt;/style&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;message&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">newnode</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="s2">&quot;I love Javascript!&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
-</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">newnode</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
 
 		
-		
+		<a href="/blog/2016/06/01/js-dom-ying-yong/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

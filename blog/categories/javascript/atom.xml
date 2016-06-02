@@ -4,7 +4,7 @@
   <title><![CDATA[Category: javascript | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-02T18:05:50+08:00</updated>
+  <updated>2016-06-02T18:11:58+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -19,6 +19,9 @@
     <updated>2016-06-01T23:45:06+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/06/01/js-dom-ying-yong</id>
     <content type="html"><![CDATA[<blockquote><p>DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下</p></blockquote>
+
+<!--more-->
+
 
 <p><strong>访问子结点childNodes</strong></p>
 
