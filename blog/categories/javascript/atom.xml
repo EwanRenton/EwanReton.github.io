@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: javascript | Ewan Reton]]></title>
+  <link href="http://ewanreton.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://ewanreton.github.io/"/>
+  <updated>2016-06-02T10:14:44+08:00</updated>
+  <id>http://ewanreton.github.io/</id>
+  <author>
+    <name><![CDATA[Ewan Reton]]></name>
+    <email><![CDATA[liukedi001@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JS-DOM-操作]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/01/js-dom-ying-yong/"/>
+    <updated>2016-06-01T23:45:06+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/01/js-dom-ying-yong</id>
+    <content type="html"><![CDATA[<blockquote><p>DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下</p></blockquote>
+
+<p><strong>访问子结点childNodes</strong></p>
+
+<blockquote><p>访问选定元素节点下的所有子节点的列表，返回的值可以看作是一个数组，他具有length属性。</p></blockquote>
+
+<pre><code class="html">    &lt;!DOCTYPE HTML&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+    &lt;title&gt;无标题文档&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;div&gt;
+      javascript  
+      &lt;p&gt;javascript&lt;/p&gt;
+      &lt;div&gt;jQuery&lt;/div&gt;
+      &lt;h5&gt;PHP&lt;/h5&gt;
+    &lt;/div&gt;
+    &lt;script type="text/javascript"&gt;
+     var divs=document.getElementsByTagName("div");
+     var child=divs[0].childNodes;
+     for(var i=0;i&lt;child.length;i++){
+         document.write(child[i].nodeType);
+         } 
+    &lt;/script&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p>运行结果:</p>
+
+<p>IE:</p>
+
+<pre><code>ul子节点个数:3
+节点类型:1
+</code></pre>
+
+<p>其它浏览器:</p>
+
+<pre><code>ul子节点个数:7
+节点类型:3
+</code></pre>
+
+<p>注意:</p>
+
+<ol>
+<li><p>IE全系列、firefox、chrome、opera、safari兼容问题</p></li>
+<li><p>节点之间的空白符，在firefox、chrome、opera、safari浏览器是文本节点，所以IE是3，其它浏览器是7，如下图所示:</p></li>
+</ol>
+
+
+<p><img src="http://img.mukewang.com/538d2b8a000163e303430127.jpg" alt="" /></p>
+
+<p>代码改成这样：</p>
+
+<pre><code class="html">    &lt;ul&gt;&lt;li&gt;javascript&lt;/li&gt;&lt;li&gt;jQuery&lt;/li&gt;&lt;li&gt;PHP&lt;/li&gt;&lt;/ul&gt;
+</code></pre>
+
+<p>就一样了</p>
+
+<p><strong>访问子结点的第一和最后项</strong></p>
+
+<ul>
+<li><code>irstChild</code> 属性返回‘childNodes’数组的第一个子节点。如果选定的节点没有子节点，则该属性返回 NULL。</li>
+<li><code>lastChild</code> 属性返回‘childNodes’数组的最后一个子节点。如果选定的节点没有子节点，则该属性返回 NULL。</li>
+</ul>
+
+
+<p><strong>访问父节点parentNode</strong></p>
+
+<ul>
+<li><code>elementNode.parentNode</code> 访问父节点
+
+<ul>
+<li>注意:父节点只能有一个</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>访问兄弟节点</strong></p>
+
+<ul>
+<li><code>nextSibling</code>
+
+<ul>
+<li>属性可返回某个节点之后紧跟的节点（处于同一树层级中）。</li>
+</ul>
+</li>
+<li><code>previousSibling</code>
+
+<ul>
+<li>属性可返回某个节点之前紧跟的节点（处于同一树层级中）。</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>插入节点appendChild()</strong></p>
+
+<blockquote><p>在指定节点的最后一个子节点列表之后添加一个新的子节点</p></blockquote>
+
+<pre><code class="html">    &lt;!DOCTYPE HTML&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+    &lt;title&gt;无标题文档&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+
+    &lt;ul id="test"&gt;
+      &lt;li&gt;JavaScript&lt;/li&gt;
+      &lt;li&gt;HTML&lt;/li&gt;
+    &lt;/ul&gt; 
+
+    &lt;script type="text/javascript"&gt;
+
+      var otest = document.getElementById("test");  
+      var newnode=document.createElement("li");
+      newnode.innerHTML="PHP";
+      otest.appendChild(newnode);
+
+
+    &lt;/script&gt; 
+
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p><strong>插入节点insertBefore()</strong></p>
+
+<blockquote><p>insertBefore() 方法可在已有的子节点前插入一个新的子节点。</p></blockquote>
+
+<ul>
+<li><code>insertBefore(newnode,node);</code>
+
+<ul>
+<li>newnode: 要插入的新节点。</li>
+<li>node: 指定此节点前插入节点。
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="ni">&amp;lt;</span>!DOCTYPE HTML&gt;
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;title&gt;</span>无标题文档<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>  <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;test&quot;</span><span class="nt">&gt;&lt;li&gt;</span>JavaScript<span class="nt">&lt;/li&gt;&lt;li&gt;</span>HTML<span class="nt">&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">otest</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">newnode</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">newnode</span><span class="p">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="s2">&quot;php&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">otest</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="nx">newnode</span><span class="p">,</span><span class="nx">otest</span><span class="p">.</span><span class="nx">lastChild</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>  <span class="nt">&lt;/script&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></p></li>
+</ul>
+
+
+<p><strong>删除节点removeChild()</strong></p>
+
+<blockquote><p><code>removeChild()</code> 方法从子节点列表中删除某个节点。如删除成功，此方法可返回被删除的节点，如失败，则返回 NULL。</p></blockquote>
+
+<p>注意: 把删除的子节点赋值给 x，这个子节点不在DOM树中，但是还存在内存中，可通过 x 操作。如果要完全删除对象，给 x 赋 null 值，代码如下:</p>
+
+<p><img src="http://img.mukewang.com/539975a800017c8e04790082.jpg" alt="" /></p>
+
+<p><strong>替换元素节点replaceChild()</strong></p>
+
+<blockquote><p>replaceChild 实现子节点(对象)的替换。返回被替换对象的引用。</p></blockquote>
+
+<ul>
+<li>node.replaceChild (newnode,oldnew )
+
+<ul>
+<li>newnode : 必需，用于替换 oldnew 的对象。</li>
+<li>oldnew : 必需，被 newnode 替换的对象。</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="html">    &lt;!DOCTYPE HTML&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+    &lt;title&gt;无标题文档&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+
+
+      &lt;div&gt;&lt;b id="oldnode"&gt;JavaScript&lt;/b&gt;是一个很常用的技术，为网页添加动态效果。&lt;/div&gt;
+      &lt;a href="javascript:replaceMessage()"&gt; 将加粗改为斜体&lt;/a&gt;
+
+        &lt;script type="text/javascript"&gt;
+          function replaceMessage(){
+
+                var oldnode=document.getElementById("oldnode");
+            var newnode=document.createElement("i");
+            newnode.innerHTML=oldnode.innerHTML
+            oldnode.parentNode.replaceChild(newnode,oldnode);
+           }    
+      &lt;/script&gt;
+
+     &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p><strong>创建元素节点createElement</strong></p>
+
+<blockquote><p>createElement()方法可创建元素节点。此方法可返回一个 Element 对象。</p></blockquote>
+
+<ul>
+<li>document.createElement(tagName)
+
+<ul>
+<li>tagName：字符串值，这个字符串用来指明创建元素的类型。</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="html">    &lt;!DOCTYPE HTML&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+    &lt;title&gt;无标题文档&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;script type="text/javascript"&gt;
+    var main = document.body;
+    //创建链接
+    function createa(url,text)
+    {
+
+        var alink = document.createElement("a");
+        alink.setAttribute("href",url);
+        alink.innerHTML=text;
+        return alink;
+
+    }
+    // 调用函数创建链接
+    main.appendChild(createa("http://www.imooc.com","慕课网"));
+
+    &lt;/script&gt; 
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p><strong>创建文本节点createTextNode</strong></p>
+
+<blockquote><p>createTextNode() 方法创建新的文本节点，返回新创建的 Text 节点。</p></blockquote>
+
+<ul>
+<li><code>document.createTextNode(data)</code>
+
+<ul>
+<li>data : 字符串值，可规定此节点的文本。</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="html">    &lt;!DOCTYPE HTML&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+    &lt;title&gt;无标题文档&lt;/title&gt;
+    &lt;style type="text/css"&gt;
+
+    .message{    
+        width:200px;
+        height:100px;
+        background-color:#CCC;}
+
+    &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;script type="text/javascript"&gt;
+
+    var element=document.createElement("p");
+    element.className="message";
+    var newnode=document.createTextNode("I love Javascript!");
+    document.body.appendChild(element);
+    element.appendChild(newnode)
+
+    &lt;/script&gt; 
+
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JS进阶之DOM]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/05/31/js-jin-jie/"/>
+    <updated>2016-05-31T13:28:27+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/05/31/js-jin-jie</id>
+    <content type="html"><![CDATA[<blockquote><p>这段时间开始实习，拿到手一个项目。都没什么时间写博客了，在写这个项目的实际过程中，发现对JS还是很陌生了。所以决定在空余时间提升下JS。在过了一遍基本的之后看到DOM的时候发现这个东西不太好懂，就觉得写个博文。</p></blockquote>
+
+<!--more-->
+
+
+<h1>认识DOM</h1>
+
+<p>文档对象模型DOM（Document Object Model）定义访问和处理HTML文档的标准方法。DOM 将HTML文档呈现为带有元素、属性和文本的树结构（节点树）。</p>
+
+<pre><code class="html">&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;
+&lt;title&gt;style样式&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h2 id="con"&gt;I love JavaScript&lt;/H2&gt;
+  &lt;p&gt; JavaScript使网页显示动态效果并实现与用户交互功能。&lt;/p&gt;
+  &lt;script type="text/javascript"&gt;
+   var myh2=document.getElementById("con");
+    myh2.style.color="red";
+    myh2.style.backgroundColor="#CCC";
+    myh2.style.display="none";
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>将HTML代码分解为DOM节点层次图：
+<img src="http://img.mukewang.com/5375ca7e0001dd8d04830279.jpg" alt="" /></p>
+
+<p><strong>HTML文档可以说由节点构成的集合，DOM节点有:</strong></p>
+
+<ol>
+<li><em>元素节点：</em> 上图中<code>&lt;html&gt;、&lt;body&gt;、&lt;p&gt;</code>等都是元素节点，即标签。</li>
+<li><em>文本节点:</em>向用户展示的内容，如<code>&lt;li&gt;...&lt;/li&gt;</code>中的JavaScript、DOM、CSS等文本。</li>
+<li><em>属性节点:</em>元素属性，如<code>&lt;a&gt;</code>标签的链接属性<code>href="http://www.imooc.com"</code>。</li>
+</ol>
+
+
+<p><strong>节点属性:</strong></p>
+
+<p><img src="http://img.mukewang.com/5375c953000117ee05240129.jpg" alt="" /></p>
+
+<p><strong>遍历节点树：</strong></p>
+
+<p><img src="http://img.mukewang.com/53f17a6400017d2905230219.jpg" alt="" /></p>
+
+<p>以上图ul为例，它的父级节点body,它的子节点3个li,它的兄弟结点h2、P。</p>
+
+<p><strong>DOM操作:</strong></p>
+
+<p><img src="http://img.mukewang.com/538d29da000152db05360278.jpg" alt="" /></p>
+
+<h1>节点属性</h1>
+
+<p>在文档对象模型 (DOM) 中，每个节点都是一个对象。DOM 节点有三个重要的属性 ：</p>
+
+<ol>
+<li>nodeName : 节点的名称</li>
+<li>nodeValue ：节点的值</li>
+<li>nodeType ：节点的类型</li>
+</ol>
+
+
+<p><strong>nodeName 属性: </strong>节点的名称，是只读的。</p>
+
+<ul>
+<li>元素节点的 nodeName 与标签名相同</li>
+<li>属性节点的 nodeName 是属性的名称</li>
+<li>文本节点的 nodeName 永远是 #text</li>
+<li>文档节点的 nodeName 永远是 #document</li>
+</ul>
+
+
+<p><strong>nodeValue 属性：</strong>节点的值</p>
+
+<ul>
+<li>元素节点的 nodeValue 是 undefined 或 null</li>
+<li>文本节点的 nodeValue 是文本自身</li>
+<li>属性节点的 nodeValue 是属性的值</li>
+</ul>
+
+
+<p><strong>nodeType 属性:</strong>节点的类型，是只读的。以下常用的几种结点类型:</p>
+
+<table>
+<thead>
+<tr>
+<th> 元素类型  </th>
+<th style="text-align:center;"> 节点类型      </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 元素      </td>
+<td style="text-align:center;"> 1       </td>
+</tr>
+<tr>
+<td> 属性      </td>
+<td style="text-align:center;"> 2      </td>
+</tr>
+<tr>
+<td> 文本      </td>
+<td style="text-align:center;"> 3      </td>
+</tr>
+<tr>
+<td> 注释      </td>
+<td style="text-align:center;"> 8     </td>
+</tr>
+<tr>
+<td> 文档      </td>
+<td style="text-align:center;"> 9      </td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+</feed>
