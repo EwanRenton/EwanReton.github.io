@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mysql | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/mysql/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-02T17:57:21+08:00</updated>
+  <updated>2016-06-02T18:05:50+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -39,13 +39,11 @@
 
 <p>查询结果：</p>
 
-<p>+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
-| concat(emp_id,&ldquo; &rdquo;,emp_name) |
-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+<p>| concat(emp_id,&ldquo; &rdquo;,emp_name) |
+| ：&mdash;&mdash;&ndash;：|
 | 100005 啸天 |
 | 100001 红枫 |
-| 100002 丽鹃 |
-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+</p>
+| 100002 丽鹃 |</p>
 
 <p>用AS关键字重新给输出结果命名标题</p>
 
@@ -56,13 +54,11 @@
 
 <p>查询结果：</p>
 
-<p>+&mdash;&mdash;&mdash;&mdash;&mdash;-+
-| info |
-+&mdash;&mdash;&mdash;&mdash;&mdash;-+
+<p>| info |
+| ：&mdash;&mdash;&ndash;：|
 | 100005 啸天 |
 | 100001 红枫 |
-| 100002 丽鹃 |
-+&mdash;&mdash;&mdash;&mdash;&mdash;-+</p>
+| 100002 丽鹃 |</p>
 
 <hr />
 
@@ -79,12 +75,25 @@
 
 <p>查询结果如下：</p>
 
-<p>+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+
-| emp_sex | count(*) |
-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+
-| fmale | 1 |
-| male | 2 |
-+&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;-+</p>
+<table>
+<thead>
+<tr>
+<th> emp_sex </th>
+<th style="text-align:left;"> count(*) </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> fmale </td>
+<td style="text-align:left;"> 1 </td>
+</tr>
+<tr>
+<td> male </td>
+<td style="text-align:left;"> 2 </td>
+</tr>
+</tbody>
+</table>
+
 
 <ol>
 <li>满足“SELECT子句中的列名必须为分组列或列函数”，因为SELECT有GROUP BY emp_sex中包含的列emp_sex。</li>
@@ -173,12 +182,31 @@ SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$con
 
 <p>mysql> select * from A inner join B on A.name = B.name;</p>
 
-<p>+&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+
-| id | name   | id | name   |
-+&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+
-|  1 | Pirate |  2 | Pirate |
-|  3 | Ninja  |  4 | Ninja  |
-+&mdash;-+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&ndash;+</p>
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name   </th>
+<th style="text-align:center;"> id </th>
+<th style="text-align:left;"> name   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate </td>
+<td style="text-align:center;">  2 </td>
+<td style="text-align:left;"> Pirate </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja  </td>
+<td style="text-align:center;">  4 </td>
+<td style="text-align:left;"> Ninja  </td>
+</tr>
+</tbody>
+</table>
+
 
 <p><strong>Left join</strong></p>
 
@@ -186,15 +214,45 @@ SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$con
 
 <p>或者：select * from A left outer join B on A.name = B.name;</p>
 
-<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
-| id | name      | id   | name   |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
-|  1 | Pirate    |    2 | Pirate |
-|  2 | Monkey    | NULL | NULL   |
-|  3 | Ninja     |    4 | Ninja  |
-|  4 | Spaghetti | NULL | NULL   |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
-4 rows in set (0.00 sec)</p>
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name      </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate    </td>
+<td style="text-align:center;">    2 </td>
+<td style="text-align:left;"> Pirate </td>
+</tr>
+<tr>
+<td>  2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL   </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja     </td>
+<td style="text-align:center;">    4 </td>
+<td style="text-align:left;"> Ninja  </td>
+</tr>
+<tr>
+<td>  4 </td>
+<td style="text-align:center;"> Spaghetti </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL   </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>4 rows in set (0.00 sec)</p>
 
 <p>left join,（或left outer join:在Mysql中两者等价，推荐使用left join.）左连接从左表(A)产生一套完整的记录,与匹配的记录(右表(B)) .如果没有匹配,右侧将包含null。</p>
 
@@ -202,25 +260,65 @@ SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$con
 
 <p>mysql> select * from A left join B on A.name=B.name where A.id is null or B.id is null;</p>
 
-<p>+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
-| id | name      | id   | name |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
-|  2 | Monkey    | NULL | NULL |
-|  4 | Spaghetti | NULL | NULL |
-+&mdash;-+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;+
-2 rows in set (0.00 sec)</p>
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name      </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL </td>
+</tr>
+<tr>
+<td>  4 </td>
+<td style="text-align:center;"> Spaghetti </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>2 rows in set (0.00 sec)</p>
 
 <p>同理，还可以模拟inner join. 如下：</p>
 
 <p>mysql> select * from A left join B on A.name=B.name where A.id is not null and B.id is not null;</p>
 
-<p>+&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
-| id | name   | id   | name   |
-+&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
-|  1 | Pirate |    2 | Pirate |
-|  3 | Ninja  |    4 | Ninja  |
-+&mdash;-+&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&ndash;+
-2 rows in set (0.00 sec)</p>
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name   </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate </td>
+<td style="text-align:center;">    2 </td>
+<td style="text-align:left;"> Pirate </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja  </td>
+<td style="text-align:center;">    4 </td>
+<td style="text-align:left;"> Ninja  </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>2 rows in set (0.00 sec)</p>
 
 <p>求差集：</p>
 
@@ -235,28 +333,87 @@ WHERE A.id IS NULL;</p>
 
 <p> 结果</p>
 
-<p>+&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+
-| id   | name      | id   | name        |
-+&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+
-|    2 | Monkey    | NULL | NULL        |
-|    4 | Spaghetti | NULL | NULL        |
-| NULL | NULL      |    1 | Rutabaga    |
-| NULL | NULL      |    3 | Darth Vader |
-+&mdash;&mdash;+&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+</p>
+<table>
+<thead>
+<tr>
+<th> id   </th>
+<th style="text-align:center;"> name      </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name        </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>    2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL        </td>
+</tr>
+<tr>
+<td>    4 </td>
+<td style="text-align:center;"> Spaghetti </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL        </td>
+</tr>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL      </td>
+<td style="text-align:center;">    1 </td>
+<td style="text-align:left;"> Rutabaga    </td>
+</tr>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL      </td>
+<td style="text-align:center;">    3 </td>
+<td style="text-align:left;"> Darth Vader </td>
+</tr>
+</tbody>
+</table>
+
 
 <p><strong>Right join</strong></p>
 
 <p>mysql> select * from A right join B on A.name = B.name;</p>
 
-<p>+&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
-| id   | name   | id | name        |
-+&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
-| NULL | NULL   |  1 | Rutabaga    |
-|    1 | Pirate |  2 | Pirate      |
-| NULL | NULL   |  3 | Darth Vader |
-|    3 | Ninja  |  4 | Ninja       |
-+&mdash;&mdash;+&mdash;&mdash;&ndash;+&mdash;-+&mdash;&mdash;&mdash;&mdash;-+
-4 rows in set (0.00 sec)</p>
+<table>
+<thead>
+<tr>
+<th> id   </th>
+<th style="text-align:center;"> name   </th>
+<th style="text-align:center;"> id </th>
+<th style="text-align:left;"> name        </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL   </td>
+<td style="text-align:center;">  1 </td>
+<td style="text-align:left;"> Rutabaga    </td>
+</tr>
+<tr>
+<td>    1 </td>
+<td style="text-align:center;"> Pirate </td>
+<td style="text-align:center;">  2 </td>
+<td style="text-align:left;"> Pirate      </td>
+</tr>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL   </td>
+<td style="text-align:center;">  3 </td>
+<td style="text-align:left;"> Darth Vader </td>
+</tr>
+<tr>
+<td>    3 </td>
+<td style="text-align:center;"> Ninja  </td>
+<td style="text-align:center;">  4 </td>
+<td style="text-align:left;"> Ninja       </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>4 rows in set (0.00 sec)</p>
 
 <p><strong>USING(column_list)子句</strong>
 用于为一系列的列进行命名，这些列必须同时在两个表中存在
@@ -1063,11 +1220,11 @@ try{
 </span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">:</span><span class="nx">email</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="nv">$email</span><span class="p">);</span>
 </span><span class='line'>    <span class="nv">$username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">imooc1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
 </span><span class='line'>    <span class="nv">$password</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">imooc1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#x61;&amp;#x69;&amp;#108;&amp;#x74;&amp;#x6f;&amp;#58;&amp;#105;&amp;#109;&amp;#111;&amp;#111;&amp;#x63;&amp;#x31;&amp;#64;&amp;#105;&amp;#109;&amp;#x6f;&amp;#111;&amp;#x63;&amp;#46;&amp;#x63;&amp;#111;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x69;&amp;#109;&amp;#x6f;&amp;#111;&amp;#x63;&amp;#49;&amp;#64;&amp;#105;&amp;#109;&amp;#x6f;&amp;#111;&amp;#99;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#x6d;&lt;/a&gt;&amp;rsquo;;</span>
+</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#x61;&amp;#x69;&amp;#108;&amp;#x74;&amp;#x6f;&amp;#x3a;&amp;#105;&amp;#x6d;&amp;#x6f;&amp;#111;&amp;#x63;&amp;#49;&amp;#x40;&amp;#x69;&amp;#109;&amp;#x6f;&amp;#x6f;&amp;#99;&amp;#46;&amp;#99;&amp;#111;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x69;&amp;#109;&amp;#x6f;&amp;#111;&amp;#99;&amp;#49;&amp;#x40;&amp;#x69;&amp;#109;&amp;#111;&amp;#x6f;&amp;#99;&amp;#46;&amp;#99;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;;</span>
 </span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
 </span><span class='line'>    <span class="nv">$username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">MR</span><span class="o">.</span><span class="nx">KING1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
 </span><span class='line'>    <span class="nv">$password</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">MR</span><span class="o">.</span><span class="nx">KING1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#97;&amp;#105;&amp;#x6c;&amp;#x74;&amp;#111;&amp;#58;&amp;#77;&amp;#82;&amp;#x2e;&amp;#x4b;&amp;#x49;&amp;#78;&amp;#71;&amp;#x31;&amp;#64;&amp;#x69;&amp;#109;&amp;#111;&amp;#x6f;&amp;#x63;&amp;#46;&amp;#x63;&amp;#111;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#77;&amp;#x52;&amp;#46;&amp;#75;&amp;#73;&amp;#78;&amp;#x47;&amp;#x31;&amp;#64;&amp;#x69;&amp;#109;&amp;#x6f;&amp;#x6f;&amp;#x63;&amp;#46;&amp;#99;&amp;#111;&amp;#109;&lt;/a&gt;&amp;rsquo;;</span>
+</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#97;&amp;#105;&amp;#x6c;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#77;&amp;#x52;&amp;#46;&amp;#75;&amp;#x49;&amp;#x4e;&amp;#x47;&amp;#49;&amp;#x40;&amp;#105;&amp;#x6d;&amp;#111;&amp;#x6f;&amp;#99;&amp;#x2e;&amp;#99;&amp;#x6f;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x4d;&amp;#82;&amp;#46;&amp;#75;&amp;#73;&amp;#x4e;&amp;#x47;&amp;#x31;&amp;#x40;&amp;#105;&amp;#109;&amp;#111;&amp;#x6f;&amp;#99;&amp;#46;&amp;#99;&amp;#x6f;&amp;#x6d;&lt;/a&gt;&amp;rsquo;;</span>
 </span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
 </span><span class='line'>    <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span>
 </span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
