@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-02T18:11:58+08:00</updated>
+  <updated>2016-06-02T18:15:45+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -3713,6 +3713,9 @@ SELECT film_id,description FROM sakila.film WHERE film_id>55 and film_id<60 ORDE
     <updated>2016-05-18T22:37:17+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/05/18/php-phone-location</id>
     <content type="html"><![CDATA[<blockquote><p>看了视频过后准备自己撸一个PHP的手机归属地查询。这个Demo的思路和方法其实算不上难。但是这个Demo作者使用了框架的思维并且用到了SPL等知识。以前没有写过这样的代码，所以决定自己写一次。</p></blockquote>
+
+<!--more-->
+
 
 <h1>下面具体说说这个Demo中遇到的一些问题。</h1>
 
