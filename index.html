@@ -9,7 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php PHP设计模式(三)-策略模式 在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。 一、策略模式概念 策略模式针对一组算法，将每一个算法封装到具有共同接口的独立的类中,此模式让算法的变化独立于使用算法的客户。从而让程序结构更灵活， &hellip;">
+	<meta name="description" content="php PHP设计模式(四)-数据库对象映射模式 1、模式定义 在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。 数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,7 +79,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (17)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (18)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -122,6 +122,206 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-06T11:24:26+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-4/" itemprop="url">PHP设计模式(四)-数据库对象映射模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h1>1、模式定义</h1>
+
+<p>在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。</p>
+
+<p>数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、以及数据映射本身三者相互独立、互不依赖。这个数据访问层由一个或多个映射器（或者数据访问对象）组成，用于实现数据传输。通用的数据访问层可以处理不同的实体类型，而专用的则处理一个或几个。</p>
+
+<p>数据映射模式的核心在于它的数据模型遵循单一职责原则（Single Responsibility Principle）, 这也是和 Active Record 模式的不同之处。最典型的数据映射模式例子就是数据库 ORM 模型 （Object Relational Mapper）。</p>
+
+<p><strong>ha_cl表</strong>
+<img src="http://www.poluoluo.com/jzxy/UploadFiles_333/201603/2016030519294690.png?20162310358" alt="" /></p>
+
+<figure class='code'><figcaption><span>Hacl.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Hacl</span><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$haclname</span><span class="p">;</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$haclcode</span><span class="p">;</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$hacls</span><span class="p">;</span>
+</span><span class='line'><span class="k">protected</span> <span class="nv">$db</span><span class="p">;</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$id</span><span class="p">){</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Baobab\Database\Mysqli</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;select * from ha_cl where id = </span><span class="si">{</span><span class="nv">$id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$res</span><span class="o">-&gt;</span><span class="na">fetch_assoc</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclname</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ha_cl_name&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclcode</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ha_cl_code&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hacls</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;hacls&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">__destruct</span><span class="p">(){</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;update ha_cl set</span>
+</span><span class='line'><span class="s2">ha_cl_code = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclcode</span><span class="si">}</span><span class="s2">&#39;,</span>
+</span><span class='line'><span class="s2">ha_cl_name = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclname</span><span class="si">}</span><span class="s2">&#39;,</span>
+</span><span class='line'><span class="s2">hacls = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hacls</span><span class="si">}</span><span class="s2">&#39;</span>
+</span><span class='line'><span class="s2">where ID = </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span><span class="si">}</span><span class="s2"></span>
+</span><span class='line'><span class="s2">limit 1&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>Factory.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">//工厂模式</span>
+</span><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Factory</span><span class="p">{</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">getHacl</span><span class="p">(</span><span class="nv">$id</span><span class="p">){</span>
+</span><span class='line'><span class="nv">$key</span> <span class="o">=</span> <span class="s1">&#39;user_&#39;</span><span class="o">.</span><span class="nv">$id</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="nx">\Baobab\Register</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="nv">$key</span><span class="p">);</span><span class="c1">//表中id不同表示的是不同的对象</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$user</span><span class="p">){</span>
+</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Baobab\Hacl</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</span><span class='line'><span class="nx">\Baobab\Register</span><span class="o">::</span><span class="na">set</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$user</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">return</span> <span class="nv">$user</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>Register.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Register</span><span class="p">{</span>
+</span><span class='line'><span class="k">protected</span> <span class="k">static</span> <span class="nv">$objects</span><span class="p">;</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">set</span><span class="p">(</span><span class="nv">$alias</span><span class="p">,</span> <span class="nv">$object</span><span class="p">){</span>
+</span><span class='line'><span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$alias</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$object</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">_unset</span><span class="p">(</span><span class="nv">$alias</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="nb">unset</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$alias</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">get</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>index.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">class</span> <span class="nc">Page</span><span class="p">{</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">index</span><span class="p">(){</span>
+</span><span class='line'><span class="nv">$hacl</span> <span class="o">=</span> <span class="nx">Baobab\Factory</span><span class="o">::</span><span class="na">getHacl</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$hacl</span><span class="o">-&gt;</span><span class="na">haclname</span> <span class="o">=</span> <span class="s1">&#39;测试名称&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">test</span><span class="p">();</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;ok&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">test</span><span class="p">(){</span>
+</span><span class='line'><span class="nv">$hacl</span> <span class="o">=</span> <span class="nx">Baobab\Factory</span><span class="o">::</span><span class="na">getHacl</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$hacl</span><span class="o">-&gt;</span><span class="na">hacls</span> <span class="o">=</span> <span class="s1">&#39;测试内容&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$page</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Page</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$page</span><span class="o">-&gt;</span><span class="na">index</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -306,8 +506,9 @@
 
 <p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
 
-<p>我来解释下这个思维导图的过程：
-1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
+<p>我来解释下这个思维导图的过程：</p>
+
+<p>1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
 
 <p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
 
@@ -460,122 +661,12 @@
 
 <ol>
 <li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
-<li>实际应用举例，PHP的数据库操作有mysql，mysqli，pdo3种，可以用适配器模式改成统一致的，类似的还有cache适配器，将memcache，redis，file，apc等不同的缓存函数，统一成一致的。</li>
 </ol>
 
 
-<p>角色：</p>
-
-<ul>
-<li>Target适配目标，该角色定义把其他类转换为何种接口，也就是我们的期望接口。</li>
-<li>Adaptee被适配者，就是需要被适配的接口。</li>
-<li>Adapter适配器，其他的两个角色都是已经存在的角色，而适配器角色是需要新建立的，它用来对Adaptee与Target接口进行适配。</li>
-</ul>
-
-
-<p>优势：</p>
-
-<p>被适配者通过适配器完成对适配目标的适配，以达到对客户使用透明的目的。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">//适配目标，规定的接口将被适配对象实现</span>
-</span><span class='line'><span class="k">interface</span> <span class="nx">IDatabase</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'><span class="c1">//适配器</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Mysql</span> <span class="k">implements</span> <span class="nx">IDatabase</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">protected</span> <span class="nv">$connect</span><span class="p">;</span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nv">$connect</span> <span class="o">=</span> <span class="nb">mysql_connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">mysql_select_db</span><span class="p">(</span><span class="nv">$database</span><span class="p">,</span> <span class="nv">$connect</span><span class="p">);</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">connect</span> <span class="o">=</span> <span class="nv">$connect</span><span class="p">;</span>
-</span><span class='line'>        <span class="c1">//...</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">//...</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'><span class="c1">//适配器</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Postgresql</span> <span class="k">implements</span> <span class="nx">IDatabase</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">protected</span> <span class="nv">$connect</span><span class="p">;</span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">connect</span> <span class="o">=</span> <span class="nb">pg_connect</span><span class="p">(</span><span class="s2">&quot;host=</span><span class="si">$host</span><span class="s2"> dbname=</span><span class="si">$database</span><span class="s2"> user=</span><span class="si">$username</span><span class="s2"> password=</span><span class="si">$password</span><span class="s2">&quot;</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//...</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">//...</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'><span class="nx"> </span>
-</span><span class='line'><span class="c1">//客户端使用</span>
-</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Postgresql</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$client</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
 
 		
-		
+		<a href="/blog/2016/06/04/php-design-2/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>
@@ -1968,42 +2059,6 @@ having就是来弥补where在分组数据判断时的不足。因为where要快�
 
 		
 		<a href="/blog/2016/05/24/php-jia-mi/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-23T12:57:08+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/mysql/'>mysql</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/23/mysql-you-hua/" itemprop="url">数据库优化</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>在面试的时候被问到数据库优化问题，结果一下没反应过来理解为了PHP性能优化（懵逼脸）一顿BB，然后就GG了</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/23/mysql-you-hua/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

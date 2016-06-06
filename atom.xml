@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-06T11:03:41+08:00</updated>
+  <updated>2016-06-06T21:23:44+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,180 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(四)-数据库对象映射模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/06/php-design-4/"/>
+    <updated>2016-06-06T11:24:26+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/06/php-design-4</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。</p>
+
+<p>数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、以及数据映射本身三者相互独立、互不依赖。这个数据访问层由一个或多个映射器（或者数据访问对象）组成，用于实现数据传输。通用的数据访问层可以处理不同的实体类型，而专用的则处理一个或几个。</p>
+
+<p>数据映射模式的核心在于它的数据模型遵循单一职责原则（Single Responsibility Principle）, 这也是和 Active Record 模式的不同之处。最典型的数据映射模式例子就是数据库 ORM 模型 （Object Relational Mapper）。</p>
+
+<p><strong>ha_cl表</strong>
+<img src="http://www.poluoluo.com/jzxy/UploadFiles_333/201603/2016030519294690.png?20162310358" alt="" /></p>
+
+<figure class='code'><figcaption><span>Hacl.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Hacl</span><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$haclname</span><span class="p">;</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$haclcode</span><span class="p">;</span>
+</span><span class='line'><span class="k">public</span> <span class="nv">$hacls</span><span class="p">;</span>
+</span><span class='line'><span class="k">protected</span> <span class="nv">$db</span><span class="p">;</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$id</span><span class="p">){</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Baobab\Database\Mysqli</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;select * from ha_cl where id = </span><span class="si">{</span><span class="nv">$id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$res</span><span class="o">-&gt;</span><span class="na">fetch_assoc</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclname</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ha_cl_name&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclcode</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ha_cl_code&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hacls</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;hacls&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">__destruct</span><span class="p">(){</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;update ha_cl set</span>
+</span><span class='line'><span class="s2">ha_cl_code = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclcode</span><span class="si">}</span><span class="s2">&#39;,</span>
+</span><span class='line'><span class="s2">ha_cl_name = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclname</span><span class="si">}</span><span class="s2">&#39;,</span>
+</span><span class='line'><span class="s2">hacls = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hacls</span><span class="si">}</span><span class="s2">&#39;</span>
+</span><span class='line'><span class="s2">where ID = </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span><span class="si">}</span><span class="s2"></span>
+</span><span class='line'><span class="s2">limit 1&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>Factory.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">//工厂模式</span>
+</span><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Factory</span><span class="p">{</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">getHacl</span><span class="p">(</span><span class="nv">$id</span><span class="p">){</span>
+</span><span class='line'><span class="nv">$key</span> <span class="o">=</span> <span class="s1">&#39;user_&#39;</span><span class="o">.</span><span class="nv">$id</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="nx">\Baobab\Register</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="nv">$key</span><span class="p">);</span><span class="c1">//表中id不同表示的是不同的对象</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$user</span><span class="p">){</span>
+</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Baobab\Hacl</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</span><span class='line'><span class="nx">\Baobab\Register</span><span class="o">::</span><span class="na">set</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$user</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">return</span> <span class="nv">$user</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>Register.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Register</span><span class="p">{</span>
+</span><span class='line'><span class="k">protected</span> <span class="k">static</span> <span class="nv">$objects</span><span class="p">;</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">set</span><span class="p">(</span><span class="nv">$alias</span><span class="p">,</span> <span class="nv">$object</span><span class="p">){</span>
+</span><span class='line'><span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$alias</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$object</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">_unset</span><span class="p">(</span><span class="nv">$alias</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="nb">unset</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$alias</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">get</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>index.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">class</span> <span class="nc">Page</span><span class="p">{</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">index</span><span class="p">(){</span>
+</span><span class='line'><span class="nv">$hacl</span> <span class="o">=</span> <span class="nx">Baobab\Factory</span><span class="o">::</span><span class="na">getHacl</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$hacl</span><span class="o">-&gt;</span><span class="na">haclname</span> <span class="o">=</span> <span class="s1">&#39;测试名称&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">test</span><span class="p">();</span>
+</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;ok&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">test</span><span class="p">(){</span>
+</span><span class='line'><span class="nv">$hacl</span> <span class="o">=</span> <span class="nx">Baobab\Factory</span><span class="o">::</span><span class="na">getHacl</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$hacl</span><span class="o">-&gt;</span><span class="na">hacls</span> <span class="o">=</span> <span class="s1">&#39;测试内容&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$page</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Page</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$page</span><span class="o">-&gt;</span><span class="na">index</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP设计模式(三)-策略模式]]></title>
@@ -174,8 +348,9 @@
 
 <p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
 
-<p>我来解释下这个思维导图的过程：
-1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
+<p>我来解释下这个思维导图的过程：</p>
+
+<p>1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
 
 <p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
 
@@ -302,6 +477,13 @@
 
 <ol>
 <li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
+</ol>
+
+
+<!--more-->
+
+
+<ol>
 <li>实际应用举例，PHP的数据库操作有mysql，mysqli，pdo3种，可以用适配器模式改成统一致的，类似的还有cache适配器，将memcache，redis，file，apc等不同的缓存函数，统一成一致的。</li>
 </ol>
 
@@ -5848,187 +6030,6 @@ service nginx restart
 
 
 <p><a href="http://www.neoease.com/nginx-virtual-host/">参考博客</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[QQ登录Demo]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/15/qq-login/"/>
-    <updated>2016-05-15T16:12:15+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/15/qq-login</id>
-    <content type="html"><![CDATA[<blockquote><p>今天完成了一个QQ登录的小Deom</p></blockquote>
-
-<h1>前置条件</h1>
-
-<ul>
-<li>一个QQ号</li>
-<li>一台公网通过域名可访问的web服务器</li>
-</ul>
-
-
-<!--more-->
-
-
-<h1>申请AppID和AppKey</h1>
-
-<p><a href="http://connect.qq.com/">QQ开放平台</a></p>
-
-<p>如果是第一次登录，会跳转到管理中心，应用开发者注册
-<img src="http://d.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b43ea01c0d46f21fcd345e56c61f1a5d/7acb0a46f21fbe0908972df36c600c338644ad08.jpg?referer=6f234af490dda144831e58820b06&amp;x=.jpg" alt="开发者注册" />
-注册后悔跳转到管理中心，点击创建应用</p>
-
-<p><img src="http://c.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=7ab420c84634970a4373102aa5f1a0f5/fc1f4134970a304ef778481dd6c8a786c8175cfb.jpg?referer=ebbc6b2a5566d016270eaa189c99&amp;x=.jpg" alt="创建应用" />
-回调地址，可以和上面一样，在开发的时候再修改。
-<img src="http://f.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=f47f75cf902bd40746c7d3f84bb2ef6c/aa18972bd40735fa1b96a55e99510fb30e2408f7.jpg?referer=8ed677a03e12b31b9e7bf91968ae&amp;x=.jpg" alt="验证" />
-将下面这段代码，复制到服务器首页<code>&lt;head&gt;</code>标签中。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;meta</span> <span class="na">property=</span><span class="s">&quot;qc:admins&quot;</span> <span class="na">content=</span><span class="s">&quot;43216566776571625476636&quot;</span> <span class="nt">/&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>添加测试回调地址</h1>
-
-<p>在QQ开放平台应用详情中，选择信息管理，</p>
-
-<p>在回调地址中添加</p>
-
-<p><img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=2bafae5c4010b912bbc1f6fbf3c68d3e/738b4710b912c8fc25701f2afb039245d7882152.jpg?referer=37adaf2785025aaf8a254afb8f30&amp;x=.jpg" alt="添加回调地址" />
-其中的callback.php可以自定义。</p>
-
-<p>记得保存之前需要验证。</p>
-
-<h1>引入官方SDK</h1>
-
-<p><a href="http://wiki.connect.qq.com/">官方SDK</a></p>
-
-<p>找到PHP下载（有能力可以自己手工开发，造车轮。）</p>
-
-<p>放到站点根目录</p>
-
-<h1>SDK参数配置</h1>
-
-<p>访问<code>http://localhost/Connect2.1/install.php</code>
-<img src="http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=b155c91931d3d539c53d0fc60abc986d/14ce36d3d539b600424ce650ee50352ac75cb753.jpg?referer=0353883031d12f2e97129a50f131&amp;x=.jpg" alt="参数配置" />
-配置成功后,保留API下的文件，其他的都可删除。</p>
-
-<h1>SDK解读</h1>
-
-<p><img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=440c3587322ac65c63056676cbc9c32c/e850352ac65c10382dc82725b5119313b17e89a7.jpg?referer=314909b58235e5ddc93b91eff77d&amp;x=.jpg" alt="" />
-<img src="http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=4c5e0d1fa086c9170c03523cf90601f2/d0c8a786c9177f3ebe9d15ea77cf3bc79e3d56a8.jpg?referer=4ebf08d032fae6cd55a39f519266&amp;x=.jpg" alt="" />
-<img src="http://h.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=327017c44e540923ae69637ba263a034/ca1349540923dd54e98f4e8fd609b3de9d82485d.jpg?referer=cd4a9bc7be12c8fcede4c2fda833&amp;x=.jpg" alt="" />
-<img src="http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=22750c750bf431adb8d2433c7b0ddd92/d1a20cf431adcbefe6cb97e1abaf2edda2cc9f5e.jpg?referer=bd373c299e25bc31724a35a8d934&amp;x=.jpg" alt="" />
-<img src="http://f.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=3ede9315d262853596e0d224a0d407fb/4ec2d5628535e5dd429f4c3871c6a7efcf1b62a2.jpg?referer=bc5660e9b63533faaca1a71ece60&amp;x=.jpg" alt="" />
-<img src="http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=9a446d86ff1986184547ef817ad65f4e/b151f8198618367af3eb973a29738bd4b21ce5f3.jpg?referer=7862fb405eee3d6d7bd1b3fb4391&amp;x=.jpg" alt="" />
-<img src="http://g.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=f77b76cf902bd40746c7d3f84bb2ef6c/aa18972bd40735fa1892a65e99510fb30e2408f3.jpg?referer=8dd274a03e12b31b9e7bf9196892&amp;x=.jpg" alt="" />
-<img src="http://a.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=4d470c1fa086c9170c03523cf90601f2/d0c8a786c9177f3ebf8414ea77cf3bc79e3d56a1.jpg?referer=4fa609d032fae6cd55a39f51927f&amp;x=.jpg" alt="" /></p>
-
-<h1>将SDK整合到web中</h1>
-
-<p>Connect2.1
-放在同级目录下</p>
-
-<figure class='code'><figcaption><span>index.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="s2">&quot;Connect2.1/qqConnectAPI.php&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;!DOCTYPE html&gt;</span>
-</span><span class='line'><span class="x">&lt;html&gt;</span>
-</span><span class='line'><span class="x">  &lt;head&gt;</span>
-</span><span class='line'><span class="x">      &lt;meta charset=&quot;utf-8&quot;&gt;</span>
-</span><span class='line'><span class="x">      &lt;title&gt;&lt;/title&gt;</span>
-</span><span class='line'><span class="x">  &lt;/heda&gt;</span>
-</span><span class='line'><span class="x">    &lt;body&gt;</span>
-</span><span class='line'><span class="x">        </span><span class="cp">&lt;?php</span> <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;qq_accesstokebn&#39;</span><span class="p">])</span><span class="o">||!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;qq_openid&#39;</span><span class="p">])){</span><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">        &lt;a href=&quot;qqlogin.php&quot;&gt;登录QQ&lt;/a&gt;</span>
-</span><span class='line'><span class="x">        </span><span class="cp">&lt;?php</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">          &lt;a href=&quot;qqlogout.php&quot;&gt;退出QQ&lt;/a&gt;</span>
-</span><span class='line'><span class="x">          </span><span class="cp">&lt;?php</span>
-</span><span class='line'>            <span class="nv">$qc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">QC</span><span class="p">(</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;qq_accesstokebn&#39;</span><span class="p">],</span><span class="nv">$_COOKIE</span><span class="p">[</span><span class="s1">&#39;qq_openid&#39;</span><span class="p">]);</span>
-</span><span class='line'>            <span class="nv">$userinfo</span> <span class="o">=</span><span class="nv">$qc</span><span class="o">-&gt;</span><span class="na">get_user_info</span><span class="p">();</span>
-</span><span class='line'>            <span class="nb">print_r</span><span class="p">(</span><span class="nv">$userinfo</span><span class="p">);</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>          <span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">    &lt;/body&gt;</span>
-</span><span class='line'><span class="x">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span>qqlogin.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">require_once</span> <span class="s1">&#39;Connect2.1/qqConnectAPI.php&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="c1">//访问QQ页面</span>
-</span><span class='line'>  <span class="nv">$oauth</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Oauth</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$oauth</span><span class="o">-&gt;</span><span class="na">qq_login</span><span class="p">();</span>
-</span><span class='line'> <span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span>qqlogout.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">&#39;qq_accesstokebn&#39;</span><span class="p">,</span><span class="k">null</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">setcookie</span><span class="p">(</span><span class="s1">&#39;qq_openid&#39;</span><span class="p">,</span><span class="k">null</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">header</span><span class="p">(</span><span class="s2">&quot;Location:index.php&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span>callback.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">require_once</span> <span class="s1">&#39;Connect2.1/qqConnectAPI.php&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="c1">//echo $_GET[&#39;code&#39;];</span>
-</span><span class='line'>  <span class="c1">//请求accesstoken</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$oauth</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Oauth</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$accesstoken</span> <span class="o">=</span> <span class="nv">$oauth</span><span class="o">-&gt;</span><span class="na">qq_callback</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$openid</span> <span class="o">=</span> <span class="nv">$oauth</span><span class="o">-&gt;</span><span class="na">get_openid</span><span class="p">();</span>
-</span><span class='line'><span class="nb">setcookie</span><span class="p">(</span><span class="s2">&quot;qq_accesstokebn&quot;</span><span class="p">,</span><span class="nv">$accesstoken</span><span class="p">,</span><span class="nb">time</span><span class="p">()</span><span class="o">+</span><span class="mi">86400</span><span class="p">);</span>
-</span><span class='line'><span class="nb">setcookie</span><span class="p">(</span><span class="s2">&quot;qq_openid&quot;</span><span class="p">,</span><span class="nv">$openid</span><span class="p">,</span><span class="nb">time</span><span class="p">()</span><span class="o">+</span><span class="mi">86400</span><span class="p">);</span>
-</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s2">&quot;Location:index.php&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   

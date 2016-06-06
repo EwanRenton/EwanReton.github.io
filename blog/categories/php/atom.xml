@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-06T11:03:41+08:00</updated>
+  <updated>2016-06-06T21:23:44+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,101 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(四)-数据库对象映射模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/06/php-design-4/"/>
+    <updated>2016-06-06T11:24:26+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/06/php-design-4</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。</p>
+
+<p>数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、以及数据映射本身三者相互独立、互不依赖。这个数据访问层由一个或多个映射器（或者数据访问对象）组成，用于实现数据传输。通用的数据访问层可以处理不同的实体类型，而专用的则处理一个或几个。</p>
+
+<p>数据映射模式的核心在于它的数据模型遵循单一职责原则（Single Responsibility Principle）, 这也是和 Active Record 模式的不同之处。最典型的数据映射模式例子就是数据库 ORM 模型 （Object Relational Mapper）。</p>
+
+<p><strong>ha_cl表</strong>
+<img src="http://www.poluoluo.com/jzxy/UploadFiles_333/201603/2016030519294690.png?20162310358" alt="" /></p>
+
+<pre><code class="php Hacl.php">    &lt;?php
+    namespace Baobab;
+    class Hacl{
+    public $id;
+    public $haclname;
+    public $haclcode;
+    public $hacls;
+    protected $db;
+    function __construct($id){
+    $this-&gt;db = new \Baobab\Database\Mysqli();
+    $this-&gt;db-&gt;connect('127.0.0.1', 'root', '', 'test');
+    $res = $this-&gt;db-&gt;query("select * from ha_cl where id = {$id}");
+    $data = $res-&gt;fetch_assoc();
+    $this-&gt;id = $data['ID'];
+    $this-&gt;haclname = $data['ha_cl_name'];
+    $this-&gt;haclcode = $data['ha_cl_code'];
+    $this-&gt;hacls = $data['hacls'];
+    }
+    function __destruct(){
+    $this-&gt;db-&gt;query("update ha_cl set
+    ha_cl_code = '{$this-&gt;haclcode}',
+    ha_cl_name = '{$this-&gt;haclname}',
+    hacls = '{$this-&gt;hacls}'
+    where ID = {$this-&gt;id}
+    limit 1");
+    }
+    }
+</code></pre>
+
+<pre><code class="php Factory.php">    //工厂模式
+    &lt;?php
+    namespace Baobab;
+    class Factory{
+    static function getHacl($id){
+    $key = 'user_'.$id;
+    $user = \Baobab\Register::get($key);//表中id不同表示的是不同的对象
+    if(!$user){
+    $user = new \Baobab\Hacl($id);
+    \Baobab\Register::set($key, $user);
+    }
+    return $user;
+    }
+    }
+</code></pre>
+
+<pre><code class="php Register.php">    &lt;?php
+    namespace Baobab;
+    class Register{
+    protected static $objects;
+    static function set($alias, $object){
+    self::$objects[$alias] = $object;
+    }
+    static function _unset($alias) {
+    unset(self::$objects[$alias]);
+    }
+    static function get($name) {
+    return self::$objects[$name];
+    }
+    }
+</code></pre>
+
+<pre><code class="php index.php">    class Page{
+    function index(){
+    $hacl = Baobab\Factory::getHacl(13);
+    $hacl-&gt;haclname = '测试名称';
+    $this-&gt;test();
+    echo 'ok';
+    }
+    function test(){
+    $hacl = Baobab\Factory::getHacl(13);
+    $hacl-&gt;hacls = '测试内容';
+    }
+    }
+    $page = new Page();
+    $page-&gt;index(); 
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP设计模式(三)-策略模式]]></title>
@@ -112,8 +207,9 @@ echo $totalPrice; //70
 
 <p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
 
-<p>我来解释下这个思维导图的过程：
-1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
+<p>我来解释下这个思维导图的过程：</p>
+
+<p>1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
 
 <p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
 
@@ -201,6 +297,13 @@ $duck-&gt;performFly();
 
 <ol>
 <li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
+</ol>
+
+
+<!--more-->
+
+
+<ol>
 <li>实际应用举例，PHP的数据库操作有mysql，mysqli，pdo3种，可以用适配器模式改成统一致的，类似的还有cache适配器，将memcache，redis，file，apc等不同的缓存函数，统一成一致的。</li>
 </ol>
 
@@ -692,14 +795,14 @@ echo "&lt;a href="test.php?'{$str}'&gt;test&lt;/a&gt;";
 </span><span class='line'>        <span class="c1">//配置邮件服务器，得到传输对象</span>
 </span><span class='line'>        <span class="nv">$transport</span><span class="o">=</span><span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">smtp</span><span class="o">.</span><span class="nx">qq</span><span class="o">.</span><span class="nx">com</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="mi">25</span><span class="p">);</span>
 </span><span class='line'>        <span class="c1">//设置登陆帐号和密码</span>
-</span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#97;&amp;#105;&amp;#x6c;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#x78;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#64;&amp;#x71;&amp;#x71;&amp;#46;&amp;#x63;&amp;#111;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#120;&amp;#x40;&amp;#x71;&amp;#x71;&amp;#x2e;&amp;#99;&amp;#111;&amp;#x6d;&lt;/a&gt;&amp;rsquo;);</span>
+</span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#x61;&amp;#x69;&amp;#108;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#64;&amp;#x71;&amp;#113;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#x40;&amp;#113;&amp;#x71;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;);</span>
 </span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="nv">$emailPassword</span><span class="p">);</span>
 </span><span class='line'>        <span class="c1">//得到发送邮件对象Swift_Mailer对象</span>
 </span><span class='line'>        <span class="nv">$mailer</span><span class="o">=</span><span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transport</span><span class="p">);</span>
 </span><span class='line'>        <span class="c1">//得到邮件信息对象</span>
 </span><span class='line'>        <span class="nv">$message</span><span class="o">=</span><span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">();</span>
 </span><span class='line'>        <span class="c1">//设置管理员的信息</span>
-</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#97;&amp;#x69;&amp;#x6c;&amp;#116;&amp;#111;&amp;#58;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#64;&amp;#113;&amp;#113;&amp;#46;&amp;#99;&amp;#x6f;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#120;&amp;#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#64;&amp;#113;&amp;#x71;&amp;#46;&amp;#99;&amp;#111;&amp;#109;&lt;/a&gt;&amp;rsquo;=&gt;&amp;lsquo;Reton&amp;rsquo;));</span>
+</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#x61;&amp;#105;&amp;#108;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#64;&amp;#113;&amp;#x71;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#120;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#64;&amp;#113;&amp;#113;&amp;#46;&amp;#99;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;=&gt;&amp;lsquo;Reton&amp;rsquo;));</span>
 </span><span class='line'>        <span class="c1">//将邮件发给谁</span>
 </span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$email</span><span class="o">=&gt;&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">reton</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;));</span>
 </span><span class='line'>        <span class="c1">//设置邮件主题</span>
@@ -866,972 +969,6 @@ echo "&lt;a href="test.php?'{$str}'&gt;test&lt;/a&gt;";
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;&lt;/</span><span class="nx">html</span><span class="o">&gt;</span>
 </span></code></pre></td></tr></table></div></figure></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Learn-more-PDO]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo/"/>
-    <updated>2016-05-19T18:47:27+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/19/learn-more-pdo</id>
-    <content type="html"><![CDATA[<blockquote><p>前段时间在做手机归属地查询的Demo时突然发现自己对PDO还是太生疏，一直都是用的以前的代码。很多都不太了解，于是重新系统的学习了一下PDO类。</p></blockquote>
-
-<!--more-->
-
-
-<h1>什么是PDO</h1>
-
-<p>PDO（PHP Data Object）数据库访问抽象层，统一各种数据库的访问接口。
-<strong>特性</strong>
-* 编码一致性
-* 灵活性
-* 高性能
-* 面向对象特性</p>
-
-<p>PDO的安装与配置，和PHP其他扩展的开启一样，只需要在<code>php.ini</code>里设置即可，这里就不多说了。</p>
-
-<h1>PDO连接数据库</h1>
-
-<pre><code class="php">&lt;?php 
-//通过参数形式连接数据库
-try{
-    $dsn='mysql:host=localhost;dbname=test';
-    $username='root';
-    $passwd='root';
-    $pdo=new PDO($dsn, $username, $passwd);
-    var_dump($pdo);
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<p><img src="http://b.picphotos.baidu.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=d2ce6c87044f78f0840b9af6490a7b68/aa64034f78f0f73686e0bed20d55b319eac413c2.jpg?referer=c0077f7aae014c08402c1c955dc1&amp;x=.jpg" alt="" /></p>
-
-<h1>PDO exec</h1>
-
-<blockquote><p>增删改，返回得是受影响的行数</p></blockquote>
-
-<pre><code class="php">&lt;?php 
-try{
-    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
-    //exec():执行一条sql语句并返回其受影响的记录的条数,如果没有受影响的记录，他返回0
-    //exec对于select没有作用
-    $sql=&lt;&lt;&lt;EOF
-        CREATE TABLE IF NOT EXISTS user(
-        id INT UNSIGNED AUTO_INCREMENT KEY,
-        username VARCHAR(20) NOT NULL UNIQUE,
-        password CHAR(32) NOT NULL,
-        email VARCHAR(30) NOT NULL
-        );
-EOF;
-    //$sql='INSERT user(username,password,email) VALUES("reton","reton","reton@qq.com")';
-    //$res=$pdo-&gt;exec($sql);
-    //echo '受影响的记录的条数为：'.$res,'&lt;br/&gt;';
-    //$pdo-&gt;lastInsertId():得到新插入记录的ID号
-    //echo '最后插入的ID号为'.$pdo-&gt;lastInsertId();
-    $res=$pdo-&gt;exec($sql);
-    var_dump($res); 
-    $sql='INSERT user(username,password,email) VALUES("reton","'.md5('reton').'","test@qq.com")';
-
-    //echo $sql;
-    $res=$pdo-&gt;exec($sql);
-    echo $res;
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<h1>PDO error 获取错误信息</h1>
-
-<blockquote><p>获取错误码和错误信息</p></blockquote>
-
-<pre><code class="php">&lt;?php 
-header('content-type:text/html;charset=utf-8');
-try{
-    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
-    $sql='delete from user12 where id=1';
-    $res=$pdo-&gt;exec($sql);
-    //echo $res.'条记录被影响';
-    //var_dump($res);
-    if($res===false){
-        //$pdo-&gt;errorCode():SQLSTATE的值
-        echo $pdo-&gt;errorCode();
-        echo '&lt;hr/&gt;';
-        //$pdo-&gt;errorInfo():返回的错误信息的数组，数组中包含3个单元
-        //0=&gt;SQLSTATE,1=&gt;CODE,2=&gt;INFO
-        $errInfo=$pdo-&gt;errorInfo();
-        print_r($errInfo);
-    }
-//  echo '&lt;hr/&gt;';
-//  echo $pdo-&gt;lastInsertId();
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<h1>PDO query</h1>
-
-<blockquote><p>执行查询，返回的是PDOStatement对象</p></blockquote>
-
-<pre><code class="php">&lt;?php 
-header('content-type:text/html;charset=utf-8');
-try{
-    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
-    //$sql='select * from user where id=2';
-    $sql='select id,username,email from user';
-    //$pdo-&gt;query($sql)，执行SQL语句，返回PDOStatement对象
-    $stmt=$pdo-&gt;query($sql);
-    var_dump($stmt);
-    echo '&lt;hr/&gt;';
-    foreach($stmt as $row){
-        //print_r($row);
-        echo '编号：'.$row['id'],'&lt;br/&gt;';
-        echo '用户名：'.$row['password'],'&lt;br/&gt;';
-        echo '邮箱：'.$row['email'],'&lt;br/&gt;';
-        echo '&lt;hr/&gt;';
-    }
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<h1>PDO prepare</h1>
-
-<blockquote><p>prepare 准备方法</p></blockquote>
-
-<pre><code class="php">header('content-type:text/html;charset=utf-8');
-try{
-    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
-    $sql='select * from user where username="reton"';
-    //prepare($sql):准备SQL语句
-    $stmt=$pdo-&gt;prepare($sql);
-    //execute():执行预处理语句
-    $res=$stmt-&gt;execute();
-    //var_dump($res);
-    //fetch():得到结果集中的一条记录
-    $row=$stmt-&gt;fetch();
-    print_r($row);
-
-    //var_dump($stmt);
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<pre><code class="php fetch.php">&lt;?php 
-header('content-type:text/html;charset=utf-8');
-try{
-    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
-    $sql='select * from user';
-    $stmt=$pdo-&gt;prepare($sql);
-    $res=$stmt-&gt;execute();
-//  if($res){
-//      while($row=$stmt-&gt;fetch()){
-//          print_r($row);
-//          echo '&lt;hr/&gt;';
-//      }
-//  }
-    $rows=$stmt-&gt;fetchAll();
-    print_r($rows);
-
-    //var_dump($stmt);
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<pre><code class="php setFetchMode.php">&lt;?php 
-header('content-type:text/html;charset=utf-8');
-try{
-    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
-    $sql='select * from user';
-    $stmt=$pdo-&gt;prepare($sql);
-    $res=$stmt-&gt;execute();
-//  if($res){
-//      while($row=$stmt-&gt;fetch(PDO::FETCH_OBJ)){//返回对象
-//          print_r($row);
-//          echo '&lt;hr/&gt;';
-//      }
-//  }
-//  $rows=$stmt-&gt;fetchAll(PDO::FETCH_ASSOC);//返回关联数组BOTH为数组加索引
-//  print_r($rows);
-    echo '&lt;hr/&gt;';
-    $stmt-&gt;setFetchMode(PDO::FETCH_ASSOC);//set了就不用传参了    
-    //var_dump($stmt);
-    $rows=$stmt-&gt;fetchAll();
-    print_r($rows);
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<h1>PDO getAttribute</h1>
-
-<blockquote><p>获得数据库连接属性</p></blockquote>
-
-<pre><code class="php">&lt;?php 
-header('content-type:text/html;charset=utf-8');
-try{
-    $dsn='mysql:host=localhost;dbname=test';
-    $username='root';
-    $passwd='root';
-    $pdo=new PDO($dsn, $username, $passwd);
-    echo '自动提交：'.$pdo-&gt;getAttribute(PDO::ATTR_AUTOCOMMIT);
-    echo '&lt;br/&gt;';
-    echo 'PDO默认的错误处理模式：'.$pdo-&gt;getAttribute(PDO::ATTR_ERRMODE);
-    $pdo-&gt;setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
-    echo '&lt;br/&gt;';
-    echo '自动提交：'.$pdo-&gt;getAttribute(PDO::ATTR_AUTOCOMMIT);
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<p>获取常用属性 并不是所有环境都支持一下的属性
-<code>php
-&lt;?php
-header('content-type:text/html;charset=utf-8');
-try{
-    $dsn='mysql:host=localhost;dbname=test';
-    $username='root';
-    $passwd='root';
-    $pdo=new PDO($dsn, $username, $passwd);
-    $attrArr=array(
-        'AUTOCOMMIT','ERRMODE','CASE','PERSISTENT','TIMEOUT','ORACLE_NULLS',
-            'SERVER_INFO','SERVER_VERSION','CLIENT_VERSION','CONNECTION_STATUS'
-    );
-    foreach($attrArr as $attr){
-        echo "PDO::ATTR_$attr: ";
-        echo $pdo-&gt;getAttribute(constant("PDO::ATTR_$attr")),'&lt;br/&gt;';
-    }
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></p>
-
-<h1>PDO setAttribute</h1>
-
-<blockquote><p>设置数据库连接属性</p></blockquote>
-
-<pre><code class="php">&lt;?php 
-header('content-type:text/html;charset=utf-8');
-try{
-    $dsn='mysql:host=localhost;dbname=test';
-    $username='root';
-    $passwd='root';
-    $options=array(PDO::ATTR_AUTOCOMMIT=&gt;0,PDO::ATTR_ERRMODE=&gt;PDO::ERRMODE_EXCEPTION);
-    $pdo=new PDO($dsn, $username, $passwd, $options);
-    echo $pdo-&gt;getAttribute(PDO::ATTR_AUTOCOMMIT);
-    echo '&lt;br/&gt;';
-    echo $pdo-&gt;getAttribute(PDO::ATTR_ERRMODE);
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code></pre>
-
-<h1>PDOStatement 对象的使用</h1>
-
-<p><strong>quote防注入</strong>
-<code>html login.php
- &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
-&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head&gt;
-&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
-&lt;title&gt;Insert title here&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;form action='doAction2.php' method='post'&gt;
-用户名：&lt;input type='text' name='username' /&gt;&lt;br/&gt;
-密码：&lt;input type='password' name='password'/&gt;&lt;br/&gt;
-&lt;input type='submit' value='登陆'/&gt;
-&lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code>
-<code>php  doAction2.php
-&lt;?php
-&lt;?php
-header('content-type:text/html;charset=utf-8');
-$username=$_POST['username'];
-$password=$_POST['password'];
-try{
-    $pdo=new PDO('mysql:host=localhost;dbname=test','root','root');
-    //echo $pdo-&gt;quote($username);
-    //$sql="select * from user where username='{$username}' and password='{$password}'";
-    //echo $sql;
-    //通过quote():返回带引号的字符串，过滤字符串中的特殊字符
-    $username=$pdo-&gt;quote($username);
-    $sql="select * from user where username={$username} and password='{$password}'";
-    echo $sql;
-    $stmt=$pdo-&gt;query($sql);
-    //PDOStatement对象的方法：rouCount()：对于select操作返回的结果集中记录的条数，
-    //对于INSERT、UPDATE、DELETE返回受影响的记录的条数
-    echo $stmt-&gt;rowCount();
-}catch(PDOException $e){
-    echo $e-&gt;getMessage();
-}
-</code>
-<strong>预处理语句的占位符</strong>
-第一种用：xxx
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">content</span><span class="o">-</span><span class="nx">type</span><span class="o">:</span><span class="nx">text</span><span class="o">/</span><span class="nx">html</span><span class="p">;</span><span class="nx">charset</span><span class="o">=</span><span class="nx">utf</span><span class="o">-</span><span class="mi">8</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="err">$</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">POST</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">username</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
-</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="err">$</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">POST</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">password</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
-</span><span class='line'><span class="k">try</span><span class="p">{</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">mysql</span><span class="o">:</span><span class="nx">host</span><span class="o">=</span><span class="nx">localhost</span><span class="p">;</span><span class="nx">dbname</span><span class="o">=</span><span class="nx">test</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>    <span class="nv">$sql</span><span class="o">=&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">select</span> <span class="o">*</span> <span class="nx">from</span> <span class="nx">user</span> <span class="nx">where</span> <span class="nx">username</span><span class="o">=:</span><span class="nx">username</span> <span class="k">and</span> <span class="nx">password</span><span class="o">=:</span><span class="nx">password</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span> <span class="c1">//占位</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">:</span><span class="nx">username</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span><span class="o">=&gt;</span><span class="nv">$username</span><span class="p">,</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">:</span><span class="nx">password</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span><span class="o">=&gt;</span><span class="nv">$password</span><span class="p">));</span><span class="nx">赋值</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span>
-</span><span class='line'><span class="nx">第二种用？</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">php</span>
-</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">content</span><span class="o">-</span><span class="nx">type</span><span class="o">:</span><span class="nx">text</span><span class="o">/</span><span class="nx">html</span><span class="p">;</span><span class="nx">charset</span><span class="o">=</span><span class="nx">utf</span><span class="o">-</span><span class="mi">8</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="err">$</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">POST</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">username</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
-</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="err">$</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">POST</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">password</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
-</span><span class='line'><span class="k">try</span><span class="p">{</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">mysql</span><span class="o">:</span><span class="nx">host</span><span class="o">=</span><span class="nx">localhost</span><span class="p">;</span><span class="nx">dbname</span><span class="o">=</span><span class="nx">test</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>    <span class="nv">$sql</span><span class="o">=&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">select</span> <span class="o">*</span> <span class="nx">from</span> <span class="nx">user</span> <span class="nx">where</span> <span class="nx">username</span><span class="o">=?</span> <span class="k">and</span> <span class="nx">password</span><span class="o">=?&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$username</span><span class="p">,</span><span class="nv">$password</span><span class="p">));</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;**</span><span class="nx">bindParam</span><span class="p">()</span><span class="nx">方法绑定参数到变量</span><span class="o">**</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">content</span><span class="o">-</span><span class="nx">type</span><span class="o">:</span><span class="nx">text</span><span class="o">/</span><span class="nx">html</span><span class="p">;</span><span class="nx">charset</span><span class="o">=</span><span class="nx">utf</span><span class="o">-</span><span class="mi">8</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'><span class="k">try</span><span class="p">{</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">mysql</span><span class="o">:</span><span class="nx">host</span><span class="o">=</span><span class="nx">localhost</span><span class="p">;</span><span class="nx">dbname</span><span class="o">=</span><span class="nx">test</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>    <span class="nv">$sql</span><span class="o">=&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">INSERT</span> <span class="nx">user</span><span class="p">(</span><span class="nx">username</span><span class="p">,</span><span class="nx">password</span><span class="p">,</span><span class="nx">email</span><span class="p">)</span> <span class="nx">VALUES</span><span class="p">(</span><span class="o">:</span><span class="nx">username</span><span class="p">,</span><span class="o">:</span><span class="nx">password</span><span class="p">,</span><span class="o">:</span><span class="nx">email</span><span class="p">)</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">prepare</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">:</span><span class="nx">username</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="nv">$username</span><span class="p">,</span><span class="nx">PDO</span><span class="o">::</span><span class="na">PARAM_STR</span><span class="p">);</span><span class="c1">//绑定参数，被绑定的项，绑定的地址（不能直接写值），参数类型。如果是用的？第一个参数要写1,2,3。表示第几个占位符</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">:</span><span class="nx">password</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="nv">$password</span><span class="p">,</span><span class="nx">PDO</span><span class="o">::</span><span class="na">PARAM_STR</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">:</span><span class="nx">email</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="nv">$email</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">imooc1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$password</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">imooc1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#97;&amp;#x69;&amp;#x6c;&amp;#116;&amp;#111;&amp;#58;&amp;#x69;&amp;#109;&amp;#x6f;&amp;#x6f;&amp;#x63;&amp;#49;&amp;#64;&amp;#105;&amp;#109;&amp;#111;&amp;#111;&amp;#x63;&amp;#46;&amp;#99;&amp;#x6f;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#105;&amp;#109;&amp;#x6f;&amp;#x6f;&amp;#x63;&amp;#49;&amp;#64;&amp;#x69;&amp;#109;&amp;#x6f;&amp;#x6f;&amp;#99;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#109;&lt;/a&gt;&amp;rsquo;;</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
-</span><span class='line'>    <span class="nv">$username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">MR</span><span class="o">.</span><span class="nx">KING1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$password</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">MR</span><span class="o">.</span><span class="nx">KING1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#x61;&amp;#105;&amp;#x6c;&amp;#x74;&amp;#x6f;&amp;#58;&amp;#77;&amp;#82;&amp;#x2e;&amp;#x4b;&amp;#73;&amp;#x4e;&amp;#x47;&amp;#x31;&amp;#64;&amp;#105;&amp;#x6d;&amp;#111;&amp;#111;&amp;#99;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#77;&amp;#82;&amp;#x2e;&amp;#x4b;&amp;#x49;&amp;#78;&amp;#x47;&amp;#x31;&amp;#x40;&amp;#105;&amp;#109;&amp;#x6f;&amp;#x6f;&amp;#x63;&amp;#46;&amp;#x63;&amp;#111;&amp;#x6d;&lt;/a&gt;&amp;rsquo;;</span>
-</span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">**</span><span class="nx">PDO错误处理模式</span><span class="o">**</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">php</span>
-</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="o">/&lt;</span><span class="nx">em</span><span class="o">&gt;</span>
-</span><span class='line'> <span class="nx">PDO</span><span class="o">::</span><span class="na">ERRMODE_SLIENT</span><span class="o">:</span><span class="nx">默认模式，静默模式</span>
-</span><span class='line'> <span class="nx">PDO</span><span class="o">::</span><span class="na">ERRMODE_WARNING</span><span class="o">:</span><span class="nx">警告模式</span>
-</span><span class='line'> <span class="nx">PDO</span><span class="o">::</span><span class="na">ERRMODE_EXCEPTION</span><span class="o">:</span><span class="nx">异常模式</span>
-</span><span class='line'> <span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;/</span>
-</span><span class='line'><span class="k">try</span><span class="p">{</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">mysql</span><span class="o">:</span><span class="nx">host</span><span class="o">=</span><span class="nx">localhost</span><span class="p">;</span><span class="nx">dbname</span><span class="o">=</span><span class="nx">test</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">setAttribute</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_ERRMODE</span><span class="p">,</span> <span class="nx">PDO</span><span class="o">::</span><span class="na">ERRMODE_EXCEPTION</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$sql</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">SELECT</span> <span class="o">*</span> <span class="nx">FROM</span> <span class="nx">noneTable</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">errorCode</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">errorInfo</span><span class="p">());</span>
-</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">!</span><span class="p">[](</span><span class="nx">http</span><span class="o">://</span><span class="nx">d</span><span class="o">.</span><span class="nx">picphotos</span><span class="o">.</span><span class="nx">baidu</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">album</span><span class="o">/</span><span class="nx">s</span><span class="o">%</span><span class="mi">3</span><span class="nx">D550</span><span class="o">%</span><span class="mi">3</span><span class="nx">Bq</span><span class="o">%</span><span class="mi">3</span><span class="nx">D90</span><span class="o">%</span><span class="mi">3</span><span class="nx">Bc</span><span class="o">%</span><span class="mi">3</span><span class="nx">Dxiangce</span><span class="o">%</span><span class="mi">2</span><span class="nx">C100</span><span class="o">%</span><span class="mi">2</span><span class="nx">C100</span><span class="o">/</span><span class="nx">sign</span><span class="o">=</span><span class="nx">d28d1e1ad02a60595610e11f180f45a6</span><span class="o">/</span><span class="nx">d8f9d72a6059252d57a8efd7339b033b5ab5b9a2</span><span class="o">.</span><span class="nx">jpg</span><span class="o">?</span><span class="nx">referer</span><span class="o">=</span><span class="nx">c8b46b4c29dda3cc52f38c100760</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="nx">x</span><span class="o">=.</span><span class="nx">jpg</span><span class="p">)</span>
-</span><span class='line'><span class="o">**</span><span class="nx">PDO事务处理模式</span><span class="o">**</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">php</span>
-</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">content</span><span class="o">-</span><span class="nx">type</span><span class="o">:</span><span class="nx">text</span><span class="o">/</span><span class="nx">html</span><span class="p">;</span><span class="nx">charset</span><span class="o">=</span><span class="nx">utf</span><span class="o">-</span><span class="mi">8</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'><span class="k">try</span><span class="p">{</span>
-</span><span class='line'>    <span class="nv">$dsn</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">mysql</span><span class="o">:</span><span class="nx">host</span><span class="o">=</span><span class="nx">localhost</span><span class="p">;</span><span class="nx">dbname</span><span class="o">=</span><span class="nx">test</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$passwd</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">root</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$options</span><span class="o">=</span><span class="k">array</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">ATTR_AUTOCOMMIT</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">=</span><span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$passwd</span><span class="p">,</span> <span class="nv">$options</span><span class="p">);</span>
-</span><span class='line'>    <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">inTransaction</span><span class="p">());</span>
-</span><span class='line'>    <span class="c1">//开启事务</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">beginTransaction</span><span class="p">();</span>
-</span><span class='line'>    <span class="nb">var_dump</span><span class="p">(</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">inTransaction</span><span class="p">());</span>
-</span><span class='line'>    <span class="c1">//$sql=&amp;lsquo;UPDATE userAccount SET money=money-2000 WHERE username=&amp;ldquo;imooc&amp;rdquo;&amp;rsquo;;</span>
-</span><span class='line'>    <span class="nv">$sql</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">UPDATE</span> <span class="nx">userAccount</span> <span class="nx">SET</span> <span class="nx">money</span><span class="o">=</span><span class="nx">money</span><span class="o">-</span><span class="mi">2000</span> <span class="nx">WHERE</span> <span class="nx">username</span><span class="o">=&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">imooc</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nv">$res1</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nb">exec</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$res1</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nx">PDOException</span><span class="p">(</span><span class="s1">&#39;imooc 转账失败&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nv">$res2</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nb">exec</span><span class="p">(</span><span class="s1">&#39;UPDATE userAccount SET money=money+2000 WHERE username=&quot;king1&quot;&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$res2</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nx">PDOException</span><span class="p">(</span><span class="s1">&#39;king 接收失败&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="c1">//提交事务</span>
-</span><span class='line'><span class="nv">$pdo</span><span class="o">-&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">commit</span><span class="p">();</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>    <span class="c1">//回滚事务</span>
-</span><span class='line'>    <span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">rollBack</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></p>
-
-<h1>PDO操作类封装</h1>
-
-<pre><code class="php">&lt;?php
-    /**
-     *
-     */
-    class PdoMySQL
-    {
-        public static $config=array();//设置链接参数，配置信息
-        public static $link=null;//保存链接标识符
-        public static $pconnect=false;//是否开启长链接
-        public static $dbVersion=null;//保存数据库版本
-        public static $connected=false;//是否链接成共
-        public static $PDOStatement=null;//保存ＰＤＯStatement对象
-        public static $queryStr = null;//保存最后执行的操作
-        public static $error=null;//保存错误信息
-        public static $lastInsertId=null;//最后插入记录的id
-        public static $numRows=0;//保存上一步影响的行数
-        function __construct($dbConfig='')
-        {
-            if(!class_exists("PDO")){
-                self::throw_excption("不支持ＰＤＯ，请先开启");
-            }
-            if(!is_array($dbConfig)){
-                $dbConfig=array(
-                    "hostname" =&gt; DB_HOST,
-                    "username" =&gt; DB_USER,
-                    "password" =&gt; DB_PWD,
-                    "database" =&gt; DB_NAME,
-                    "hostport" =&gt; DB_PORT,
-                    "dbms"     =&gt; DB_TYPE,
-                    "dsn" =&gt;DB_TYPE.":host=".DB_HOST.";dbname=".DB_NAME
-                );
-            }
-            if(empty($dbConfig['hostname']))self::throw_excption("没有定义数据库配置，请先定义。");
-            self::$config=$dbConfig;
-            if(empty(self::$config['params']))self::$config['params']=array();
-            if(!isset(self::$link)){
-                $configs=self::$config;
-                if(self::$pconnect){
-                    //开启长链接，添加到配置数组中
-                    $configs['params'][constant("PDO::ATTR_PERSISTENT")]=true;
-                }
-                try {
-                    self::$link=new PDO($configs['dsn'],$configs['username'],$configs['password'],$configs['params']);
-                } catch (PDOException $e) {
-                    self::throw_excption($e-&gt;getMessage());
-                }
-                if(!self::$link){
-                    self::throw_excption("PDO链接错误");
-                    return false;
-                }
-                self::$link-&gt;exec('SET NAMES'.DB_CHARSET);
-                self::$dbVersion=self::$link-&gt;getAttribute(constant("PDO::ATTR_SERVER_VERSION"));
-                self::$connected=true;
-                unset($configs);
-            }
-        }
-        /**
-         * 得到所有记录
-         * @param  [type] $sql [description]
-         * @return [type]      [description]
-         */
-         public static function getAll($sql=null)
-        {
-            if($sql!=null){
-                self::query($sql);
-            }
-            $result=self::$PDOStatement-&gt;fetchAll(constant("PDO::FETCH_ASSOC"));
-            return $result;
-        }
-        /**
-         * 得到结果集中的一条记录
-         * @param  [type] $sql [description]
-         * @return [type]      [description]
-         */
-        public static function getRow($sql=null)
-        {
-            if($sql!=null){
-                self::query($sql);
-            }
-            $result =self::$PDOStatement-&gt;fetch(constant("PDO::FETCH_ASSOC"));
-            return $result;
-        }
-        /**
-         * 解析字段
-         * @param  [type] $fields [description]
-         * @return [type]         [description]
-         */
-        public  static function parseFields($fields)
-        {
-            if(is_array($fields)){
-                    array_walk($fields,array('PdoMySQL','addSpecilChar'));
-                    $fieldsStr=implode(',',$fields);
-            }elseif (is_string($fields)&amp;&amp;!empty($fields)) {
-                if(strpos($fields,'`')===false){
-                    $fields=explode(',',$fields);
-                    array_walk($fields,array('PdoMySQL','addSpecilChar'));
-                    $fieldsStr=implode(',',$fields);
-                }else {
-                    $fieldsStr=$fields;
-                }
-            }else {
-                $fieldsStr='*';
-            }
-            return $fieldsStr;
-        }
-        /**
-         * 通过反引号引用字段，
-         * @param [type] $value [description]
-         */
-        public static function addSpecilChar(&amp;$value)
-        {
-            if($value==='*'||strpos($value,'.')!==false||strpos($value,'`')!==false){
-                //不用做处理
-            }elseif (strpos($value,'`')===false) {
-                # code...
-                $value='`'.trim($value).'`';
-            }
-            return $value;
-        }
-        /**
-         * 根据主键查记录
-         * @param  [type] $tabName [description]
-         * @param  [type] $priId   [description]
-         * @param  string $fields  [description]
-         * @return [type]          [description]
-         */
-        public  static function findById($tabName,$priId,$fields='*')
-        {
-            $sql="SELECT %s FROM %s WHERE id =%d";
-            return self::getRow(sprintf($sql,self::parseFields($fields),$tabName,$priId));
-        }
-        /**
-         * 执行普通查询，
-         * @param  [type] $tables [description]
-         * @param  [type] $where  [description]
-         * @param  string $fields [description]
-         * @param  [type] $group  [description]
-         * @param  [type] $having [description]
-         * @param  [type] $order  [description]
-         * @param  [type] $limit  [description]
-         * @return [type]         [description]
-         */
-        public static function find($tables,$where=null,$fields='*',$group=null,$having=null,$order=null,$limit=null)
-        {
-            $sql='SELECT '.self::parseFields($fields).' FROM '.$tables.self::parseWhere($where).self::parseGroup($group).self::parseHaving($having).self::parseOrder($order).self::parseLimit($limit);
-            $dataAll=self::getAll($sql);
-            // if(count($dataAll)==1){
-            //     $rlt=$dataAll[0];
-            // }else {
-            //     $rlt=$dataAll;
-            // }
-            // return $rlt;
-            return count($dataAll)==1?$dataAll[0]:$dataAll;
-        }
-        /**
-         * 添加记录
-         * array(
-         *
-         * )
-         * @param string $value [description]
-         */
-        public static function add($data,$table)
-        {
-            $keys=array_keys($data);
-            array_walk($keys,array('PdoMySQL','addSpecilChar'));
-            $fieldsStr=join(',',$keys);
-            $values="'".join("','",array_values($data))."'";
-            $sql="INSERT {$table}({$fieldsStr}) VALUES({$values})";
-            return self::execute($sql);
-        }
-        /**
-         * 更新记录
-         * @param  [array] $data  [description]
-         * @param  [string] $table [description]
-         * @param  [string] $where [description]
-         * @param  [string] $order [description]
-         * @param  [string] $limit [description]
-         * @return [type]        [description]
-         */
-        public  static function update($data,$table,$where=null,$order=null,$limit=null)
-        {
-            foreach ($data as $key =&gt; $value) {
-                $set.=$key."='".$value."',";
-            }
-            $sets=rtrim($sets,',');
-            $sql="UPDATE {$table} SET {$sets} ".self::parseWhere($where).self::parseOrder($order).self::parseLimit($limit);
-             return self::execute($sql);
-        }
-        /**
-         * 删除记录
-         * @param  [type]  $table [description]
-         * @param  [type]  $where [description]
-         * @param  [type]  $order [description]
-         * @param  integer $limit [description]
-         * @return [type]         [description]
-         */
-        public static function delete($table,$where=null,$order=null,$limit=0)
-        {
-            $sql="delete from {$table} " .self::parseWhere($where).self::parseOrder($order).self::parseLimit($limit);
-            return self::execute($sql);
-        }
-        /**
-         * 得到最后执行的ＳＱＬ语句
-         * @return [type] [description]
-         */
-        public static function getLastSql()
-        {
-            $link=self::$link;
-            if(!$link){
-                return false;
-            }
-            return self::$queryStr;
-        }
-        /**
-         * 得到上一步插入操作的ＩＤ
-         */
-        public static function getLsetInsertId()
-        {
-            $link=self::$link;
-            if(!$link)return false;
-            return self::$lastInsertId;
-        }
-        /**
-         * 得到数据库版本
-         */
-        public static function getDbVersion()
-        {
-            $link=self::$link;
-            if(!$link)return false;
-            return self::$dbVersion;
-        }
-        /**
-         * 得到数据库有哪些表
-         * @return [type] [description]
-         */
-        public  static function showTables()
-        {
-            $tables=array();
-            if(self::query('SHOW TABLES')){
-                $result = self::getAll();
-                foreach ($result as $key =&gt; $value) {
-                    # code...
-                    $tables[$key]=current($value);
-                }
-            }
-            return $tables;
-        }
-        /**
-         * 解析ｗｈｅｒｅ条件
-         * @param  [type] $where [description]
-         * @return [type]        [description]
-         */
-        public static function parseWhere($where)
-        {
-            $whereStr='';
-            if(is_string($where)&amp;&amp;!empty($where)){
-                $whereStr=$where;
-            }
-            return empty($whereStr)?'':' WHERE '.$whereStr;
-        }
-        /**
-         * 解析分组
-         * @param  [type] $group [description]
-         * @return [type]        [description]
-         */
-        public static function parseGroup($group)
-        {
-            $groupStr='';
-            if(is_array($group)){
-                $groupStr.=' GROUP BY '.implode(',',$group);
-            }elseif (is_string($group)&amp;&amp;!empty($group)) {
-                $groupStr.=' GROUP BY '.$group;
-            }
-            return empty($groupStr)?'':$groupStr;
-        }
-        /**
-         * 对分组结果通过Ｈａｖｉｎｇ子句进行二次删选
-         * @param  [type] $having [description]
-         * @return [type]         [description]
-         */
-        public static function parseHaving($having)
-        {
-            $havingStr='';
-            if(is_string($having)&amp;&amp;!empty($having)){
-                $havingStr.=' HAVING '.$having;
-            }
-            return $havingStr;
-        }
-        /**
-         * 解析order by
-         * @param  [type] $order [description]
-         * @return [type]        [description]
-         */
-        public  static function parseOrder($order)
-        {
-            $orderStr='';
-            if(is_array($order)){
-                $orderStr.=' ORDER BY '.join(',',$order);
-            }elseif (is_string($order)&amp;&amp;!empty($order)) {
-                $orderStr.=' ORDER BY '.$order;
-                # code...
-            }
-            return $orderStr;
-        }
-        /**
-         * 解析限制条数
-         * ｌｉｍｉｔ 3
-         * ｌｉｍｉｔ 0,3
-         * @param  [type] $limit [description]
-         * @return [type]        [description]
-         */
-        public  static function parseLimit($limit)
-        {
-            $limitStr='';
-            if(is_array($limit)){
-                if(count($limit)&gt;1){
-                    $limitStr.=' LIMIT '.$limit[0].','.$limit[1];
-                }else {
-                    $limitStr.=' LIMIT '.$limit[0];
-                }
-            }elseif (is_string($limit)&amp;&amp;!empty($limit)) {
-                $limitStr.=' LIMIT '.$limit;
-            }
-            return $limitStr;
-        }
-        /**
-         * 执行增删改，返回受影响的条数
-         * @param  [type] $sql [description]
-         * @return [type]      [description]
-         */
-        public static function execute($sql=null)
-        {
-            $link=self::$link;
-            if(!$link) return false;
-            self::$queryStr=$sql;
-            if(!empty(self::$PDOStatement))self::free();
-            $result=$link-&gt;exec(self::$queryStr);
-            self::haveErrorThrowException();
-            if($result){
-                self::$lastInsertId=$link-&gt;lastInsertId();
-                self::$numRows=$result;;
-                return self::$numRows;
-            }else {
-                return false;
-            }
-        }
-        /**
-         *释放结果集
-         * @return [type] [description]
-         */
-        public  static function free()
-        {
-            self::$PDOStatement=null;
-        }
-        /**
-         * 执行ｓｑｌ语句
-         * @param  string $sql [description]
-         * @return [type]      [description]
-         */
-        public static function query($sql='')
-        {
-            $link=self::$link;
-            if(!$link)return false;
-            //判断之前是否有结果集，如果有的话，释放结果集
-            if(!empty(self::$link)) self::free();
-            self::$queryStr=$sql;
-            self::$PDOStatement=$link-&gt;prepare(self::$queryStr);
-            $res = self::$PDOStatement-&gt;execute();
-            self::haveErrorThrowException();
-            return $res;
-        }
-        /**
-         * 如果有错误，抛出
-         * @return [type] [description]
-         */
-        public static function haveErrorThrowException()
-        {
-            $obj=empty(self::$PDOStatement)?self::$link:self::$PDOStatement;
-            $arrError=$obj-&gt;errorInfo();
-            // print_r($arrError);
-            if($arrError[0]!='00000'){
-                self::$error="SQLSTATE".$arrError[0]."SQL Error".$arrError[2]."&lt;br/&gt;Error SQL".self::$queryStr;
-                self::throw_excption(self::$error);
-                return false;
-            }
-            if(self::$queryStr==""){
-                self::throw_excption('没有执行的ＳＱＬ语句');
-                return false;
-            }
-        }
-        /**
-         * 自定义错误处理
-         * @param  [type] $errMsg [description]
-         * @return [type]         [description]
-         */
-        public function throw_excption($errMsg)
-        {
-            echo "&lt;div style='width:80%;background-color:#ABCDEF;colod:black;font-size:20px;padding:20px 0px;'&gt;
-            ".$errMsg."
-            &lt;/div&gt;";
-        }
-        /**
-         * 销毁链接对象，关闭数据库。
-         * @return [type] [description]
-         */
-        public static function close()
-        {
-            self::$link=null;
-        }
-
-    }
-require_once"config.php";
-// $PdoMySQL=new PdoMySQL;
-// // var_dump($PdoMySQL);
-// // $sql="insert user (username,password,email) values('reane23','sdf','sdf')";
-// $tables='user';
-// $res=$PdoMySQL-&gt;find($tables,'id&gt;=19','*',null,null,null,'3');
-// var_dump($res);
-// echo $PdoMySQL::$lastInsertId;
-// print_r($res);
-</code></pre>
-
-<pre><code class="php config.php">&lt;?php
-define("DB_HOST","localhost");
-define("DB_USER","root");
-define("DB_PWD","123456");
-define("DB_NAME","test");
-define("DB_PORT","3306");
-define("DB_TYPE","mysql");
-define("DB_CHARSET","utf8");
-</code></pre>
 ]]></content>
   </entry>
   
