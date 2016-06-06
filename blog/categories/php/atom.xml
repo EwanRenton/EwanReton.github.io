@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-02T21:40:21+08:00</updated>
+  <updated>2016-06-06T10:43:05+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,252 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(三)-策略模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/06/php-design-3/"/>
+    <updated>2016-06-06T10:32:22+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/06/php-design-3</id>
+    <content type="html"><![CDATA[<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
+
+<h1>一、策略模式概念</h1>
+
+<p>策略模式针对一组算法，将每一个算法封装到具有共同接口的独立的类中,此模式让算法的变化独立于使用算法的客户。从而让程序结构更灵活，具有更好的扩展性和维护性。</p>
+
+<p>策略模式:定义了算法族,分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户。</p>
+
+<p>封装:把行为用接口封装起来，我们可以把那些经常变化的部分，从当前的类中单独取出来，用接口进行单独的封装。
+互相替换:我们封装好了接口，通过指定不同的接口实现类进行算法的变化。</p>
+
+<h1>二、策略模式结构图</h1>
+
+<p><img src="http://www.phpddt.com/usr/uploads/2014/01/2390999757.jpg" alt="" /></p>
+
+<h1>三、策略模式角色说明</h1>
+
+<p> 抽象策略(Strategy）角色：定义所有支持的算法的公共接口。通常是以一个接口或抽象来实现。Context使用这个接口来调用其ConcreteStrategy定义的算法。</p>
+
+<p>具体策略(ConcreteStrategy)角色：以Strategy接口实现某具体算法</p>
+
+<p>环境(Context)角色：持有一个Strategy类的引用，用一个ConcreteStrategy对象来配置</p>
+
+<h1>四、实例一</h1>
+
+<p>比如说购物车系统，在给商品计算总价的时候，普通会员肯定是商品单价乘以数量，但是对中级会员提供8者折扣，对高级会员提供7折折扣，这种场景就可以使用策略模式实现：</p>
+
+<pre><code class="php">/**
+ * 策略模式实例
+ * 
+ */
+//抽象策略角色《为接口或者抽象类，给具体策略类继承》
+interface Strategy
+{
+    public function computePrice($price);
+}
+
+//具体策略角色-普通会员策略类
+class GenernalMember implements Strategy
+{
+    public function computePrice($price)
+    {
+        return $price;
+    }
+}
+
+//具体策略角色-中级会员策略类
+class MiddleMember implements Strategy
+{
+    public function computePrice($price)
+    {
+        return $price * 0.8;
+    }
+}
+
+//具体策略角色-高级会员策略类
+class HignMember implements Strategy
+{
+    public function computePrice($price)
+    {
+        return $price * 0.7;
+    }
+}
+
+//环境角色实现类
+class Price 
+{
+    //具体策略对象
+    private $strategyInstance;
+
+    //构造函数
+    public function __construct($instance)
+    {
+        $this-&gt;strategyInstance = $instance;
+    }
+
+    public function compute($price)
+    {
+        return $this-&gt;strategyInstance-&gt;computePrice($price);
+    }
+}
+
+//客户端使用
+$p = new Price(new HignMember());
+
+$totalPrice = $p-&gt;compute(100);
+
+echo $totalPrice; //70
+</code></pre>
+
+<h1>实例二</h1>
+
+<p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
+
+<p>我来解释下这个思维导图的过程：
+1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
+
+<p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
+
+<p> 问题来了：</p>
+
+<ul>
+<li>原来Duck的子类中竟然有橡皮鸭，橡皮鸭是不会飞的。——Joe用重载的方式，把橡皮鸭的fly()方法设置为空.</li>
+<li>覆盖fly()，我们看到了橡皮鸭的fly()里，没有任何代码，如果以后我们再添加别的不会飞的鸭子，那我么还要这么处理吗?——那么代码重复了!</li>
+</ul>
+
+
+<p>3.上面2的方式我们知道是有问题的，所以Joe想到把Duck做成接口，这样每个子类必须实现Duck里的方法。这样就保证每个鸭子都能根据自己的需要添加行为。</p>
+
+<p>问题来了：</p>
+
+<ul>
+<li>产品经常处于更新中，规格也在不断的变化。导致每当有新鸭子的时候，Joe就要被迫检查一遍子类是否覆盖了fly()方法。——当你修改某个行为的时候，你必须得往下追踪并在每一个定义此行为的类中修改它。</li>
+</ul>
+
+
+<p>4.综合以上问题，Joe想到了把那些变化的部分从不变化的位置中抽出来。比如，我们对fly()行为，做了单独的接口FlyBehavior。如果鸭子想要飞行功能的时候，我们就让鸭子实现FlyBehavior.</p>
+
+<p>5.深造:我们想让鸭子有不同的飞行功能，让它在运行时候做不同的飞行动作。让鸭子类实现接口，只能让鸭子有一种行为。</p>
+
+<p>所以Joe，想到用组合的防止，当鸭子需要其他飞行功能要求的时候，我们可以用setBehavior()方式，指定性的飞行方式。</p>
+
+<pre><code class="php">interface FlyBehavior{
+    public function fly();
+}
+
+class FlyWithWings implements FlyBehavior{
+    public function fly(){
+        echo "Fly With Wings \n";
+    }
+}
+
+class FlyWithNo implements FlyBehavior{
+    public function fly(){
+        echo "Fly With No Wings \n";
+    }
+}
+class Duck{
+    private $_flyBehavior;
+    public function performFly(){
+        $this-&gt;_flyBehavior-&gt;fly();
+    }
+
+    public function setFlyBehavior(FlyBehavior $behavior){
+        $this-&gt;_flyBehavior = $behavior;
+    }
+}
+
+class RubberDuck extends Duck{
+}
+// Test Case
+$duck = new RubberDuck();
+
+/*  想让鸭子用翅膀飞行 */
+$duck-&gt;setFlyBehavior(new FlyWithWings());
+$duck-&gt;performFly();            
+
+/*  想让鸭子不用翅膀飞行 */
+$duck-&gt;setFlyBehavior(new FlyWithNo());
+$duck-&gt;performFly();
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(二)-适配器模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/04/php-design-2/"/>
+    <updated>2016-06-04T12:21:09+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/04/php-design-2</id>
+    <content type="html"><![CDATA[<h1>适配器模式</h1>
+
+<ol>
+<li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
+<li>实际应用举例，PHP的数据库操作有mysql，mysqli，pdo3种，可以用适配器模式改成统一致的，类似的还有cache适配器，将memcache，redis，file，apc等不同的缓存函数，统一成一致的。</li>
+</ol>
+
+
+<p>角色：</p>
+
+<ul>
+<li>Target适配目标，该角色定义把其他类转换为何种接口，也就是我们的期望接口。</li>
+<li>Adaptee被适配者，就是需要被适配的接口。</li>
+<li>Adapter适配器，其他的两个角色都是已经存在的角色，而适配器角色是需要新建立的，它用来对Adaptee与Target接口进行适配。</li>
+</ul>
+
+
+<p>优势：</p>
+
+<p>被适配者通过适配器完成对适配目标的适配，以达到对客户使用透明的目的。</p>
+
+<pre><code class="php">//适配目标，规定的接口将被适配对象实现
+interface IDatabase
+{
+    public function connect($host, $username, $password, $database);
+    public function query($sql);
+}
+ 
+//适配器
+class Mysql implements IDatabase
+{
+    protected $connect;
+ 
+    public function connect($host, $username, $password, $database)
+    {
+        $connect = mysql_connect($host, $username, $password);
+        mysql_select_db($database, $connect);
+        $this-&gt;connect = $connect;
+        //...
+    }
+ 
+    public function query($sql)
+    {
+        //...
+    }
+}
+ 
+//适配器
+class Postgresql implements IDatabase
+{
+    protected $connect;
+ 
+    public function connect($host, $username, $password, $database)
+    {
+        $this-&gt;connect = pg_connect("host=$host dbname=$database user=$username password=$password");
+        //...
+    }
+ 
+    public function query($sql)
+    {
+        //...
+    }
+}
+ 
+ 
+//客户端使用
+$client = new Postgresql();
+$client-&gt;query($sql);
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[php加密]]></title>
@@ -436,14 +682,14 @@ echo "&lt;a href="test.php?'{$str}'&gt;test&lt;/a&gt;";
 </span><span class='line'>        <span class="c1">//配置邮件服务器，得到传输对象</span>
 </span><span class='line'>        <span class="nv">$transport</span><span class="o">=</span><span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">smtp</span><span class="o">.</span><span class="nx">qq</span><span class="o">.</span><span class="nx">com</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="mi">25</span><span class="p">);</span>
 </span><span class='line'>        <span class="c1">//设置登陆帐号和密码</span>
-</span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#x61;&amp;#105;&amp;#x6c;&amp;#116;&amp;#111;&amp;#58;&amp;#x78;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#120;&amp;#x40;&amp;#113;&amp;#113;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#120;&amp;#120;&amp;#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#x78;&amp;#64;&amp;#x71;&amp;#113;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;);</span>
+</span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#97;&amp;#105;&amp;#x6c;&amp;#116;&amp;#x6f;&amp;#58;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#64;&amp;#113;&amp;#113;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#120;&amp;#120;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#64;&amp;#x71;&amp;#x71;&amp;#46;&amp;#x63;&amp;#111;&amp;#109;&lt;/a&gt;&amp;rsquo;);</span>
 </span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="nv">$emailPassword</span><span class="p">);</span>
 </span><span class='line'>        <span class="c1">//得到发送邮件对象Swift_Mailer对象</span>
 </span><span class='line'>        <span class="nv">$mailer</span><span class="o">=</span><span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transport</span><span class="p">);</span>
 </span><span class='line'>        <span class="c1">//得到邮件信息对象</span>
 </span><span class='line'>        <span class="nv">$message</span><span class="o">=</span><span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">();</span>
 </span><span class='line'>        <span class="c1">//设置管理员的信息</span>
-</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#97;&amp;#105;&amp;#108;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#x40;&amp;#113;&amp;#x71;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x78;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#64;&amp;#113;&amp;#113;&amp;#46;&amp;#99;&amp;#111;&amp;#109;&lt;/a&gt;&amp;rsquo;=&gt;&amp;lsquo;Reton&amp;rsquo;));</span>
+</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#x61;&amp;#x69;&amp;#108;&amp;#x74;&amp;#x6f;&amp;#58;&amp;#120;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#x78;&amp;#64;&amp;#113;&amp;#113;&amp;#46;&amp;#99;&amp;#111;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#x40;&amp;#x71;&amp;#x71;&amp;#46;&amp;#99;&amp;#x6f;&amp;#x6d;&lt;/a&gt;&amp;rsquo;=&gt;&amp;lsquo;Reton&amp;rsquo;));</span>
 </span><span class='line'>        <span class="c1">//将邮件发给谁</span>
 </span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$email</span><span class="o">=&gt;&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">reton</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;));</span>
 </span><span class='line'>        <span class="c1">//设置邮件主题</span>
@@ -1075,11 +1321,11 @@ try{
 </span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">bindParam</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">:</span><span class="nx">email</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="nv">$email</span><span class="p">);</span>
 </span><span class='line'>    <span class="nv">$username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">imooc1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
 </span><span class='line'>    <span class="nv">$password</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">imooc1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#x61;&amp;#x69;&amp;#x6c;&amp;#116;&amp;#111;&amp;#58;&amp;#x69;&amp;#109;&amp;#111;&amp;#111;&amp;#99;&amp;#x31;&amp;#64;&amp;#105;&amp;#109;&amp;#111;&amp;#x6f;&amp;#99;&amp;#46;&amp;#x63;&amp;#111;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#105;&amp;#x6d;&amp;#x6f;&amp;#x6f;&amp;#x63;&amp;#x31;&amp;#64;&amp;#x69;&amp;#x6d;&amp;#111;&amp;#x6f;&amp;#99;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#x6d;&lt;/a&gt;&amp;rsquo;;</span>
+</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#97;&amp;#105;&amp;#x6c;&amp;#116;&amp;#x6f;&amp;#58;&amp;#x69;&amp;#x6d;&amp;#x6f;&amp;#x6f;&amp;#x63;&amp;#x31;&amp;#64;&amp;#105;&amp;#109;&amp;#x6f;&amp;#111;&amp;#99;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x69;&amp;#x6d;&amp;#x6f;&amp;#111;&amp;#x63;&amp;#x31;&amp;#64;&amp;#105;&amp;#109;&amp;#x6f;&amp;#x6f;&amp;#99;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#x6d;&lt;/a&gt;&amp;rsquo;;</span>
 </span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
 </span><span class='line'>    <span class="nv">$username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">MR</span><span class="o">.</span><span class="nx">KING1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
 </span><span class='line'>    <span class="nv">$password</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">MR</span><span class="o">.</span><span class="nx">KING1</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#97;&amp;#105;&amp;#x6c;&amp;#116;&amp;#x6f;&amp;#58;&amp;#77;&amp;#82;&amp;#46;&amp;#x4b;&amp;#x49;&amp;#x4e;&amp;#x47;&amp;#49;&amp;#x40;&amp;#105;&amp;#109;&amp;#x6f;&amp;#111;&amp;#x63;&amp;#46;&amp;#x63;&amp;#111;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x4d;&amp;#82;&amp;#46;&amp;#75;&amp;#x49;&amp;#78;&amp;#71;&amp;#49;&amp;#64;&amp;#x69;&amp;#x6d;&amp;#x6f;&amp;#x6f;&amp;#99;&amp;#x2e;&amp;#99;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;;</span>
+</span><span class='line'>    <span class="nv">$email</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#97;&amp;#105;&amp;#x6c;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#77;&amp;#x52;&amp;#x2e;&amp;#75;&amp;#x49;&amp;#x4e;&amp;#x47;&amp;#x31;&amp;#64;&amp;#x69;&amp;#x6d;&amp;#x6f;&amp;#111;&amp;#x63;&amp;#46;&amp;#99;&amp;#x6f;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x4d;&amp;#x52;&amp;#x2e;&amp;#x4b;&amp;#x49;&amp;#x4e;&amp;#71;&amp;#49;&amp;#64;&amp;#105;&amp;#109;&amp;#111;&amp;#111;&amp;#99;&amp;#46;&amp;#99;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;;</span>
 </span><span class='line'>    <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
 </span><span class='line'>    <span class="k">echo</span> <span class="nv">$stmt</span><span class="o">-&gt;</span><span class="na">rowCount</span><span class="p">();</span>
 </span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
@@ -1575,165 +1821,6 @@ define("DB_NAME","test");
 define("DB_PORT","3306");
 define("DB_TYPE","mysql");
 define("DB_CHARSET","utf8");
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[php手机归属地查询Demo]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/18/php-phone-location/"/>
-    <updated>2016-05-18T22:37:17+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/18/php-phone-location</id>
-    <content type="html"><![CDATA[<blockquote><p>看了视频过后准备自己撸一个PHP的手机归属地查询。这个Demo的思路和方法其实算不上难。但是这个Demo作者使用了框架的思维并且用到了SPL等知识。以前没有写过这样的代码，所以决定自己写一次。</p></blockquote>
-
-<!--more-->
-
-
-<h1>下面具体说说这个Demo中遇到的一些问题。</h1>
-
-<p><strong>SPL-AutoLoad</strong></p>
-
-<p>在使用SPL的autoload时，借助以前的Spl的代码来实际使用，发现在实际的项目中老是出现无法加载的情况。
-先把具体代码贴出来
-<code>php
-&lt;?php
-    use app\MobileQuery;
-    spl_autoload_extensions();
-    set_include_path(get_include_path().PATH_SEPARATOR."libs/".PATH_SEPARATOR."app/");
-    spl_autoload_register();
-?&gt;
-</code>
-<code>PHP
-&lt;?php libs/mypdo.php
-namespace libs;
-use \PDO;
-    class mypdo
-    {
-    }
-</code>
-如上，当我将<code>libs/mypdo.php</code>命名为<code>MyPdo.php</code>时，在实例化<code>mypdo</code>就会发生不能加载的情况，而如果命名成小写就没有问题。
-原因如下:</p>
-
-<pre class="prettyprint linenums">
-WINDOWS大小写不敏感，而在LINUX下区分大小写，
-spl_autoload会把类名转化为小写进行文件搜索，
-这样就造成linux下无法正常include文件.
-解决办法:
-1.索性把被包含文件改成小写；
-2.扫目录得到文件列表，然后遍历列表去匹配出正确文件名，包含之。
-</pre>
-
-
-<p><strong>PHP内存不够</strong></p>
-
-<p>这个其实问题是出在对命名空间理解不透彻。</p>
-
-<p>之前在使用PDO的时候为了方便，直接将自定义的PDO操作类命名为<code>PDO.php</code>并且在构造函数中实例化PDO对象。
-```php
-&lt;?php
-namespace libs;
-use \PDO;
-    class PDO
-    {
-        public function __construct()
-        {
-            try {</p>
-
-<pre><code>            $this-&gt;db = new PDO("mysql:host=".$this-&gt;db_host.";dbname=".$this-&gt;db_name,$this-&gt;db_user,$this-&gt;db_pass);
-            $this-&gt;db-&gt;exec("SET CHARACTER SET".$this-&gt;db_charset);
-            $this-&gt;db-&gt;exec("SET NAMES".$this-&gt;db_charset);
-        } catch (PDOException $e) {
-            print "Error!:".$e-&gt;getMessage()."&lt;br&gt;";
-            die();
-        }
-
-    }
-}
-</code></pre>
-
-<p>?>
-<code>
-一直报错，PHP每次不够，改了很多次</code>php.ini<code>都没用。后来突然发现是我在</code>new PDO<code>的时候它实际上是</code>new```的自己本身，造成了一个死循环。</p>
-
-<p>后来将类名改成<code>mypdo</code>后发现找不到PDO。</p>
-
-<p>原来是我这里用了命名空间的概念，如果想用PDO需要在前面加入
-<code>php
-use \PDO;
-</code>。</p>
-
-<p><em>*MySQL删除json_encode()出来的*</em></p>
-
-<p>在将数据保存到数据库后，在读数据时不能<code>json_decode</code>对应的中文。</p>
-
-<p>后来发现是在存入数据库时，中文编码出来的<code>\</code>被删除了。
-<code>php
-{"a":"\u232e234\e23"}//json_encode的结果
-{"a":"u232e234e23"}//存到数据库的结果
-</code>
-解决方法:
-在外层调用一下函数addslashes();这个函数会在每个反斜杠的前面添加反斜杠，如此这般就可以存进数据库了。
-<code>php
-  $info = addslashes(json_encode($review_log));//这样处理后存进数据库就不回丢失“\"
-</code>
-最后我将这个Demo放到了GitHub：<a href="https://github.com/EwanReton/PhpPhoneLocation">https://github.com/EwanReton/PhpPhoneLocation</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP-namespace-use用法]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/18/php-namespace-use/"/>
-    <updated>2016-05-18T22:14:17+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/18/php-namespace-use</id>
-    <content type="html"><![CDATA[<blockquote><p>今天在看视频的时候发现作者用到了namespce和use。以前只在ThinkPHP框架中看到过这种用法，以为是ThinkPHP框架特有的，也就一直没上心。今天有又看到了觉定深入了解下。</p></blockquote>
-
-<!--more-->
-
-
-<h1>什么是命名空间？</h1>
-
-<p>从广义上来说，命名空间是一种封装事物的方法。在很多地方都可以见到这种抽象概念。例如，在操作系统中目录用来将相关文件分组，对于目录中的文件来说，它就扮演了命名空间的角色。具体举个例子，文件 foo.txt 可以同时在目录/home/greg 和 /home/other 中存在，但在同一个目录中不能存在两个 foo.txt 文件。另外，在目录 /home/greg 外访问 foo.txt 文件时，我们必须将目录名以及目录分隔符放在文件名之前得到 /home/greg/foo.txt。这个原理应用到程序设计领域就是命名空间的概念。</p>
-
-<p>在PHP中，命名空间用来解决在编写类库或应用程序时创建可重用的代码如类或函数时碰到的两类问题：</p>
-
-<ol>
-<li>用户编写的代码与PHP内部的类/函数/常量或第三方类/函数/常量之间的名字冲突。</li>
-<li>为很长的标识符名称(通常是为了缓解第一类问题而定义的)创建一个别名（或简短）的名称，提高源代码的可读性。</li>
-</ol>
-
-
-<p>下面介绍几种使用namespace和use的方法:</p>
-
-<p>namespace（以下简称ns）。在定义了一个ns之后，下面所申明的class、interface、const（不包含variable）都是在申明的ns这个“域”里面的。当引用一个申明了ns的包含文件，想要调用这个ns里面的东西，那必须调整当前脚本也到此ns域，否则就得用全称（）包含ns全称）：</p>
-
-<pre><code class="php">// inc.php  
-namespace Foo;  
-class Bar {}  
-
-// 访问Foo的第一种方法，用全称  
-require 'inc.php';  
-$foo = new \Foo\Bar();  
-
-// 访问Foo的第二种方法  
-namespace Foo; // 调整当前脚本到Foo这个ns域，而且namespace申明必须在第一句  
-require 'inc.php';  
-$foo = new Bar();  
-</code></pre>
-
-<p><em>use关键字目的是使用ns的别名：</em></p>
-
-<pre><code class="php">// 比如  
-use A\Very\Long\Namespace as Ns;  
-// 这样就可以用Ns来代替A/Very/Long/Namespace这个ns下定义的东西  
-$foo = new Ns\Foo(); 
-</code></pre>
-
-<p>但是在一些开源项目里面经常会看到use Ns\Component这样的用法，没有用as，这让我以前一直在思考use是否还有第二种用法，糟糕的是php的文档里面也没有对此用法有描述，只能靠猜测，后来仔细想过这个问题，得出一个比较靠谱的结论是use可以省略as以及后面的别名而直接把ns最后一个节点的名字当作别名，感觉是不是很像ln -s命令的用法呢：</p>
-
-<pre><code class="php">// 第三种用法  
-require 'inc.php';  
-use Foo\Bar; // 这样Bar就等于Foo\Bar了  
-$foo = new Bar();  
 </code></pre>
 ]]></content>
   </entry>

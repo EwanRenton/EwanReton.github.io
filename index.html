@@ -9,7 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="git GIT分支 今天在学习git的远程操作的时候发现了一篇关于分支(branch)的文章，讲得非常好。让我对分支的理解更深了一步. 先贴上原地址http://www.tuicool.com/articles/U73q63V 然后就照搬了0 0 git的分支是什么 顾名思义， &hellip;">
+	<meta name="description" content="php PHP设计模式(三)-策略模式 在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。 一、策略模式概念 策略模式针对一组算法，将每一个算法封装到具有共同接口的独立的类中,此模式让算法的变化独立于使用算法的客户。从而让程序结构更灵活， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,11 +75,11 @@
   <ul id="categories">
     <li class='category'><a href='/blog/categories/git/'>git (3)</a></li>
 <li class='category'><a href='/blog/categories/javascript/'>javascript (2)</a></li>
-<li class='category'><a href='/blog/categories/linux/'>linux (5)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>linux (6)</a></li>
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (15)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (17)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -122,6 +122,544 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-06T10:32:22+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-3/" itemprop="url">PHP设计模式(三)-策略模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
+
+<h1>一、策略模式概念</h1>
+
+<p>策略模式针对一组算法，将每一个算法封装到具有共同接口的独立的类中,此模式让算法的变化独立于使用算法的客户。从而让程序结构更灵活，具有更好的扩展性和维护性。</p>
+
+<p>策略模式:定义了算法族,分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户。</p>
+
+<p>封装:把行为用接口封装起来，我们可以把那些经常变化的部分，从当前的类中单独取出来，用接口进行单独的封装。
+互相替换:我们封装好了接口，通过指定不同的接口实现类进行算法的变化。</p>
+
+<h1>二、策略模式结构图</h1>
+
+<p><img src="http://www.phpddt.com/usr/uploads/2014/01/2390999757.jpg" alt="" /></p>
+
+<h1>三、策略模式角色说明</h1>
+
+<p> 抽象策略(Strategy）角色：定义所有支持的算法的公共接口。通常是以一个接口或抽象来实现。Context使用这个接口来调用其ConcreteStrategy定义的算法。</p>
+
+<p>具体策略(ConcreteStrategy)角色：以Strategy接口实现某具体算法</p>
+
+<p>环境(Context)角色：持有一个Strategy类的引用，用一个ConcreteStrategy对象来配置</p>
+
+<h1>四、实例一</h1>
+
+<p>比如说购物车系统，在给商品计算总价的时候，普通会员肯定是商品单价乘以数量，但是对中级会员提供8者折扣，对高级会员提供7折折扣，这种场景就可以使用策略模式实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 策略模式实例</span>
+</span><span class='line'><span class="sd"> * </span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="c1">//抽象策略角色《为接口或者抽象类，给具体策略类继承》</span>
+</span><span class='line'><span class="k">interface</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//具体策略角色-普通会员策略类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">GenernalMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//具体策略角色-中级会员策略类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MiddleMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//具体策略角色-高级会员策略类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">HignMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span> <span class="o">*</span> <span class="mf">0.7</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//环境角色实现类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Price</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//具体策略对象</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$strategyInstance</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//构造函数</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$instance</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">strategyInstance</span> <span class="o">=</span> <span class="nv">$instance</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">compute</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">strategyInstance</span><span class="o">-&gt;</span><span class="na">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//客户端使用</span>
+</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Price</span><span class="p">(</span><span class="k">new</span> <span class="nx">HignMember</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$totalPrice</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">compute</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$totalPrice</span><span class="p">;</span> <span class="c1">//70</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>实例二</h1>
+
+<p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
+
+<p>我来解释下这个思维导图的过程：
+1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
+
+<p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
+
+<p> 问题来了：</p>
+
+<ul>
+<li>原来Duck的子类中竟然有橡皮鸭，橡皮鸭是不会飞的。——Joe用重载的方式，把橡皮鸭的fly()方法设置为空.</li>
+<li>覆盖fly()，我们看到了橡皮鸭的fly()里，没有任何代码，如果以后我们再添加别的不会飞的鸭子，那我么还要这么处理吗?——那么代码重复了!</li>
+</ul>
+
+
+<p>3.上面2的方式我们知道是有问题的，所以Joe想到把Duck做成接口，这样每个子类必须实现Duck里的方法。这样就保证每个鸭子都能根据自己的需要添加行为。</p>
+
+<p>问题来了：</p>
+
+<ul>
+<li>产品经常处于更新中，规格也在不断的变化。导致每当有新鸭子的时候，Joe就要被迫检查一遍子类是否覆盖了fly()方法。——当你修改某个行为的时候，你必须得往下追踪并在每一个定义此行为的类中修改它。</li>
+</ul>
+
+
+<p>4.综合以上问题，Joe想到了把那些变化的部分从不变化的位置中抽出来。比如，我们对fly()行为，做了单独的接口FlyBehavior。如果鸭子想要飞行功能的时候，我们就让鸭子实现FlyBehavior.</p>
+
+<p>5.深造:我们想让鸭子有不同的飞行功能，让它在运行时候做不同的飞行动作。让鸭子类实现接口，只能让鸭子有一种行为。</p>
+
+<p>所以Joe，想到用组合的防止，当鸭子需要其他飞行功能要求的时候，我们可以用setBehavior()方式，指定性的飞行方式。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">interface</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FlyWithWings</span> <span class="k">implements</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">(){</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;Fly With Wings </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FlyWithNo</span> <span class="k">implements</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">(){</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;Fly With No Wings </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Duck</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$_flyBehavior</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">performFly</span><span class="p">(){</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_flyBehavior</span><span class="o">-&gt;</span><span class="na">fly</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">setFlyBehavior</span><span class="p">(</span><span class="nx">FlyBehavior</span> <span class="nv">$behavior</span><span class="p">){</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_flyBehavior</span> <span class="o">=</span> <span class="nv">$behavior</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RubberDuck</span> <span class="k">extends</span> <span class="nx">Duck</span><span class="p">{</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// Test Case</span>
+</span><span class='line'><span class="nv">$duck</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RubberDuck</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*  想让鸭子用翅膀飞行 */</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">setFlyBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">FlyWithWings</span><span class="p">());</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">performFly</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*  想让鸭子不用翅膀飞行 */</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">setFlyBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">FlyWithNo</span><span class="p">());</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">performFly</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-04T12:21:09+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/04/php-design-2/" itemprop="url">PHP设计模式(二)-适配器模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h1>适配器模式</h1>
+
+<ol>
+<li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
+<li>实际应用举例，PHP的数据库操作有mysql，mysqli，pdo3种，可以用适配器模式改成统一致的，类似的还有cache适配器，将memcache，redis，file，apc等不同的缓存函数，统一成一致的。</li>
+</ol>
+
+
+<p>角色：</p>
+
+<ul>
+<li>Target适配目标，该角色定义把其他类转换为何种接口，也就是我们的期望接口。</li>
+<li>Adaptee被适配者，就是需要被适配的接口。</li>
+<li>Adapter适配器，其他的两个角色都是已经存在的角色，而适配器角色是需要新建立的，它用来对Adaptee与Target接口进行适配。</li>
+</ul>
+
+
+<p>优势：</p>
+
+<p>被适配者通过适配器完成对适配目标的适配，以达到对客户使用透明的目的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">//适配目标，规定的接口将被适配对象实现</span>
+</span><span class='line'><span class="k">interface</span> <span class="nx">IDatabase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="c1">//适配器</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Mysql</span> <span class="k">implements</span> <span class="nx">IDatabase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$connect</span><span class="p">;</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$connect</span> <span class="o">=</span> <span class="nb">mysql_connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">);</span>
+</span><span class='line'>        <span class="nb">mysql_select_db</span><span class="p">(</span><span class="nv">$database</span><span class="p">,</span> <span class="nv">$connect</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">connect</span> <span class="o">=</span> <span class="nv">$connect</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="c1">//适配器</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Postgresql</span> <span class="k">implements</span> <span class="nx">IDatabase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$connect</span><span class="p">;</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">connect</span> <span class="o">=</span> <span class="nb">pg_connect</span><span class="p">(</span><span class="s2">&quot;host=</span><span class="si">$host</span><span class="s2"> dbname=</span><span class="si">$database</span><span class="s2"> user=</span><span class="si">$username</span><span class="s2"> password=</span><span class="si">$password</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="c1">//客户端使用</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Postgresql</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$client</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-04T11:39:34+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/linux/'>linux</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/04/ubuntu-apache2-rewrite/" itemprop="url">Ubuntu下Apache2开启URL重写模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>今天同事，发的项目过来在我的Ubuntu上打不开，发现是URL重写模式没启动，然后用如下方法解决。</p></blockquote>
+
+<h1>开启Apache的Rewrite功能</h1>
+
+<p>在终端中执行：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2enmode rewrite</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指令后，即启用了 Mod_rewrite 模块</p>
+
+<p>另外，也可以通过将</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/apache2/mods-available/rewrite.load</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 连接到</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 来打开 Mod_rewrite 模块。用指令操作就是：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后发现并无法正常rewrite网址</p>
+
+<p>这里，还有一点需要注意的地方：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo vim /etc/apache2/sites-enabled/000-default</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将其中的</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride None</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>修改为</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride All</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的 /etc/apache2/sites-enabled/000-default 实则为 /etc/apache2/sites-available/default 的连接。而 AllowwOverride None 则会完全忽略 .htaccess 文件，自然其中所定义的 rewrite 规则也就不能生效了。</p>
+
+<p>最后，重新启动Apache2 服务即可</p>
+
+<p>service apache2 restart</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1456,116 +1994,6 @@ having就是来弥补where在分组数据判断时的不足。因为where要快�
 
 		
 		<a href="/blog/2016/05/23/mysql-you-hua/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-22T16:07:33+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/22/pdo-shi-li/" itemprop="url">PDO实例-发送邮件激活账户</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>实现注册发送邮件激活账户</p>
-
-<p>使用swiftmailer-master发送邮件</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/22/pdo-shi-li/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-19T18:47:27+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/mysql/'>mysql</a>, <a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/19/learn-more-pdo/" itemprop="url">Learn-more-PDO</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>前段时间在做手机归属地查询的Demo时突然发现自己对PDO还是太生疏，一直都是用的以前的代码。很多都不太了解，于是重新系统的学习了一下PDO类。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/19/learn-more-pdo/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-18T22:37:17+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/18/php-phone-location/" itemprop="url">php手机归属地查询Demo</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>看了视频过后准备自己撸一个PHP的手机归属地查询。这个Demo的思路和方法其实算不上难。但是这个Demo作者使用了框架的思维并且用到了SPL等知识。以前没有写过这样的代码，所以决定自己写一次。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/18/php-phone-location/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://ewanreton.github.io/blog/2016/06/06/php-design-3/</loc>
+<lastmod>2016-06-06T10:32:22+08:00</lastmod>
+</url>
+<url>
+<loc>http://ewanreton.github.io/blog/2016/06/04/php-design-2/</loc>
+<lastmod>2016-06-04T12:21:09+08:00</lastmod>
+</url>
+<url>
+<loc>http://ewanreton.github.io/blog/2016/06/04/ubuntu-apache2-rewrite/</loc>
+<lastmod>2016-06-04T11:39:34+08:00</lastmod>
+</url>
+<url>
 <loc>http://ewanreton.github.io/blog/2016/06/02/git-branch/</loc>
 <lastmod>2016-06-02T21:29:24+08:00</lastmod>
 </url>

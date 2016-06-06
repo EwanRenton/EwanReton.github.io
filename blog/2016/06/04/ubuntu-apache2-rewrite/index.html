@@ -5,11 +5,12 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Nginx虚拟主机配置 - Ewan Reton</title>
+	<title>Ubuntu下Apache2开启URL重写模式 - Ewan Reton</title>
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="Nginx虚拟主机配置 今天闲下来决定把腾讯云服务器上的网站弄成虚拟主机。毕竟通过 /xx/xx访问也不成样子 0.0 增加虚拟主机 进入 /etc/nginx/conf.d 目录, 创建虚拟主机配置文件 demo.neoease.com.conf ({域名}.conf) &hellip;">
+	<meta name="description" content="Ubuntu下Apache2开启URL重写模式 今天同事，发的项目过来在我的Ubuntu上打不开，发现是URL重写模式没启动，然后用如下方法解决。 开启Apache的Rewrite功能 在终端中执行： 1
+sudo a2enmode rewrite 指令后，即启用了 Mod_rewrite 模块 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +20,7 @@
 
 	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/05/16/nginx-virtualhost/">
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/06/04/ubuntu-apache2-rewrite/">
 	<link href="/favicon.png" rel="shortcut icon">
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -121,86 +122,64 @@
 			
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-	<h1 class="title" itemprop="name">Nginx虚拟主机配置</h1>
-	<div class="entry-content" itemprop="articleBody"><blockquote><p>今天闲下来决定把腾讯云服务器上的网站弄成虚拟主机。毕竟通过 /xx/xx访问也不成样子 0.0</p></blockquote>
+	<h1 class="title" itemprop="name">Ubuntu下Apache2开启URL重写模式</h1>
+	<div class="entry-content" itemprop="articleBody"><blockquote><p>今天同事，发的项目过来在我的Ubuntu上打不开，发现是URL重写模式没启动，然后用如下方法解决。</p></blockquote>
 
-<!--more-->
+<h1>开启Apache的Rewrite功能</h1>
 
+<p>在终端中执行：</p>
 
-<h1>增加虚拟主机</h1>
-
-<ol>
-<li>进入 <code>/etc/nginx/conf.d</code> 目录, 创建虚拟主机配置文件 demo.neoease.com.conf ({域名}.conf) 这个目录每个人都是不同的，进到你的配置目录就好了</li>
-<li>打开配置文件, 添加服务如下:</li>
-</ol>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2enmode rewrite</span></code></pre></td></tr></table></div></figure>
 
 
-<pre class="prettyprint linenums">
-server {
-    listen       80;
-    server_name demo.neoease.com;
-    index index.html index.htm index.php;
-    root  /var/www/demo_neoease_com;
- 
-    log_format demo.neoease.com '$remote_addr - $remote_user [$time_local] $request'
-    '$status $body_bytes_sent $http_referer '
-    '$http_user_agent $http_x_forwarded_for';
-    access_log  /var/log/demo.neoease.com.log demo.neoease.com;
-}
-</pre>
+<p>指令后，即启用了 Mod_rewrite 模块</p>
+
+<p>另外，也可以通过将</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/apache2/mods-available/rewrite.load</span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>打开 Nginx 配置文件 /usr/local/nginx/conf/nginx.conf, 在 http 范围引入虚拟主机配置文件如下:</li>
-</ol>
+<p> 连接到</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
 
 
-<pre class="prettyprint">
-include vhost/*.conf;
-这个一般来说都是有的。
-</pre>
+<p> 来打开 Mod_rewrite 模块。用指令操作就是：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
 
 
-<p></p>
+<p>然后发现并无法正常rewrite网址</p>
 
-<h1>让 Nginx 虚拟主机支持 PHP</h1>
+<p>这里，还有一点需要注意的地方：</p>
 
-<p>在前面第 2 步的虚拟主机服务对应的目录加入对 PHP 的支持, 这里使用的是 FastCGI, 修改如下.</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo vim /etc/apache2/sites-enabled/000-default</span></code></pre></td></tr></table></div></figure>
 
-<pre class="prettyprint linenums">
-server {
-        listen       80;
-        server_name class.ewanreton.cn;
-        index index.html index.htm index.php;
-        root  /usr/share/nginx/html/class;
 
-            location ~ \.php$ {
-        root           /usr/share/nginx/html/class;
-        fastcgi_pass   127.0.0.1:9000;
-        fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-        include        fastcgi_params;
-    }
+<p>将其中的</p>
 
-        log_format class.ewanreton.cn '$remote_addr - $remote_user [$time_local] $request'
-        '$status $body_bytes_sent $http_referer '
-        '$http_user_agent $http_x_forwarded_for';
-        access_log  /var/log/class.ewanreton.cn.log class.ewanreton.cn;
-}
-这个是我腾讯云服务器上的版本。中间配置PHP支持与原博文有所不一样。
-</pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride None</span></code></pre></td></tr></table></div></figure>
 
 
 <p></p>
 
-<p>重启 Nginx 服务, 执行以下语句.</p>
+<p>修改为</p>
 
-<pre class="prettyprint linenums">
-service nginx restart
-</pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride All</span></code></pre></td></tr></table></div></figure>
 
 
-<p><a href="http://www.neoease.com/nginx-virtual-host/">参考博客</a></p>
+<p>上面的 /etc/apache2/sites-enabled/000-default 实则为 /etc/apache2/sites-available/default 的连接。而 AllowwOverride None 则会完全忽略 .htaccess 文件，自然其中所定义的 rewrite 规则也就不能生效了。</p>
+
+<p>最后，重新启动Apache2 服务即可</p>
+
+<p>service apache2 restart</p>
 </div>
 
 </article>
@@ -231,7 +210,7 @@ service nginx restart
   <section>
     <h1>Comments</h1>
     <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="/blog/2016/05/16/nginx-virtualhost" data-title="Nginx虚拟主机配置" data-url="http://ewanreton.github.io/blog/2016/05/16/nginx-virtualhost/"></div>
+	<div class="ds-thread" data-thread-key="/blog/2016/06/04/ubuntu-apache2-rewrite" data-title="Ubuntu下Apache2开启URL重写模式" data-url="http://ewanreton.github.io/blog/2016/06/04/ubuntu-apache2-rewrite/"></div>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">

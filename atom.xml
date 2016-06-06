@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-02T21:40:21+08:00</updated>
+  <updated>2016-06-06T10:43:05+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,466 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(三)-策略模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/06/php-design-3/"/>
+    <updated>2016-06-06T10:32:22+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/06/php-design-3</id>
+    <content type="html"><![CDATA[<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
+
+<h1>一、策略模式概念</h1>
+
+<p>策略模式针对一组算法，将每一个算法封装到具有共同接口的独立的类中,此模式让算法的变化独立于使用算法的客户。从而让程序结构更灵活，具有更好的扩展性和维护性。</p>
+
+<p>策略模式:定义了算法族,分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户。</p>
+
+<p>封装:把行为用接口封装起来，我们可以把那些经常变化的部分，从当前的类中单独取出来，用接口进行单独的封装。
+互相替换:我们封装好了接口，通过指定不同的接口实现类进行算法的变化。</p>
+
+<h1>二、策略模式结构图</h1>
+
+<p><img src="http://www.phpddt.com/usr/uploads/2014/01/2390999757.jpg" alt="" /></p>
+
+<h1>三、策略模式角色说明</h1>
+
+<p> 抽象策略(Strategy）角色：定义所有支持的算法的公共接口。通常是以一个接口或抽象来实现。Context使用这个接口来调用其ConcreteStrategy定义的算法。</p>
+
+<p>具体策略(ConcreteStrategy)角色：以Strategy接口实现某具体算法</p>
+
+<p>环境(Context)角色：持有一个Strategy类的引用，用一个ConcreteStrategy对象来配置</p>
+
+<h1>四、实例一</h1>
+
+<p>比如说购物车系统，在给商品计算总价的时候，普通会员肯定是商品单价乘以数量，但是对中级会员提供8者折扣，对高级会员提供7折折扣，这种场景就可以使用策略模式实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 策略模式实例</span>
+</span><span class='line'><span class="sd"> * </span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="c1">//抽象策略角色《为接口或者抽象类，给具体策略类继承》</span>
+</span><span class='line'><span class="k">interface</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//具体策略角色-普通会员策略类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">GenernalMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//具体策略角色-中级会员策略类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MiddleMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//具体策略角色-高级会员策略类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">HignMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span> <span class="o">*</span> <span class="mf">0.7</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//环境角色实现类</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Price</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//具体策略对象</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$strategyInstance</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//构造函数</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$instance</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">strategyInstance</span> <span class="o">=</span> <span class="nv">$instance</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">compute</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">strategyInstance</span><span class="o">-&gt;</span><span class="na">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//客户端使用</span>
+</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Price</span><span class="p">(</span><span class="k">new</span> <span class="nx">HignMember</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$totalPrice</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">compute</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">echo</span> <span class="nv">$totalPrice</span><span class="p">;</span> <span class="c1">//70</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>实例二</h1>
+
+<p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
+
+<p>我来解释下这个思维导图的过程：
+1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
+
+<p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
+
+<p> 问题来了：</p>
+
+<ul>
+<li>原来Duck的子类中竟然有橡皮鸭，橡皮鸭是不会飞的。——Joe用重载的方式，把橡皮鸭的fly()方法设置为空.</li>
+<li>覆盖fly()，我们看到了橡皮鸭的fly()里，没有任何代码，如果以后我们再添加别的不会飞的鸭子，那我么还要这么处理吗?——那么代码重复了!</li>
+</ul>
+
+
+<p>3.上面2的方式我们知道是有问题的，所以Joe想到把Duck做成接口，这样每个子类必须实现Duck里的方法。这样就保证每个鸭子都能根据自己的需要添加行为。</p>
+
+<p>问题来了：</p>
+
+<ul>
+<li>产品经常处于更新中，规格也在不断的变化。导致每当有新鸭子的时候，Joe就要被迫检查一遍子类是否覆盖了fly()方法。——当你修改某个行为的时候，你必须得往下追踪并在每一个定义此行为的类中修改它。</li>
+</ul>
+
+
+<p>4.综合以上问题，Joe想到了把那些变化的部分从不变化的位置中抽出来。比如，我们对fly()行为，做了单独的接口FlyBehavior。如果鸭子想要飞行功能的时候，我们就让鸭子实现FlyBehavior.</p>
+
+<p>5.深造:我们想让鸭子有不同的飞行功能，让它在运行时候做不同的飞行动作。让鸭子类实现接口，只能让鸭子有一种行为。</p>
+
+<p>所以Joe，想到用组合的防止，当鸭子需要其他飞行功能要求的时候，我们可以用setBehavior()方式，指定性的飞行方式。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">interface</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FlyWithWings</span> <span class="k">implements</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">(){</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;Fly With Wings </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FlyWithNo</span> <span class="k">implements</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">(){</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;Fly With No Wings </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Duck</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$_flyBehavior</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">performFly</span><span class="p">(){</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_flyBehavior</span><span class="o">-&gt;</span><span class="na">fly</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">setFlyBehavior</span><span class="p">(</span><span class="nx">FlyBehavior</span> <span class="nv">$behavior</span><span class="p">){</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_flyBehavior</span> <span class="o">=</span> <span class="nv">$behavior</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RubberDuck</span> <span class="k">extends</span> <span class="nx">Duck</span><span class="p">{</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// Test Case</span>
+</span><span class='line'><span class="nv">$duck</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RubberDuck</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*  想让鸭子用翅膀飞行 */</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">setFlyBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">FlyWithWings</span><span class="p">());</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">performFly</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*  想让鸭子不用翅膀飞行 */</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">setFlyBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">FlyWithNo</span><span class="p">());</span>
+</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">performFly</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(二)-适配器模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/04/php-design-2/"/>
+    <updated>2016-06-04T12:21:09+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/04/php-design-2</id>
+    <content type="html"><![CDATA[<h1>适配器模式</h1>
+
+<ol>
+<li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
+<li>实际应用举例，PHP的数据库操作有mysql，mysqli，pdo3种，可以用适配器模式改成统一致的，类似的还有cache适配器，将memcache，redis，file，apc等不同的缓存函数，统一成一致的。</li>
+</ol>
+
+
+<p>角色：</p>
+
+<ul>
+<li>Target适配目标，该角色定义把其他类转换为何种接口，也就是我们的期望接口。</li>
+<li>Adaptee被适配者，就是需要被适配的接口。</li>
+<li>Adapter适配器，其他的两个角色都是已经存在的角色，而适配器角色是需要新建立的，它用来对Adaptee与Target接口进行适配。</li>
+</ul>
+
+
+<p>优势：</p>
+
+<p>被适配者通过适配器完成对适配目标的适配，以达到对客户使用透明的目的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">//适配目标，规定的接口将被适配对象实现</span>
+</span><span class='line'><span class="k">interface</span> <span class="nx">IDatabase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="c1">//适配器</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Mysql</span> <span class="k">implements</span> <span class="nx">IDatabase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$connect</span><span class="p">;</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$connect</span> <span class="o">=</span> <span class="nb">mysql_connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">);</span>
+</span><span class='line'>        <span class="nb">mysql_select_db</span><span class="p">(</span><span class="nv">$database</span><span class="p">,</span> <span class="nv">$connect</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">connect</span> <span class="o">=</span> <span class="nv">$connect</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="c1">//适配器</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Postgresql</span> <span class="k">implements</span> <span class="nx">IDatabase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$connect</span><span class="p">;</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$username</span><span class="p">,</span> <span class="nv">$password</span><span class="p">,</span> <span class="nv">$database</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">connect</span> <span class="o">=</span> <span class="nb">pg_connect</span><span class="p">(</span><span class="s2">&quot;host=</span><span class="si">$host</span><span class="s2"> dbname=</span><span class="si">$database</span><span class="s2"> user=</span><span class="si">$username</span><span class="s2"> password=</span><span class="si">$password</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="nx"> </span>
+</span><span class='line'><span class="c1">//客户端使用</span>
+</span><span class='line'><span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Postgresql</span><span class="p">();</span>
+</span><span class='line'><span class="nv">$client</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntu下Apache2开启URL重写模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/04/ubuntu-apache2-rewrite/"/>
+    <updated>2016-06-04T11:39:34+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/04/ubuntu-apache2-rewrite</id>
+    <content type="html"><![CDATA[<blockquote><p>今天同事，发的项目过来在我的Ubuntu上打不开，发现是URL重写模式没启动，然后用如下方法解决。</p></blockquote>
+
+<h1>开启Apache的Rewrite功能</h1>
+
+<p>在终端中执行：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2enmode rewrite</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指令后，即启用了 Mod_rewrite 模块</p>
+
+<p>另外，也可以通过将</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/apache2/mods-available/rewrite.load</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 连接到</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 来打开 Mod_rewrite 模块。用指令操作就是：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后发现并无法正常rewrite网址</p>
+
+<p>这里，还有一点需要注意的地方：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo vim /etc/apache2/sites-enabled/000-default</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将其中的</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride None</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>修改为</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride All</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的 /etc/apache2/sites-enabled/000-default 实则为 /etc/apache2/sites-available/default 的连接。而 AllowwOverride None 则会完全忽略 .htaccess 文件，自然其中所定义的 rewrite 规则也就不能生效了。</p>
+
+<p>最后，重新启动Apache2 服务即可</p>
+
+<p>service apache2 restart</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GIT分支]]></title>
@@ -5556,1496 +6016,6 @@ service nginx restart
 </span><span class='line'><span class="nb">setcookie</span><span class="p">(</span><span class="s2">&quot;qq_accesstokebn&quot;</span><span class="p">,</span><span class="nv">$accesstoken</span><span class="p">,</span><span class="nb">time</span><span class="p">()</span><span class="o">+</span><span class="mi">86400</span><span class="p">);</span>
 </span><span class='line'><span class="nb">setcookie</span><span class="p">(</span><span class="s2">&quot;qq_openid&quot;</span><span class="p">,</span><span class="nv">$openid</span><span class="p">,</span><span class="nb">time</span><span class="p">()</span><span class="o">+</span><span class="mi">86400</span><span class="p">);</span>
 </span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s2">&quot;Location:index.php&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP-Memcache]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/14/memcache/"/>
-    <updated>2016-05-14T20:08:26+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/14/memcache</id>
-    <content type="html"><![CDATA[<h1>什么是Memcache</h1>
-
-<blockquote><p>Memcache通过缓存服务器信息的方式来加速服务器处理能力的系统。Memcache分配一块服务器上的内存来缓存一段特定时间之内的最近的查询数据。一旦某个数据被再次请求，那么Memcache就直接从内存中返回这个数据，而不是从数据库中，所以这将会加速查询速度。</p></blockquote>
-
-<!--more-->
-
-
-<h1>Memcache使用场景</h1>
-
-<ul>
-<li>非持久化存储：对数据存储要求不高</li>
-<li>分布式存储：不适合单机（对内存消耗很大）</li>
-<li>ke/value存储：格式简单，不支持List，Array数据格式
-
-<h1>Memcache服务端的安装</h1></li>
-<li>编译安装 Libevent Memcache</li>
-<li>依赖管理工具 yum apt-get</li>
-<li>Memcache 和Memcached
-
-<ul>
-<li>Memcached 是Memcache的升级版本 推荐使用</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$sudo apt-get install memcached</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装完Memcache服务端以后，我们需要启动该服务：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>memcached -d -m 128 -p 11211 -u root</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ps -ef |grep memcach</span></code></pre></td></tr></table></div></figure>
-
-
-<p>查看是否启动
-这里需要说明一下memcached服务的启动参数：</p>
-
-<ul>
-<li>-p 监听的端口</li>
-<li>-l 连接的IP地址, 默认是本机</li>
-<li>-d start 启动memcached服务
-
-<ul>
-<li>-d restart 重起memcached服务</li>
-<li>-d stop|shutdown 关闭正在运行的memcached服务</li>
-<li>-d install 安装memcached服务</li>
-<li>-d uninstall 卸载memcached服务</li>
-</ul>
-</li>
-<li>-u 以的身份运行 (仅在以root运行的时候有效)</li>
-<li>-m 最大内存使用，单位MB。默认64MB</li>
-<li>-M 内存耗尽时返回错误，而不是删除项</li>
-<li>-c 最大同时连接数，默认是1024</li>
-<li>-f 块大小增长因子，默认是1.25-n 最小分配空间，key+value+flags默认是48</li>
-<li>-h 显示帮助
-
-<h1>Memcache客户端的安装</h1></li>
-<li>安装Libmemcached</li>
-<li>为PHP安装memcached扩展</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$sudo apt-get install php5-memcache</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装完以后我们需要在php.ini里进行简单的配置,打开/etc/php5/apache2/php.ini文件在末尾添加如下内容：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="p">[</span><span class="nx">Memcache</span><span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">;</span> <span class="nx">一个高性能的分布式的内存对象缓存系统，通过在内存里维护一个统一的巨大的hash表，</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">它能够用来存储各种格式的数据，包括图像、视频、文件以及数据库检索的结果等。</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="p">;</span> <span class="nx">是否在遇到错误时透明地向其他服务器进行故障转移。</span>
-</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">allow_failover</span> <span class="o">=</span> <span class="nx">On</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">;</span> <span class="nx">接受和发送数据时最多尝试多少个服务器，只在打开memcache</span><span class="o">.</span><span class="nx">allow_failover时有效。memcache</span><span class="o">.</span><span class="nx">max_failover_attempts</span> <span class="o">=</span> <span class="mi">20</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">;</span> <span class="nx">数据将按照此值设定的块大小进行转移。此值越小所需的额外网络传输越多。</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">如果发现无法解释的速度降低，可以尝试将此值增加到32768。</span>
-</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">chunk_size</span> <span class="o">=</span> <span class="mi">8192</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">;</span> <span class="nx">连接到memcached服务器时使用的默认TCP端口。</span>
-</span><span class='line'><span class="nx">memcache</span><span class="o">.</span><span class="nx">default_port</span> <span class="o">=</span> <span class="mi">11211</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">;</span> <span class="nx">控制将key映射到server的策略。默认值”standard”表示使用先前版本的老hash策略。</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">设为”consistent”可以允许在连接池中添加</span><span class="o">/</span><span class="nx">删除服务器时不必重新计算key与server之间的映射关系。</span>
-</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_strategy</span> <span class="o">=</span> <span class="nx">“standard”</span><span class="p">;</span> <span class="nx">控制将key映射到server的散列函数。默认值”crc32″使用CRC32算法，而”fnv”则表示使用FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a算法。</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">FNV</span><span class="o">-</span><span class="mi">1</span><span class="nx">a比CRC32速度稍低，但是散列效果更好。</span>
-</span><span class='line'><span class="p">;</span><span class="nx">memcache</span><span class="o">.</span><span class="nx">hash_function</span> <span class="o">=</span> <span class="nx">“crc32″</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>保存<code>php.ini</code>,执行<code>service apache2 restart</code>重启Apache。使用<code>php -m |grep memchched</code>查看是否安装成功</p>
-
-<h1>Memcached 常见操作</h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="nv">$m</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcached</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$array</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>  <span class="k">array</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span><span class="mi">11211</span><span class="p">),</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">);</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">addServers</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span> <span class="c1">//添加服务器 添加多条为addServers 一条为 addServer（“127.0.0.1”，11211）；</span>
-</span><span class='line'><span class="c1">// // echo &quot;11&quot;;</span>
-</span><span class='line'><span class="c1">// $info=$m-&gt;getStats();</span>
-</span><span class='line'><span class="c1">// print_r($info);</span>
-</span><span class='line'><span class="c1">//数据类操作</span>
-</span><span class='line'><span class="c1">//add</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//key value time</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue2&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//两次赋值不会改变它的值</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">replace</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue3&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//替换</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">,</span><span class="s2">&quot;mvalue&quot;</span><span class="p">,</span><span class="mi">600</span><span class="p">);</span><span class="c1">//常用，如果不存在mkey则创建，如果存在则覆盖</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s2">&quot;mkey&quot;</span><span class="p">);</span><span class="c1">//删除</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">flush</span><span class="p">();</span><span class="c1">//清空memcache中的所有缓存</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">increment</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span><span class="c1">//每次刷新num+5</span>
-</span><span class='line'><span class="nv">$m</span><span class="o">-&gt;</span><span class="na">decrement</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span><span class="c1">//每次刷新num-5</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="nv">$m</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Memcached</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$array</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="k">array</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span><span class="mi">11211</span><span class="p">),</span>
-</span><span class='line'>  <span class="p">);</span>
-</span><span class='line'>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">addServers</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$data</span><span class="o">=</span><span class="k">array</span><span class="p">(</span>
-</span><span class='line'>    <span class="s2">&quot;key&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;key2&quot;</span> <span class="o">=&gt;</span><span class="s2">&quot;value2&quot;</span><span class="p">,</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">);</span>
-</span><span class='line'>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">setMulti</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span> <span class="c1">//一次设置多个值</span>
-</span><span class='line'> <span class="nv">$result</span><span class="o">=</span>  <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getMulti</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span><span class="s2">&quot;key2&quot;</span><span class="p">));</span><span class="c1">//一次获取多个值</span>
-</span><span class='line'> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
-</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">deleteMulti</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span><span class="s2">&quot;key2&quot;</span><span class="p">));</span><span class="c1">//一次删除多个值</span>
-</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getResultCode</span><span class="p">();</span><span class="c1">//获取上次操作返回值</span>
-</span><span class='line'> <span class="nv">$m</span><span class="o">-&gt;</span><span class="na">getResultMessage</span><span class="p">();</span><span class="c1">//获取上次操作的信息</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a href="http://php.net/manual/zh/book.memcached.php">官方说明文档</a></p>
-
-<h1>项目中使用Memcached</h1>
-
-<ul>
-<li>即时生成缓存　
-
-<ul>
-<li>类似于新闻详情页，第一个人来了生成缓存，第二个人再来直接读缓存</li>
-</ul>
-</li>
-<li>提前生成缓存
-
-<ul>
-<li>适合高访问量</li>
-</ul>
-</li>
-<li>永久缓存
-
-<ul>
-<li>关于我们 这种基本不变的网页</li>
-</ul>
-</li>
-</ul>
-
-
-<h1>注意事项</h1>
-
-<ul>
-<li>不要在单机模式中使用Memcached</li>
-<li>不要在Memcached保存重要数据。掉电会丢失。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[spl初识]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/13/spl/"/>
-    <updated>2016-05-13T20:26:58+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/13/spl</id>
-    <content type="html"><![CDATA[<h1>什么是SPL</h1>
-
-<blockquote><p>SPL是Standard PHP Library（PHP标准库）的缩写。
-根据官方定义，它是"a collection of interfaces and classes that are meant to solve standard problems"。但是，目前在使用中，SPL更多地被看作是一种使object（物体）模仿array（数组）行为的interfaces和classes。</p></blockquote>
-
-<!--more-->
-
-
-<h1>SPL的常用数据结构</h1>
-
-<h2>双向链表</h2>
-
-<ul>
-<li>SplDoublyLinkedList类</li>
-<li>操作
-
-<ul>
-<li>当前节点操作：
-
-<ul>
-<li>rewind:使当前节点指向Buttom（头部）</li>
-<li>next：指向下一个节点</li>
-<li>prev：指向上一个节点</li>
-<li>current：指向链表当前节点的指针，调用前需调用rewind，指向的节点被删除后会指向一个空节点</li>
-</ul>
-</li>
-<li>增加节点操作：
-
-<ul>
-<li>push：向链表的顶部（尾部）插入一个节点</li>
-<li>unshift：向链表的底部插入一个节点（头部）</li>
-</ul>
-</li>
-<li>删除节点操作：
-
-<ul>
-<li>pop：获取链表中顶部（尾部）的节点并删除，不改变当前指针的位置</li>
-<li>shift：删除连边底部（头部）的节点</li>
-</ul>
-</li>
-<li>定位操作
-
-<ul>
-<li>bottom：获得链表底部（头部）的元素，指针位置不变</li>
-<li>top：获得链表顶部（尾部）的元素，指针位置不变</li>
-</ul>
-</li>
-<li>特定节点操作
-
-<ul>
-<li>offsetExists</li>
-<li>offsetGet</li>
-<li>offsetSet</li>
-<li>offsetUnset</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">=</span><span class="k">new</span> <span class="nx">SplDoublyLinkedList</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="c1">//把节点添加到顶部</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">unshift</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="c1">//将新的节点添加到底部（bottom）</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span><span class="c1">//rewind操作用于把节点指针指向bottom所在的节点</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;current:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span> <span class="c1">//获取节点指针指向的节点（当前）</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">prev</span><span class="p">();</span><span class="c1">//指向上一节点</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;next:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span><span class="c1">//指向下一节点</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()){</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Current node valid</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Current node invalid</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span><span class="c1">//如果当前节点有效，valid返回true</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;valid list&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;invalid list&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;pop value&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">pop</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span><span class="c1">//把TOP位置的节点从链表中弹出。pop不影响指针指向的节点。如果pop指向的是top，调用POP后会指向NULL</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;current:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">shift</span><span class="p">();</span><span class="c1">//把bottom位置的节点从链表中删除。并返回</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>堆栈</h2>
-
-<ul>
-<li>继承自SplDoublyLinkedList类的SplStack类</li>
-<li>先进后出</li>
-<li>操作
-
-<ul>
-<li>push：压入堆栈</li>
-<li>pop：弹出堆栈</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>    <span class="nv">$stack</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SplStack</span><span class="p">();</span>
-</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">push</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$stack</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Bottom:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">bottom</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Top:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">top</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">offsetSet</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;C&quot;</span><span class="p">);</span><span class="c1">//在Stack里面offset=0是TOP所在的位置，offset=1是top位置节点靠近bottom位置的相邻节点</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$stack</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Current:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span><span class="c1">//双向链表的rewind和堆栈的rewind相反，堆栈的rewind使得当前指针指向TOP所在的位置，而双向链表的rewind指向bottom所在的位置</span>
-</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;Current:&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="c1">//遍历堆栈</span>
-</span><span class='line'>    <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">while</span><span class="p">(</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;=&gt;&quot;</span><span class="o">.</span><span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="c1">//删除堆栈</span>
-</span><span class='line'>    <span class="nv">$popObj</span> <span class="o">=</span> <span class="nv">$stack</span><span class="o">-&gt;</span><span class="na">pop</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;PopED object:&quot;</span><span class="o">.</span><span class="nv">$popObj</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$stack</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>队列</h2>
-
-<ul>
-<li>继承自SplDoublyLinkedList类的SplQueue类</li>
-<li>先进先出</li>
-<li>操作
-
-<ul>
-<li>enqueue：进入队里</li>
-<li>duqueue：退出对列</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="nv">$obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SplQueue</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">enqueue</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span><span class="c1">//插入一个节点到TOP位置</span>
-</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">enqueue</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">enqueue</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;bottom:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">bottom</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;top:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">top</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">offsetSet</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;A&quot;</span><span class="p">);</span><span class="c1">//队列里面的offset=0是bottom所在的位置</span>
-</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span><span class="c1">//队列的rewind指向bottom所在的位置</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;current:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;=&gt;&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;dequeue obj:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">dequeue</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span><span class="c1">//从队列中提取bottom位置的节点并删除</span>
-</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>迭代器</h1>
-
-<h2>什么是迭代器</h2>
-
-<blockquote><p>通过某种同意的方式遍历链表或数组中的元素的过程叫做迭代遍历，而这种统一的遍历工具我们叫做迭代器</p></blockquote>
-
-<p>在PHP中迭代器是通过Iterator接口定义的。</p>
-
-<h2>常用的迭代器 ArrayIterator</h2>
-
-<ul>
-<li>熟悉使用foreach和while语句通过ArrayIterator遍历数组的方法</li>
-<li>熟悉使用seek跳过某些元素的方法</li>
-<li>熟悉使用ArrayIerator进行排序的方法</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>    <span class="nv">$fruits</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s2">&quot;apple&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;appale value&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;orange&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;orange value&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;grape&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;grape value&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;plum&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;plum value&quot;</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$fruits</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use fruits directly </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$fruits</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="c1">//使用ArrayIterator 遍历数组</span>
-</span><span class='line'>    <span class="nv">$obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayObject</span><span class="p">(</span><span class="nv">$fruits</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$it</span> <span class="o">=</span> <span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">getIterator</span><span class="p">();</span><span class="c1">//获取迭代器</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use ArrayIterator in foreach </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use ArrayIterator in while </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span><span class="c1">//ccurretn前需要rewind</span>
-</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="nv">$it</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">())</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">();</span>
-</span><span class='line'>      <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="c1">//跳过某些元素进行打印</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;use seek befor while </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">rewind</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$it</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">()){</span>
-</span><span class='line'>      <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">seek</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>      <span class="k">while</span> <span class="p">(</span><span class="nv">$it</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">())</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">key</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$obj</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">();</span>
-</span><span class='line'>        <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="c1">//实现排序</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use ksort </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">ksort</span><span class="p">();</span><span class="c1">//对key字典序排序</span>
-</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;use asort </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">ksort</span><span class="p">();</span><span class="c1">//对value字典序排序</span>
-</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>常用的迭代器 AppendIterator</h2>
-
-<ul>
-<li>AppendIterator能陆续遍历几个迭代器
-
-<ul>
-<li>按顺序迭代访问几个不同的迭代器。 例如，希望在一些循环中迭代访问两个或多个组合。</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="nv">$array_a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">));</span>
-</span><span class='line'>  <span class="nv">$array_b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;f&quot;</span><span class="p">,</span><span class="s2">&quot;g&quot;</span><span class="p">,</span><span class="s2">&quot;h&quot;</span><span class="p">));</span>
-</span><span class='line'>  <span class="nv">$it</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AppendIterator</span><span class="p">();</span>
-</span><span class='line'>  <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">append</span><span class="p">(</span><span class="nv">$array_a</span><span class="p">);</span><span class="c1">//通过append方法把迭代器对象添加到AppendIterator对象中</span>
-</span><span class='line'>  <span class="nv">$it</span><span class="o">-&gt;</span><span class="na">append</span><span class="p">(</span><span class="nv">$array_b</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>常用的迭代器 MultipleIterator</h2>
-
-<ul>
-<li>MultipleIterator用于把多个Iterator里面的数据组合为一个整体来访问</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="nv">$idIter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;01&quot;</span><span class="p">,</span><span class="s2">&quot;02&quot;</span><span class="p">,</span><span class="s2">&quot;03&quot;</span><span class="p">));</span>
-</span><span class='line'>  <span class="nv">$nameIter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s2">&quot;张三&quot;</span><span class="p">,</span><span class="s2">&quot;李四&quot;</span><span class="p">,</span><span class="s2">&quot;王五&quot;</span><span class="p">));</span>
-</span><span class='line'>  <span class="nv">$ageIter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;22&quot;</span><span class="p">,</span><span class="s2">&quot;23&quot;</span><span class="p">,</span><span class="s2">&quot;24&quot;</span><span class="p">));</span>
-</span><span class='line'>  <span class="nv">$mit</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MultipleIterator</span><span class="p">(</span><span class="nx">MultipleIterator</span><span class="o">::</span><span class="na">MIT_KEYS_ASSOC</span><span class="p">);</span><span class="c1">//知明当你拼凑起来过后Key也是一个Array</span>
-</span><span class='line'>  <span class="nv">$mit</span><span class="o">-&gt;</span><span class="na">attachIterator</span><span class="p">(</span><span class="nv">$idIter</span><span class="p">,</span><span class="s2">&quot;ID&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$mit</span><span class="o">-&gt;</span><span class="na">attachIterator</span><span class="p">(</span><span class="nv">$nameIter</span><span class="p">,</span><span class="s2">&quot;NAME&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$mit</span><span class="o">-&gt;</span><span class="na">attachIterator</span><span class="p">(</span><span class="nv">$ageIter</span><span class="p">,</span><span class="s2">&quot;AGE&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">foreach</span> <span class="p">(</span><span class="nv">$mit</span> <span class="k">as</span>  <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>常用的迭代器 FilesystemIterator</h2>
-
-<ul>
-<li>FilesystemIterator能遍历文件系统</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>    <span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s2">&quot;PRC&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$it</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FilesystemIterator</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$it</span> <span class="k">as</span>  <span class="nv">$finfo</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;%s</span><span class="se">\t</span><span class="s2">%s</span><span class="se">\t</span><span class="s2">%8s</span><span class="se">\t</span><span class="s2">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nb">date</span><span class="p">(</span><span class="s2">&quot;Y-m-d H:i:s&quot;</span><span class="p">,</span><span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">getMTime</span><span class="p">()),</span>
-</span><span class='line'>      <span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">isDir</span><span class="p">()</span><span class="o">?</span><span class="s2">&quot;&lt;DIR&gt;&quot;</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nb">number_format</span><span class="p">(</span><span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">getSize</span><span class="p">()),</span>
-</span><span class='line'>      <span class="nv">$finfo</span><span class="o">-&gt;</span><span class="na">getFileName</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>    <span class="c1">// echo $finfo-&gt;isDir()?&quot;&lt;DIR&gt;&quot;:&quot;&quot;,</span>
-</span><span class='line'>      <span class="c1">// echo date(&quot;Y-m-d H:i:s&quot;,$finfo-&gt;getMTime()).&quot;\n&quot;;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>SPL基础接口</h1>
-
-<h2>Countable</h2>
-
-<ul>
-<li>继承了该接口的类可以直接调用count（）得到元素个数。</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s2">&quot;PRC&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$array</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;张三&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="o">=&gt;</span><span class="s1">&#39;5&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;李四&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="o">=&gt;</span><span class="s1">&#39;6&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="k">array</span><span class="p">(</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;王五&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="o">=&gt;</span><span class="s1">&#39;7&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$array</span><span class="p">)</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$array</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">CountMe</span> <span class="k">implements</span> <span class="nx">Countable</span><span class="p">{</span> <span class="c1">//实现Countable接口，</span>
-</span><span class='line'>    <span class="k">protected</span> <span class="nv">$_myCount</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">count</span><span class="p">(){</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_myCount</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="nv">$obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">CountMe</span><span class="p">();</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$obj</span><span class="p">);</span><span class="c1">//实现了Countable接口就能通过cout函数直接调用到之前定义好的Count方法</span>
-</span><span class='line'> <span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>OuterIterator</h2>
-
-<ul>
-<li>如果想对迭代器进行一定的处理之后再返回，可以用这个接口</li>
-<li>继承自IteratorIterator这个类</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>    <span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s2">&quot;PRC&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$array</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span><span class="s2">&quot;value2&quot;</span><span class="p">,</span><span class="s2">&quot;value3&quot;</span><span class="p">,</span><span class="s2">&quot;value4&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nb">print_r</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$outerObj</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OuterImpl</span><span class="p">(</span> <span class="k">new</span> <span class="nx">ArrayIterator</span><span class="p">(</span><span class="nv">$array</span><span class="p">));</span>
-</span><span class='line'>    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$outerObj</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="c1"># code...</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;++&quot;</span><span class="o">.</span><span class="nv">$key</span><span class="o">.</span><span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="nv">$value</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">class</span> <span class="nc">OuterImpl</span> <span class="k">extends</span> <span class="nx">IteratorIterator</span><span class="p">{</span>
-</span><span class='line'>      <span class="k">public</span> <span class="k">function</span> <span class="nf">current</span><span class="p">(){</span>
-</span><span class='line'>        <span class="k">return</span> <span class="k">parent</span><span class="o">::</span><span class="na">current</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;_tail&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">public</span> <span class="k">function</span> <span class="nf">key</span><span class="p">(){</span>
-</span><span class='line'>        <span class="k">return</span> <span class="s2">&quot;pre_&quot;</span><span class="o">.</span><span class="k">parent</span><span class="o">::</span><span class="na">key</span><span class="p">();</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>RecursiveTterator</h2>
-
-<ul>
-<li>可以对多次结构的迭代器进行迭代，比如遍历一棵树</li>
-<li>所有具有层次结构特点的数据都可以用这个接口遍历
-
-<ul>
-<li>如文件夹</li>
-</ul>
-</li>
-<li>关键方法
-
-<ul>
-<li>hasChildren :用于判断当前节点是否存在子节点</li>
-<li>getChileren :用于得到当前节点子节点的迭代器</li>
-</ul>
-</li>
-<li>SPL中实现该接口的类
-
-<ul>
-<li>RecursiveArrayIterator，RecursiveCachingIterator等以 Recursive开头的类都能进行多层次结构化的遍历
-
-<h2>SeekableIterator</h2></li>
-</ul>
-</li>
-<li>可以通过seek方法定位到集合里面的某个元素</li>
-<li>seek方法的参数是元素的位置，从0开始</li>
-</ul>
-
-
-<h1>SPL基础函数的使用</h1>
-
-<h2>Autoload</h2>
-
-<ul>
-<li>为了初始化PHP中的类对象，需要通过一定的方法寻找到类的定义。通常情况下，类会定义在一个单独的文件中。</li>
-<li>Autoload就是PHP找到这些文件的方法。</li>
-</ul>
-
-
-<figure class='code'><figcaption><span>libs/test.class.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="sd">/**</span>
-</span><span class='line'><span class="sd">   *</span>
-</span><span class='line'><span class="sd">   */</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">test</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Loading Class Libs/test.class.php</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span>libs/test.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Test</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(){</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;Loading Class Libs/test.php</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'> <span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span>Autoload01.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="nb">spl_autoload_extensions</span><span class="p">(</span><span class="s2">&quot;.class.php,.php&quot;</span><span class="p">);</span><span class="c1">//设置autoload寻找php定义的类文件的扩展名，多个扩展名用逗号分开,前面的扩招名优先匹配</span>
-</span><span class='line'>  <span class="nb">set_include_path</span><span class="p">(</span><span class="nb">get_include_path</span><span class="p">()</span><span class="o">.</span><span class="nx">PATH_SEPARATOR</span><span class="o">.</span><span class="s2">&quot;libs/&quot;</span><span class="p">);</span><span class="c1">//设置autoload寻找php定义的类文件的目录，多个目录用PATH_SEPARATOR分隔</span>
-</span><span class='line'>  <span class="nb">spl_autoload_register</span><span class="p">();</span><span class="c1">//提示PHP使用autoload机制查找类定义</span>
-</span><span class='line'>  <span class="k">new</span> <span class="nx">test</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span>Autoload02.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">__autoload</span><span class="p">(</span><span class="nv">$class_name</span><span class="p">){</span><span class="c1">//定义__autoload函数，可以不调用spl_autoload_register函数的情况下完成类的装载</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;__autoload class:&quot;</span><span class="o">.</span><span class="nv">$class_name</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">require_once</span><span class="p">(</span><span class="s2">&quot;libs/&quot;</span><span class="o">.</span><span class="nv">$class_name</span><span class="o">.</span><span class="s2">&quot;.php&quot;</span><span class="p">);</span><span class="c1">//装载类</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">classLoader</span><span class="p">(</span><span class="nv">$class_name</span><span class="p">){</span><span class="c1">//定义一个替换__autoload函数的类文件装载函数</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;classLoader() load class:&quot;</span><span class="o">.</span><span class="nv">$class_name</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">require_once</span><span class="p">(</span><span class="s2">&quot;libs/&quot;</span><span class="o">.</span><span class="nv">$class_name</span><span class="o">.</span><span class="s2">&quot;.php&quot;</span><span class="p">);</span><span class="c1">//装载类</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="nb">spl_autoload_register</span><span class="p">(</span><span class="s2">&quot;classLoader&quot;</span><span class="p">);</span><span class="c1">//传入定义好的装载类的函数的名称替换__autoload函数</span>
-</span><span class='line'>  <span class="k">new</span> <span class="nx">test</span><span class="p">();</span>
-</span><span class='line'> <span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span>Autoload03.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">classLoader</span><span class="p">(</span><span class="nv">$class_name</span><span class="p">){</span><span class="c1">//定义一个替换__autoload函数的类文件装载函数</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;classLoader() load class:&quot;</span><span class="o">.</span><span class="nv">$class_name</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="nb">set_include_path</span><span class="p">(</span><span class="s2">&quot;lib/&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nb">spl_autoload</span><span class="p">(</span><span class="nv">$class_name</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nb">spl_autoload_register</span><span class="p">(</span><span class="s2">&quot;classLoader&quot;</span><span class="p">);</span><span class="c1">//传入定义好的装载类的函数的名称替换__autoload函数</span>
-</span><span class='line'><span class="k">new</span> <span class="nx">test</span><span class="p">();</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>SPL其他函数</h1>
-
-<ul>
-<li><p>迭代器相关</p>
-
-<ul>
-<li>iterator_apply :为迭代器中的每个元素调用一个用户自定义函数</li>
-<li>iterator_count ：计算迭代器元素个数</li>
-<li>iterator_to_array ：将迭代器的元素拷贝到数组</li>
-</ul>
-</li>
-<li><p>类信息相关函数</p>
-
-<ul>
-<li>class_implements 返回指定类实现的所有接口
-
-<ul>
-<li>可以用instanceof判断某个对象时候实现某个接口或者某个类的实例</li>
-</ul>
-</li>
-<li>class_parents 返回指定类的父类
-
-<ul>
-<li>如果继承了多次，会把所有父类都打印出来</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-
-<h1>文件处理类库</h1>
-
-<ul>
-<li>SPLFileInfo 用于获得文件的基本信息，比如修改时间，大小，目录等</li>
-<li>SplFileObject用于操作文件的内容，比如读写</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="nv">$file</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SplFileInfo</span><span class="p">(</span><span class="s2">&quot;temp.txt&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;File is cerated at &quot;</span><span class="o">.</span><span class="nb">date</span><span class="p">(</span><span class="s2">&quot;Y-m-d H:i:s&quot;</span><span class="p">,</span><span class="nv">$file</span><span class="o">-&gt;</span><span class="na">getCTime</span><span class="p">())</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;File is modified at &quot;</span><span class="o">.</span><span class="nb">date</span><span class="p">(</span><span class="s2">&quot;Y-m-d H:i:s&quot;</span><span class="p">,</span><span class="nv">$file</span><span class="o">-&gt;</span><span class="na">getMTime</span><span class="p">())</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;File is size is&quot;</span><span class="o">.</span><span class="nv">$file</span><span class="o">-&gt;</span><span class="na">getSize</span><span class="p">()</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="c1">//读取文件里面的内容</span>
-</span><span class='line'>  <span class="nv">$fileObj</span> <span class="o">=</span> <span class="nv">$file</span><span class="o">-&gt;</span><span class="na">openFile</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="nv">$fileObj</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">())</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$fileObj</span><span class="o">-&gt;</span><span class="na">fgets</span><span class="p">();</span><span class="c1">//获取文件里慢的一行数据</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="nv">$fileObj</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$file</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[cURL]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/12/php-curl/"/>
-    <updated>2016-05-12T20:52:24+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/12/php-curl</id>
-    <content type="html"><![CDATA[<h1>cURl的概念</h1>
-
-<blockquote><p>cURL（Client URL Library Functions）使用URL语法传输数据的命令行工具</p></blockquote>
-
-<!--more-->
-
-
-<h1>使用场景</h1>
-
-<ul>
-<li>网页资源
-
-<ul>
-<li>网页爬虫</li>
-</ul>
-</li>
-<li><p>WebService数据接口资源</p>
-
-<ul>
-<li>动态获取接口数据，如天气 号码归属地等</li>
-</ul>
-</li>
-<li><p>FTP服务器里面的文件资源</p>
-
-<ul>
-<li>下载Ftp里面的文件</li>
-</ul>
-</li>
-<li><p>其他资源</p>
-
-<ul>
-<li>所有网络上的资源都可以用cURL访问和下载</li>
-</ul>
-</li>
-</ul>
-
-
-<p>确定是否支持cURL<code>php -i |grep cURL</code></p>
-
-<h1>cURL操作步骤</h1>
-
-<ul>
-<li>初始化
-
-<ul>
-<li>curl_init()</li>
-</ul>
-</li>
-<li>执行
-
-<ul>
-<li>curl_exec()</li>
-</ul>
-</li>
-<li><p>关闭</p>
-
-<ul>
-<li>curl_close()
-
-<h1>实例</h1></li>
-</ul>
-</li>
-<li><p>简单的网页爬虫</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="nv">$curl</span><span class="o">=</span><span class="nb">curl_init</span><span class="p">(</span><span class="s1">&#39;http://www.baidu.com&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>抓取网页并替换部分内容</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * 在网络上下载一个网页并把内容中的“百度”替换为“GOOD”之后输出</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>         <span class="c1">// 初始化</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.baidu.com&quot;</span><span class="p">);</span>     <span class="c1">// 设置访问网页的URL</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>           <span class="c1">// 执行之后不直接打印出来</span>
-</span><span class='line'><span class="nv">$output</span><span class="o">=</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span> <span class="c1">// 执行</span>
-</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>           <span class="c1">// 关闭cURL</span>
-</span><span class='line'><span class="k">echo</span> <span class="nb">str_replace</span><span class="p">(</span><span class="s2">&quot;百度&quot;</span><span class="p">,</span><span class="s2">&quot;GOOD&quot;</span><span class="p">,</span><span class="nv">$output</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>调用WebService获取天气信息
-代码需要修改</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nb">sprintf</span><span class="p">(</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
-</span><span class='line'><span class="s1">&lt;soap:Envelope </span>
-</span><span class='line'><span class="s1">xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; </span>
-</span><span class='line'><span class="s1">xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; </span>
-</span><span class='line'><span class="s1">xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;</span>
-</span><span class='line'><span class="s1">  &lt;soap:Body&gt;</span>
-</span><span class='line'><span class="s1">    &lt;getWeatherbyCityName xmlns=&quot;http://WebXml.com.cn/&quot;&gt;</span>
-</span><span class='line'><span class="s1">      &lt;theCityName&gt;%s&lt;/theCityName&gt;</span>
-</span><span class='line'><span class="s1">    &lt;/getWeatherbyCityName&gt;</span>
-</span><span class='line'><span class="s1">  &lt;/soap:Body&gt;</span>
-</span><span class='line'><span class="s1">&lt;/soap:Envelope&gt;&#39;</span><span class="p">,</span><span class="s1">&#39;北京&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span> 
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.webxml.com.cn/WebServices/WeatherWebService.asmx&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPHEADER</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;Content-Type: application/soap+xml; charset=utf-8&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s2">&quot;Content-length: &quot;</span><span class="o">.</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$data</span><span class="p">),</span>
-</span><span class='line'>  <span class="s2">&quot;SOAPAction:</span><span class="se">\&quot;</span><span class="s2">http://WebXml.com.cn/getWeatherbyCityName</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">));</span>
-</span><span class='line'><span class="nv">$rtn</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">)){</span>
-</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$info</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;RETURN: &quot;</span> <span class="o">.</span> <span class="nv">$rtn</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;Curl error: &#39;</span> <span class="o">.</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>登录网站并下载个人空间页面</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * 登录慕课网并下载个人空间页面</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'><span class="nv">$data</span><span class="o">=</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;username&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;promonkey&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;password&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;1q2w3e&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;remember&#39;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$data</span><span class="o">=</span><span class="s1">&#39;username=xxx&amp;password=xxx&amp;remember=1&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>         <span class="c1">// 初始化</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.imooc.com/user/login&quot;</span><span class="p">);</span>      <span class="c1">// 设置访问网页的URL</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>           <span class="c1">// 执行之后不直接打印出来</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Cookie相关设置，这部分设置需要在所有会话开始之前设置</span>
-</span><span class='line'><span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s1">&#39;PRC&#39;</span><span class="p">);</span> <span class="c1">// 使用Cookie时，必须先设置时区</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_COOKIESESSION</span><span class="p">,</span> <span class="k">TRUE</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// 这样能够让cURL支持页面链接跳转</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPHEADER</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;application/x-www-form-urlencoded; charset=utf-8&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s2">&quot;Content-length: &quot;</span><span class="o">.</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$data</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">));</span>
-</span><span class='line'><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>    <span class="c1">// 执行</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;http://www.imooc.com/space/index&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPHEADER</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s2">&quot;Content-type: text/xml&quot;</span>
-</span><span class='line'>  <span class="p">));</span>
-</span><span class='line'><span class="nv">$output</span><span class="o">=</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span> <span class="c1">// 执行</span>
-</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>           <span class="c1">// 关闭cURL</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$output</span><span class="p">;</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>FTP服务器下载文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * 从FTP服务器下载一个文件到本地</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span> 
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;ftp://xxx(ip)/downloaddemo.txt&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">300</span><span class="p">);</span> <span class="c1">// times out after 300s</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_USERPWD</span><span class="p">,</span> <span class="s2">&quot;xxx:xxx&quot;</span><span class="p">);</span><span class="c1">//FTP用户名：密码</span>
-</span><span class='line'><span class="c1">// Sets up the output file</span>
-</span><span class='line'><span class="nv">$outfile</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="s1">&#39;dest.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">);</span><span class="c1">//保存到本地的文件名</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_FILE</span><span class="p">,</span> <span class="nv">$outfile</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$rtn</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="nb">fclose</span><span class="p">(</span><span class="nv">$outfile</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">)){</span>
-</span><span class='line'>  <span class="c1">// $info = curl_getinfo($curlobj); </span>
-</span><span class='line'>  <span class="c1">// print_r($info);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;RETURN: &quot;</span> <span class="o">.</span> <span class="nv">$rtn</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;Curl error: &#39;</span> <span class="o">.</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>上传文件到FTP</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * 把本地文件上传到FTP服务器上</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span> 
-</span><span class='line'><span class="nv">$localfile</span> <span class="o">=</span> <span class="s1">&#39;ftp01.php&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fopen</span><span class="p">(</span><span class="nv">$localfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;ftp://xxx/ftp01_uploaded.php&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">300</span><span class="p">);</span> <span class="c1">// times out after 300s</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_USERPWD</span><span class="p">,</span> <span class="s2">&quot;xxx:xxx&quot;</span><span class="p">);</span><span class="c1">//FTP用户名：密码</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_UPLOAD</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_INFILE</span><span class="p">,</span> <span class="nv">$fp</span><span class="p">);</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_INFILESIZE</span><span class="p">,</span> <span class="nb">filesize</span><span class="p">(</span><span class="nv">$localfile</span><span class="p">));</span>
-</span><span class='line'><span class="nv">$rtn</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">)){</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;Uploaded successfully.&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s1">&#39;Curl error: &#39;</span> <span class="o">.</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>访问HTTPS资源</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * 下载网络上面的一个HTTPS的资源</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'><span class="nv">$curlobj</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>         <span class="c1">// 初始化</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="s2">&quot;https://ajax.aspnetcdn.com/ajax/jquery.validate/1.12.0/jquery.validate.js&quot;</span><span class="p">);</span>        <span class="c1">// 设置访问网页的URL</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>           <span class="c1">// 执行之后不直接打印出来</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// 设置HTTPS支持</span>
-</span><span class='line'><span class="nb">date_default_timezone_set</span><span class="p">(</span><span class="s1">&#39;PRC&#39;</span><span class="p">);</span> <span class="c1">// 使用Cookie时，必须先设置时区</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// 对认证证书来源的检查从证书中检查SSL加密算法是否存在</span>
-</span><span class='line'><span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYHOST</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// </span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$output</span><span class="o">=</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span> <span class="c1">// 执行</span>
-</span><span class='line'><span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curlobj</span><span class="p">);</span>           <span class="c1">// 关闭cURL</span>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$output</span><span class="p">;</span>
 </span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
 </span></code></pre></td></tr></table></div></figure>
 
