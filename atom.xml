@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-06T10:43:05+08:00</updated>
+  <updated>2016-06-06T11:03:41+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -280,6 +280,16 @@
 </span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">performFly</span><span class="p">();</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<h1>五、策略模式的控制和反转</h1>
+
+<p>使用策略模式可以实现Ioc，依赖倒置和控制反转</p>
+
+<p>在原本的类中，存在一个A类中调用B类，则A类是依赖于B类的。</p>
+
+<p>通过几个接口的设置和策略的解耦，就把依赖进行了反转，也就是我们在写A类的时候不需要去实现B类。</p>
+
+<p>只有在最后执行的时候才进行绑定。</p>
 ]]></content>
   </entry>
   
