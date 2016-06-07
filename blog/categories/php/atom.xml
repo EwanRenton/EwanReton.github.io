@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-06T21:23:44+08:00</updated>
+  <updated>2016-06-07T11:36:47+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -14,6 +14,406 @@
 
   
   <entry>
+    <title type="html"><![CDATA[PHP设计模式(七)-装饰器模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/07/php-design-7/"/>
+    <updated>2016-06-07T10:53:23+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/07/php-design-7</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>装饰器模式能够从一个对象的外部动态地给对象添加功能。</p>
+
+<p>通常给对象添加功能，要么直接修改对象添加相应的功能，要么派生对应的子类来扩展，抑或是使用对象组合的方式。显然，直接修改对应的类这种方式并不可取。在面向对象的设计中，我们也应该尽量使用对象组合，而不是对象继承来扩展和复用功能。装饰器模式就是基于对象组合的方式，可以很灵活的给对象添加所需要的功能。装饰器模式的本质就是动态组合。动态是手段，组合才是目的。</p>
+
+<p>常见的使用示例：Web服务层 —— 为 REST 服务提供 JSON 和 XML 装饰器。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2015/12/decorator-design-pattern.png" alt="" /></p>
+
+<h1>3、实例代码</h1>
+
+<p>定义接口：</p>
+
+<pre><code class="php RendererInterface.php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Decorator;
+
+    /**
+     * RendererInterface接口
+     */
+    interface RendererInterface
+    {
+        /**
+         * render data
+         *
+         * @return mixed
+         */
+        public function renderData();
+    }
+</code></pre>
+
+<pre><code class="php Webservice.php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Decorator;
+
+    /**
+     * Webservice类
+     */
+    class Webservice implements RendererInterface
+    {
+        /**
+         * @var mixed
+         */
+        protected $data;
+
+        /**
+         * @param mixed $data
+         */
+        public function __construct($data)
+        {
+            $this-&gt;data = $data;
+        }
+
+        /**
+         * @return string
+         */
+        public function renderData()
+        {
+            return $this-&gt;data;
+        }
+    }
+
+个人感觉在这里没有必要实现RendererInterface接口，
+实现这个接口过后就必须实现renderData方法，而这个方法仅仅是用来返回数据。
+但是这个名字和后面装饰器的实现方法重名，很容易混乱。
+这里如果不实现RendererInterface接口，将renderData()改为getData（）应该会好一些，至少程序没那么容易搞混。
+</code></pre>
+
+<p>装饰器抽象类：</p>
+
+<pre><code class="php Decorator.php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Decorator;
+
+    /**
+     * 装饰器必须实现 RendererInterface 接口, 这是装饰器模式的主要特点，
+     * 否则的话就不是装饰器而只是个包裹类
+     */
+
+    /**
+     * Decorator类
+     */
+    abstract class Decorator implements RendererInterface
+    {
+        /**
+         * @var RendererInterface
+         */
+        protected $wrapped;
+
+        /**
+         * 必须类型声明装饰组件以便在子类中可以调用renderData()方法
+         *
+         * @param RendererInterface $wrappable
+         */
+        public function __construct(RendererInterface $wrappable)
+        {
+            $this-&gt;wrapped = $wrappable;
+        }
+    }
+</code></pre>
+
+<pre><code class="php RenderInXml.php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Decorator;
+
+    /**
+     * RenderInXml类
+     */
+    class RenderInXml extends Decorator
+    {
+        /**
+         * render data as XML
+         *
+         * @return mixed|string
+         */
+        public function renderData()
+        {
+            $output = $this-&gt;wrapped-&gt;renderData();
+
+            // do some fancy conversion to xml from array ...
+
+            $doc = new \DOMDocument();
+
+            foreach ($output as $key =&gt; $val) {
+                $doc-&gt;appendChild($doc-&gt;createElement($key, $val));
+            }
+
+            return $doc-&gt;saveXML();
+        }
+    }
+</code></pre>
+
+<pre><code class="php RenderInJson.php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Decorator;
+
+    /**
+     * RenderInJson类
+     */
+    class RenderInJson extends Decorator
+    {
+        /**
+         * render data as JSON
+         *
+         * @return mixed|string
+         */
+        public function renderData()
+        {
+            $output = $this-&gt;wrapped-&gt;renderData();
+
+            return json_encode($output);
+        }
+    }
+</code></pre>
+
+<h1>4、测试代码</h1>
+
+<pre><code class="php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Decorator\Tests;
+
+    use DesignPatterns\Structural\Decorator;
+
+    /**
+     * DecoratorTest 用于测试装饰器模式
+     */
+    class DecoratorTest extends \PHPUnit_Framework_TestCase
+    {
+
+        protected $service;
+
+        protected function setUp()
+        {
+            $this-&gt;service = new Decorator\Webservice(array('foo' =&gt; 'bar'));//实例化 Webservice 类
+        }
+
+        public function testJsonDecorator()
+        {
+            // Wrap service with a JSON decorator for renderers
+            $service = new Decorator\RenderInJson($this-&gt;service);//给实例化的类添加装饰器
+            // Our Renderer will now output JSON instead of an array
+            $this-&gt;assertEquals('{"foo":"bar"}', $service-&gt;renderData());
+        }
+
+        public function testXmlDecorator()
+        {
+            // Wrap service with a XML decorator for renderers
+            $service = new Decorator\RenderInXml($this-&gt;service);
+            // Our Renderer will now output XML instead of an array
+            $xml = '&lt;?xml version="1.0"?&gt;&lt;foo&gt;bar&lt;/foo&gt;';
+            $this-&gt;assertXmlStringEqualsXmlString($xml, $service-&gt;renderData());
+        }
+
+        /**
+         * The first key-point of this pattern :
+         */
+        public function testDecoratorMustImplementsRenderer()
+        {
+            $className = 'DesignPatterns\Structural\Decorator\Decorator';
+            $interfaceName = 'DesignPatterns\Structural\Decorator\RendererInterface';
+            $this-&gt;assertTrue(is_subclass_of($className, $interfaceName));
+        }
+
+        /**
+         * Second key-point of this pattern : the decorator is type-hinted
+         *
+         * @expectedException \PHPUnit_Framework_Error
+         */
+        public function testDecoratorTypeHinted()
+        {
+            if (version_compare(PHP_VERSION, '7', '&gt;=')) {
+                throw new \PHPUnit_Framework_Error('Skip test for PHP 7', 0, __FILE__, __LINE__);
+            }
+
+            $this-&gt;getMockForAbstractClass('DesignPatterns\Structural\Decorator\Decorator', array(new \stdClass()));
+        }
+
+        /**
+         * Second key-point of this pattern : the decorator is type-hinted
+         *
+         * @requires PHP 7
+         * @expectedException TypeError
+         */
+        public function testDecoratorTypeHintedForPhp7()
+        {
+            $this-&gt;getMockForAbstractClass('DesignPatterns\Structural\Decorator\Decorator', array(new \stdClass()));
+        }
+
+        /**
+         * The decorator implements and wraps the same interface
+         */
+        public function testDecoratorOnlyAcceptRenderer()
+        {
+            $mock = $this-&gt;getMock('DesignPatterns\Structural\Decorator\RendererInterface');
+            $dec = $this-&gt;getMockForAbstractClass('DesignPatterns\Structural\Decorator\Decorator', array($mock));
+            $this-&gt;assertNotNull($dec);
+        }
+    } 
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(六)-原型模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/07/php-design-6/"/>
+    <updated>2016-06-07T10:22:51+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/07/php-design-6</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>通过创建原型使用克隆方法实现对象创建而不是使用标准的<code>new</code> 方式。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2015/12/120b8c2b-9cad-44e8-a286-3347d32d57dd.png" alt="" /></p>
+
+<h1>3、示例代码</h1>
+
+<pre><code class="php BookPrototype.php">&lt;?php
+
+    namespace DesignPatterns\Creational\Prototype;
+
+    /**
+     * BookPrototype类
+     */
+    abstract class BookPrototype
+    {
+        /**
+         * @var string
+         */
+        protected $title;
+
+        /**
+         * @var string
+         */
+        protected $category;
+
+        /**
+         * @abstract
+         * @return void
+         */
+        abstract public function __clone();
+
+        /**
+         * @return string
+         */
+        public function getTitle()
+        {
+            return $this-&gt;title;
+        }
+
+        /**
+         * @param string $title
+         */
+        public function setTitle($title)
+        {
+            $this-&gt;title = $title;
+        }
+    }
+</code></pre>
+
+<pre><code class="php BarBookPrototype.php">    &lt;?php
+
+    namespace DesignPatterns\Creational\Prototype;
+
+    /**
+     * BarBookPrototype类
+     */
+    class BarBookPrototype extends BookPrototype
+    {
+        /**
+         * @var string
+         */
+        protected $category = 'Bar';
+
+        /**
+         * empty clone
+         */
+        public function __clone()
+        {
+        }
+    }
+</code></pre>
+
+<pre><code class="php FooBookPrototype.php">    &lt;?php
+
+    namespace DesignPatterns\Creational\Prototype;
+
+    /**
+     * FooBookPrototype类
+     */
+    class FooBookPrototype extends BookPrototype
+    {
+        protected $category = 'Foo';
+
+        /**
+         * empty clone
+         */
+        public function __clone()
+        {
+        }
+    }
+</code></pre>
+
+<h1>4、测试代码</h1>
+
+<pre><code class="php">    &lt;?php
+
+    namespace DesignPatterns\Creational\Prototype\Tests;
+
+    use DesignPatterns\Creational\Prototype\BookPrototype;
+    use DesignPatterns\Creational\Prototype\FooBookPrototype;
+    use DesignPatterns\Creational\Prototype\BarBookPrototype;
+
+    /**
+     * PrototypeTest tests the prototype pattern
+     */
+    class PrototypeTest extends \PHPUnit_Framework_TestCase
+    {
+        //实例化得到类的原型
+         public function getPrototype(){
+             return array(
+                 array(new FooBookPrototype()),
+                 array(new BarBookPrototype())
+             );
+         }
+
+         /**
+          * 克隆类
+          * @dataProvider getPrototype
+          */
+         public function testCreation(BookPrototype $prototype)
+         {
+             $book = clone $prototype;
+             $book-&gt;setTitle($book-&gt;getCategory().' Book');
+             $this-&gt;assertInstanceOf('DesignPatterns\Creational\Prototype\BookPrototype', $book);
+         }
+    } 
+</code></pre>
+
+<h1>5、总结</h1>
+
+<p>原型模式的主要思想是基于现有的对象克隆一个新的对象出来，一般是用对象内部提供的克隆方法，通过该方法返回一个对象的副本，这种创建对象的方式，相比我们之前说的几类创建型模式还是有区别的，之前的讲述的工厂方法模式与抽象工厂都是通过工厂封装具体的 new 操作的过程，返回一个新的对象，有的时候我们通过这样的创建工厂创建对象不值得，特别是以下的几个场景，可能使用原型模式更简单、效率更高：</p>
+
+<ul>
+<li>如果说我们的对象类型不是刚开始就能确定，而是在运行时确定的话，那么我们通过这个类型的对象克隆出一个新的类型更容易。</li>
+<li>有的时候我们可能在实际的项目中需要一个对象在某个状态下的副本，这个前提很重要，这点怎么理解呢，例如有的时候我们需要对比一个对象经过处理后的状态和处理前的状态是否发生过改变，可能我们就需要在执行某段处理之前，克隆这个对象此时状态的副本，然后等执行后的状态进行相应的对比，这样的应用在项目中也是经常会出现的。</li>
+<li>当我们处理的对象比较简单，并且对象之间的区别很小，可能只是很固定的几个属性不同的时候，使用原型模式更合适。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[PHP设计模式(四)-数据库对象映射模式]]></title>
     <link href="http://ewanreton.github.io/blog/2016/06/06/php-design-4/"/>
     <updated>2016-06-06T11:24:26+08:00</updated>
@@ -21,6 +421,9 @@
     <content type="html"><![CDATA[<h1>1、模式定义</h1>
 
 <p>在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。</p>
+
+<!--more-->
+
 
 <p>数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、以及数据映射本身三者相互独立、互不依赖。这个数据访问层由一个或多个映射器（或者数据访问对象）组成，用于实现数据传输。通用的数据访问层可以处理不同的实体类型，而专用的则处理一个或几个。</p>
 
@@ -114,6 +517,9 @@
     <updated>2016-06-06T10:32:22+08:00</updated>
     <id>http://ewanreton.github.io/blog/2016/06/06/php-design-3</id>
     <content type="html"><![CDATA[<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
+
+<!--more-->
+
 
 <h1>一、策略模式概念</h1>
 
@@ -369,606 +775,6 @@ class Postgresql implements IDatabase
 $client = new Postgresql();
 $client-&gt;query($sql);
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[php加密]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/24/php-jia-mi/"/>
-    <updated>2016-05-24T10:38:59+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/24/php-jia-mi</id>
-    <content type="html"><![CDATA[<h1>PHP中几种常见的加密方式</h1>
-
-<ul>
-<li>Md5()加密算法</li>
-<li>Crypt()加密算法</li>
-<li>Sha1()加密算法</li>
-<li>URL编码加密</li>
-<li>Base64编码加密</li>
-</ul>
-
-
-<hr />
-
-<!--more-->
-
-
-<p><strong>MD5()</strong></p>
-
-<ul>
-<li>单向加密算法，不可逆</li>
-</ul>
-
-
-<pre><code class="php">string md5(string $str[,bool $raw=output = false])
-</code></pre>
-
-<p>单向加密，不可逆</p>
-
-<p>$str:原始字符串</p>
-
-<p>$raw_output：一般不用，如果被设置为true，那么md5报文摘要将以16字节长度的原始二进制格式返回。否则返回以32为字符十六进制数字形式返回散列值。
-使用过程中最好使用多次md5</p>
-
-<pre><code class="php">$str='EwanReton';
-$code=md5(md5($str,true));
-</code></pre>
-
-<p><strong>Crypt()</strong></p>
-
-<ul>
-<li>单向加密算法，不可逆</li>
-</ul>
-
-
-<pre><code class="php">string crypt(string $str[,string $salt])
-</code></pre>
-
-<p>$str:需要加密的字符串</p>
-
-<p>$salt：盐值。加密时的干扰串，使编码更安全 DES算法标准长度为2 MD5为12
-若没有传$salt 将随机生成 否则每次刷新密文不变</p>
-
-<pre><code class="php">crypt('EwanReton','ly');//EDS根据盐值的长度自动选用
-输出:lyxxxxxxxxx
-crypt('EwanReton','$1$ly6661$');//MD5盐值的格式 最多12位
-输出：$1$ly6661$xxxxxxx
-</code></pre>
-
-<p>当盐值超过了长度限制会截取相应长度，如EDS中<code>test</code>
-会截取成<code>te</code></p>
-
-<p><strong>Sha1()</strong></p>
-
-<ul>
-<li>单向加密算法，不可逆</li>
-</ul>
-
-
-<pre><code class="php">string sha1(string $str[,bool $raw=output = false])
-</code></pre>
-
-<p>和md5类似使用也和md5类似多次sha1</p>
-
-<p>$str:原始字符串</p>
-
-<p>$raw_output：一般不用，如果被设置为true，那么sha1摘要将以20字节长度的原始二进制格式返回。否则返回以40为字符十六进制数字形式返回散列值。</p>
-
-<p><strong>URL编码加密</strong></p>
-
-<ul>
-<li>urlencode(string $str) //编码字符串</li>
-<li>urldecode(string $str) //解码</li>
-<li>rawurlencode(string $str) //按照RFC1738进行编码
-
-<ul>
-<li>解码也可以用urldecode(string $str)</li>
-</ul>
-</li>
-<li>rawurldecode(string $str)</li>
-</ul>
-
-
-<p>编码规范：除了<code>-_.</code>之外所有非字母数字字符都被替换成百分号（%）后跟两位十六进制数，空格则编码为加号（+）</p>
-
-<pre><code class="php">$str='Ewan Reton';
-echo urlencode($str);
-echo "&lt;hr/&gt;";
-$str="Ewan Reton.php?act=test";
-echo urlencode($str);
-</code></pre>
-
-<p>输出</p>
-
-<pre class="prettyprint linenums">
-Ewan+Reton
-Ewan+Reton.php%3Fact%3Dtest
-</pre>
-
-
-<p>常见的编码：</p>
-
-<pre class="prettyprint linenums">
-? %3F
-= %3D
-空格 + 按照RFC1738进行编码 为%20
-% %25
-& %26
-\ %5C
-+ %2B
-</pre>
-
-
-<p>应用：</p>
-
-<hr />
-
-<p>在使用<code>get</code>方式传值时格式为<code>?key1=vaule&amp;key2=value2</code></p>
-
-<p>但是当我们<code>key1</code>的<code>value</code>为<code>Ewan&amp;Reton</code>在解析时会把Reton也解析成一个传的变量并且值为<code>null</code></p>
-
-<p>为了解决这个问题可以这样处理:</p>
-
-<pre><code class="php">$value="Ewan&amp;Reton";
-$str="key1=".urlcode($value)."&amp;key2=value2";
-echo "&lt;a href="test.php?'{$str}'&gt;test&lt;/a&gt;";
-</code></pre>
-
-<p>注意：</p>
-
-<p>这里不需要解码，在识别时会自动识别成<code>key1=Ewan&amp;Reton&amp;key2=value2</code></p>
-
-<hr />
-
-<p><strong>base64编码加密</strong></p>
-
-<ul>
-<li>base64_encode(string $data)</li>
-<li>base64_decode(string $data[,bool $strict=false])
-
-<ul>
-<li>//如果输出的数据超出了base64字母表则返回false</li>
-</ul>
-</li>
-</ul>
-
-
-<p>将任何2进制字符编码到一个可打印的64字符中，中文和图片都可编码。解决早起邮件网关只能识别ASCII。</p>
-
-<p>主要作用将非ASCII码的数据转换成ASCII，其实是一个数据编码并算不上加密算法。</p>
-
-<h1>加密技术分类</h1>
-
-<p><strong>单向散列加密</strong></p>
-
-<p>通过对不同输入长度的信息进行散列计算，得到固定长度的输出，这个散列计算过程是单向的，即不能通过输出反推输入。</p>
-
-<p><strong>对称加密技术</strong></p>
-
-<p>加密和解密使用的密钥是同一个密钥或者可以相互推算。</p>
-
-<p><strong>非对称加密技术</strong></p>
-
-<p>加密和解密使用的密钥不是同一个，其中一个对外公开，被称为公钥，另一个只有拥有者知道。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PDO实例-发送邮件激活账户]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/22/pdo-shi-li/"/>
-    <updated>2016-05-22T16:07:33+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/22/pdo-shi-li</id>
-    <content type="html"><![CDATA[<blockquote><p>实现注册发送邮件激活账户</p>
-
-<p>使用swiftmailer-master发送邮件</p></blockquote>
-
-<!--more-->
-
-
-<p>核心代码:
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">content</span><span class="o">-</span><span class="nx">type</span><span class="o">:</span><span class="nx">text</span><span class="o">/</span><span class="nx">html</span><span class="p">;</span><span class="nx">charset</span><span class="o">=</span><span class="nx">utf</span><span class="o">-</span><span class="mi">8</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'><span class="c1">//1.包含所需文件</span>
-</span><span class='line'><span class="k">require_once</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">swiftmailer</span><span class="o">-</span><span class="nx">master</span><span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">swift_required</span><span class="o">.</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'><span class="k">require_once</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">PdoMySQL</span><span class="o">.</span><span class="nx">class</span><span class="o">.</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'><span class="k">require_once</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">config</span><span class="o">.</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'><span class="k">require_once</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">pwd</span><span class="o">.</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'><span class="c1">//2.接收信息</span>
-</span><span class='line'><span class="nv">$act</span><span class="o">=</span><span class="err">$</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">GET</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">act</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
-</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="nb">addslashes</span><span class="p">(</span><span class="err">$</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">POST</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">username</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]);</span>
-</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="nb">md5</span><span class="p">(</span><span class="err">$</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">POST</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">password</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]);</span>
-</span><span class='line'><span class="nv">$email</span><span class="o">=</span><span class="err">$</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">POST</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">email</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;];</span>
-</span><span class='line'><span class="nv">$table</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">user</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'><span class="c1">//3.得到连接对象</span>
-</span><span class='line'><span class="nv">$PdoMySQL</span><span class="o">=</span><span class="k">new</span> <span class="nx">PdoMySQL</span><span class="p">();</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nv">$act</span><span class="o">===&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">reg</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;){</span>
-</span><span class='line'>    <span class="nv">$regtime</span><span class="o">=</span><span class="nb">time</span><span class="p">();</span>
-</span><span class='line'>    <span class="c1">//完成注册的功能</span>
-</span><span class='line'>    <span class="nv">$token</span><span class="o">=</span><span class="nb">md5</span><span class="p">(</span><span class="nv">$username</span><span class="o">.</span><span class="nv">$password</span><span class="o">.</span><span class="nv">$regtime</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$token_exptime</span><span class="o">=</span><span class="nv">$regtime</span><span class="o">+</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">;</span><span class="c1">//过期时间</span>
-</span><span class='line'>    <span class="nv">$data</span><span class="o">=</span><span class="nb">compact</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">username</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">password</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">email</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">token</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">token_exptime</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">regtime</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>    <span class="nv">$res</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="nv">$table</span><span class="p">);</span>
-</span><span class='line'>    <span class="nv">$lastInsertId</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">getLastInsertId</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$res</span><span class="p">){</span>
-</span><span class='line'>        <span class="c1">//发送邮件，以QQ邮箱为例</span>
-</span><span class='line'>        <span class="c1">//配置邮件服务器，得到传输对象</span>
-</span><span class='line'>        <span class="nv">$transport</span><span class="o">=</span><span class="nx">Swift_SmtpTransport</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">smtp</span><span class="o">.</span><span class="nx">qq</span><span class="o">.</span><span class="nx">com</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="mi">25</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//设置登陆帐号和密码</span>
-</span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setUsername</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#x6d;&amp;#x61;&amp;#x69;&amp;#108;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#64;&amp;#x71;&amp;#113;&amp;#x2e;&amp;#x63;&amp;#x6f;&amp;#x6d;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#120;&amp;#x78;&amp;#x40;&amp;#113;&amp;#x71;&amp;#46;&amp;#x63;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;);</span>
-</span><span class='line'>        <span class="nv">$transport</span><span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="nv">$emailPassword</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//得到发送邮件对象Swift_Mailer对象</span>
-</span><span class='line'>        <span class="nv">$mailer</span><span class="o">=</span><span class="nx">Swift_Mailer</span><span class="o">::</span><span class="na">newInstance</span><span class="p">(</span><span class="nv">$transport</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//得到邮件信息对象</span>
-</span><span class='line'>        <span class="nv">$message</span><span class="o">=</span><span class="nx">Swift_Message</span><span class="o">::</span><span class="na">newInstance</span><span class="p">();</span>
-</span><span class='line'>        <span class="c1">//设置管理员的信息</span>
-</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setFrom</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;&amp;#109;&amp;#x61;&amp;#105;&amp;#108;&amp;#116;&amp;#x6f;&amp;#x3a;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#120;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#64;&amp;#113;&amp;#x71;&amp;#x2e;&amp;#x63;&amp;#111;&amp;#109;&quot;</span><span class="o">&gt;&amp;</span><span class="c1">#120;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#x78;&amp;#120;&amp;#120;&amp;#120;&amp;#64;&amp;#113;&amp;#113;&amp;#46;&amp;#99;&amp;#x6f;&amp;#109;&lt;/a&gt;&amp;rsquo;=&gt;&amp;lsquo;Reton&amp;rsquo;));</span>
-</span><span class='line'>        <span class="c1">//将邮件发给谁</span>
-</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setTo</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$email</span><span class="o">=&gt;&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">reton</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;));</span>
-</span><span class='line'>        <span class="c1">//设置邮件主题</span>
-</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setSubject</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">激活邮件</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>        <span class="nv">$url</span><span class="o">=&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;http://&quot;</span><span class="o">&gt;</span><span class="nx">http</span><span class="o">://&lt;/</span><span class="nx">a</span><span class="o">&gt;&amp;</span><span class="nx">rdquo</span><span class="p">;</span><span class="o">.</span><span class="err">$</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">SERVER</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">HTTP_HOST</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]</span><span class="o">.</span><span class="err">$</span><span class="o">&lt;/</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">SERVER</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">PHP_SELF</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]</span><span class="o">.&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">?</span><span class="nx">act</span><span class="o">=</span><span class="nx">active</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="nx">token</span><span class="o">=</span><span class="p">{</span><span class="nv">$token</span><span class="p">}</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
-</span><span class='line'>        <span class="nv">$urlencode</span><span class="o">=</span><span class="nb">urlencode</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>        <span class="nv">$str</span><span class="o">=&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">EOF</span>
-</span><span class='line'>        <span class="nx">亲爱的</span><span class="p">{</span><span class="nv">$username</span><span class="p">}</span><span class="nx">您好</span><span class="o">~</span><span class="nx">！感谢您注册我们网站</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
-</span><span class='line'>        <span class="nx">请点击此链接激活帐号即可登陆！</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$url</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="nv">$urlencode</span><span class="p">}</span><span class="o">&lt;/</span><span class="nx">a</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
-</span><span class='line'>        <span class="nx">如果点此链接无反映，可以将其复制到浏览器中来执行，链接的有效时间为24小时。</span>    <span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="nx">EOF</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$message</span><span class="o">-&gt;</span><span class="na">setBody</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;{</span><span class="nv">$str</span><span class="p">}</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">text</span><span class="o">/</span><span class="nx">html</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">utf</span><span class="o">-</span><span class="mi">8</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>        <span class="k">try</span><span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nv">$mailer</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">)){</span>
-</span><span class='line'>                <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">恭喜您</span><span class="p">{</span><span class="nv">$username</span><span class="p">}</span><span class="nx">注册成功，请到邮箱激活之后登陆</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
-</span><span class='line'>                <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="mi">3</span><span class="nx">秒钟后跳转到登陆页面</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>                <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;refresh&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;3;url=index.php#tologin&quot;</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>            <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>                <span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="nv">$table</span><span class="p">,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">id</span><span class="o">=&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="o">.</span><span class="nv">$lastInsertId</span><span class="p">);</span>
-</span><span class='line'>                <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">注册失败，请重新注册</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>                <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="mi">3</span><span class="nx">秒钟后跳转到注册页面</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>                <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;refresh&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;3;url=index.php#toregister&quot;</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">Swift_ConnectionException</span> <span class="nv">$e</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">邮件发送错误</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="o">.</span><span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">用户注册失败</span><span class="p">,</span><span class="mi">3</span><span class="nx">秒钟后跳转到注册页面</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;refresh&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;3;url=index.php#toregister&quot;</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span><span class="k">elseif</span><span class="p">(</span><span class="nv">$act</span><span class="o">===&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">login</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;){</span>
-</span><span class='line'>    <span class="c1">//完成登陆的功能</span>
-</span><span class='line'>    <span class="nv">$row</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="nv">$table</span><span class="p">,</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">username</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;{</span><span class="nv">$username</span><span class="p">}</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span> <span class="k">AND</span> <span class="nx">password</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;{</span><span class="nv">$password</span><span class="p">}</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">status</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$row</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">status</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">请先激活在登陆</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;refresh&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;3;url=index.php#tologin&quot;</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">登陆成功</span><span class="p">,</span><span class="mi">3</span><span class="nx">秒钟后跳转到首页</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;refresh&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;3;url=http://www.imooc.com&quot;</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="p">}</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><span class="k">elseif</span><span class="p">(</span><span class="nv">$act</span><span class="o">===&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">active</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;){</span>
-</span><span class='line'>    <span class="nv">$token</span><span class="o">=</span><span class="nb">addslashes</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">token</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]);</span>
-</span><span class='line'>    <span class="nv">$row</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">find</span><span class="p">(</span><span class="nv">$table</span><span class="p">,</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">token</span><span class="o">=&amp;</span><span class="nx">lsquo</span><span class="p">;{</span><span class="nv">$token</span><span class="p">}</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span> <span class="k">AND</span> <span class="nx">status</span><span class="o">=</span><span class="mi">0</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">id</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">token_exptime</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;));</span>
-</span><span class='line'>    <span class="nv">$now</span><span class="o">=</span><span class="nb">time</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$now</span><span class="o">&gt;</span><span class="nv">$row</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">token_exptime</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]){</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">激活时间过期，请重新登陆激活</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>        <span class="nv">$res</span><span class="o">=</span><span class="nv">$PdoMySQL</span><span class="o">-&gt;</span><span class="na">update</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">status</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">),</span><span class="nv">$table</span><span class="p">,</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">id</span><span class="o">=&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="o">.</span><span class="nv">$row</span><span class="p">[</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">id</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;]);</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nv">$res</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">激活成功</span><span class="p">,</span><span class="mi">3</span><span class="nx">秒钟后跳转到登陆页面</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;refresh&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;3;url=index.php#tologin&quot;</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">激活失败，请重新激活</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;refresh&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;3;url=index.php&quot;</span><span class="o">/&gt;&amp;</span><span class="nx">rsquo</span><span class="p">;;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">code</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">html</span> <span class="nx">index</span><span class="o">.</span><span class="nx">php</span>
-</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;!--</span><span class="p">[</span><span class="k">if</span> <span class="nx">lt</span> <span class="nx">IE</span> <span class="mi">7</span> <span class="p">]</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;no-js ie6 lt8&quot;</span><span class="o">&gt;</span> <span class="o">&lt;!</span><span class="p">[</span><span class="k">endif</span><span class="p">]</span><span class="o">--&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;!--</span><span class="p">[</span><span class="k">if</span> <span class="nx">IE</span> <span class="mi">7</span> <span class="p">]</span><span class="o">&gt;</span>    <span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;no-js ie7 lt8&quot;</span><span class="o">&gt;</span> <span class="o">&lt;!</span><span class="p">[</span><span class="k">endif</span><span class="p">]</span><span class="o">--&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;!--</span><span class="p">[</span><span class="k">if</span> <span class="nx">IE</span> <span class="mi">8</span> <span class="p">]</span><span class="o">&gt;</span>    <span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;no-js ie8 lt8&quot;</span><span class="o">&gt;</span> <span class="o">&lt;!</span><span class="p">[</span><span class="k">endif</span><span class="p">]</span><span class="o">--&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;!--</span><span class="p">[</span><span class="k">if</span> <span class="nx">IE</span> <span class="mi">9</span> <span class="p">]</span><span class="o">&gt;</span>    <span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;no-js ie9&quot;</span><span class="o">&gt;</span> <span class="o">&lt;!</span><span class="p">[</span><span class="k">endif</span><span class="p">]</span><span class="o">--&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;!--</span><span class="p">[</span><span class="k">if</span> <span class="p">(</span><span class="nx">gt</span> <span class="nx">IE</span> <span class="mi">9</span><span class="p">)</span><span class="o">|!</span><span class="p">(</span><span class="nx">IE</span><span class="p">)]</span><span class="o">&gt;&lt;!--&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;no-js&quot;</span><span class="o">&gt;</span> <span class="o">&lt;!--&lt;!</span><span class="p">[</span><span class="k">endif</span><span class="p">]</span><span class="o">--&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>        <span class="o">&lt;!--</span> <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">http</span><span class="o">-</span><span class="nx">equiv</span><span class="o">=</span><span class="s2">&quot;X-UA-Compatible&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;IE=edge,chrome=1&quot;</span><span class="o">&gt;</span>  <span class="o">&amp;</span><span class="nx">ndash</span><span class="p">;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">Login</span> <span class="k">and</span> <span class="nx">Registration</span> <span class="nx">Form</span> <span class="nx">with</span> <span class="nx">HTML5</span> <span class="k">and</span> <span class="nx">CSS3</span><span class="o">&lt;/</span><span class="nx">title</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;viewport&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;description&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;Login and Registration Form with HTML5 and CSS3&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;keywords&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;html5, css3, form, switch, animation, :target, pseudo-class&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;author&quot;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&quot;Codrops&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nb">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&quot;shortcut icon&quot;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;../favicon.ico&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nb">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;css/demo.css&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nb">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;css/style.css&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nb">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;css/animate-custom.css&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>    <span class="o">&lt;/</span><span class="nx">head</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nb">header</span><span class="o">&gt;</span>
-</span><span class='line'>                <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">It</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="nx">s</span> <span class="nx">Reton</span><span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="k">This</span> <span class="nx">Is</span> <span class="nx">Reton</span><span class="o">&lt;/</span><span class="nx">span</span><span class="o">&gt;&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
-</span><span class='line'>                <span class="o">&lt;</span><span class="nx">nav</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;codrops-demos&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>                    <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="nx">Click</span> <span class="o">&lt;</span><span class="nx">strong</span><span class="o">&gt;&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Join</span> <span class="nx">us</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span><span class="o">&lt;/</span><span class="nx">strong</span><span class="o">&gt;</span> <span class="nx">to</span> <span class="nx">Register</span> <span class="nx">the</span> <span class="nx">reton</span><span class="o">&lt;/</span><span class="nx">span</span><span class="o">&gt;</span>
-</span><span class='line'>                <span class="o">&lt;/</span><span class="nx">nav</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;/</span><span class="nb">header</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">section</span><span class="o">&gt;</span>             <span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span>
-</span><span class='line'>                <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;container_demo&quot;</span> <span class="o">&gt;</span>
-</span><span class='line'>                    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;hiddenanchor&quot;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;toregister&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">a</span><span class="o">&gt;</span>
-</span><span class='line'>                    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;hiddenanchor&quot;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;tologin&quot;</span><span class="o">&gt;&lt;/</span><span class="nx">a</span><span class="o">&gt;</span>
-</span><span class='line'>                    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;wrapper&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>                        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;login&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;animate form&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>                            <span class="o">&lt;</span><span class="nx">form</span>  <span class="nx">action</span><span class="o">=</span><span class="s2">&quot;doAction.php?act=login&quot;</span> <span class="nx">autocomplete</span><span class="o">=</span><span class="s2">&quot;on&quot;</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Log</span> <span class="nx">in</span><span class="o">&lt;/</span><span class="nx">h1</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;uname&quot;</span> <span class="nx">data</span><span class="o">-</span><span class="nx">icon</span><span class="o">=</span><span class="s2">&quot;u&quot;</span> <span class="o">&gt;</span> <span class="nx">Your</span> <span class="nx">username</span> <span class="o">&lt;/</span><span class="nx">label</span><span class="o">&gt;</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="nx">required</span><span class="o">=</span><span class="s2">&quot;required&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&quot;My Username&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;youpasswd&quot;</span> <span class="nx">data</span><span class="o">-</span><span class="nx">icon</span><span class="o">=</span><span class="s2">&quot;p&quot;</span><span class="o">&gt;</span> <span class="nx">Your</span> <span class="nx">password</span> <span class="o">&lt;/</span><span class="nx">label</span><span class="o">&gt;</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="nx">required</span><span class="o">=</span><span class="s2">&quot;required&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&quot;*****&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;</span><span class="nx">p</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;keeplogin&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;checkbox&quot;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;loginkeeping&quot;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;loginkeeping&quot;</span> <span class="nx">value</span><span class="o">=</span><span class="s2">&quot;loginkeeping&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;loginkeeping&quot;</span><span class="o">&gt;</span><span class="nx">Keep</span> <span class="nx">me</span> <span class="nx">logged</span> <span class="nx">in</span><span class="o">&lt;/</span><span class="nx">label</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;</span><span class="nx">p</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;login button&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="nx">value</span><span class="o">=</span><span class="s2">&quot;Login&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;</span><span class="nx">p</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;change_link&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>                                    <span class="k">Not</span> <span class="nx">a</span> <span class="nx">member</span> <span class="nx">yet</span> <span class="o">?</span>
-</span><span class='line'>                                    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;#toregister&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;to_register&quot;</span><span class="o">&gt;</span><span class="nx">Join</span> <span class="nx">us</span><span class="o">&lt;/</span><span class="nx">a</span><span class="o">&gt;</span>
-</span><span class='line'>                                <span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>                            <span class="o">&lt;/</span><span class="nx">form</span><span class="o">&gt;</span>
-</span><span class='line'>                        <span class="o">&lt;/</span><span class="nx">div</span><span class="o">&gt;&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span>                    <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;register&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;animate form&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                        <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">form</span>  <span class="nx">action</span><span class="o">=</span><span class="s2">&quot;doAction.php?act=reg&quot;</span> <span class="nx">autocomplete</span><span class="o">=</span><span class="s2">&quot;on&quot;</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">h1</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span> <span class="nx">Sign</span> <span class="nx">up</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">h1</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;usernamesignup&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;uname&quot;</span> <span class="nx">data</span><span class="o">-</span><span class="nx">icon</span><span class="o">=</span><span class="s2">&quot;u&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">Your</span> <span class="nx">username</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">label</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;usernamesignup&quot;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;username&quot;</span> <span class="nx">required</span><span class="o">=</span><span class="s2">&quot;required&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&quot;Mr.King&quot;</span> <span class="o">/&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;emailsignup&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;youmail&quot;</span> <span class="nx">data</span><span class="o">-</span><span class="nx">icon</span><span class="o">=</span><span class="s2">&quot;e&quot;</span> <span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span> <span class="nx">Your</span> <span class="nx">email</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">label</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;emailsignup&quot;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;email&quot;</span> <span class="nx">required</span><span class="o">=</span><span class="s2">&quot;required&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;email&quot;</span> <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&quot;xxxx@mail.com&quot;</span><span class="o">/&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&quot;passwordsignup&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;youpasswd&quot;</span> <span class="nx">data</span><span class="o">-</span><span class="nx">icon</span><span class="o">=</span><span class="s2">&quot;p&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span><span class="nx">Your</span> <span class="nx">password</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">label</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;passwordsignup&quot;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="nx">required</span><span class="o">=</span><span class="s2">&quot;required&quot;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;password&quot;</span> <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&quot;******&quot;</span><span class="o">/&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">p</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;signin button&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="nx">value</span><span class="o">=</span><span class="s2">&quot;Sign up&quot;</span><span class="o">/&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">p</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;change_link&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                                <span class="nx">Already</span> <span class="nx">a</span> <span class="nx">member</span> <span class="o">?</span>
-</span><span class='line'>                                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;#tologin&quot;</span> <span class="nx">class</span><span class="o">=</span><span class="s2">&quot;to_register&quot;</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span> <span class="nx">Go</span> <span class="k">and</span> <span class="nb">log</span> <span class="nx">in</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">a</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">p</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                        <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">form</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>                    <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">div</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">div</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>            <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">div</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>        <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">section</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">div</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">/</span><span class="nx">body</span><span class="o">&amp;</span><span class="nx">gt</span><span class="p">;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">code</span><span class="o">&gt;&lt;/</span><span class="nx">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;&lt;/</span><span class="nx">html</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></p>
 ]]></content>
   </entry>
   

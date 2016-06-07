@@ -9,7 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php PHP设计模式(四)-数据库对象映射模式 1、模式定义 在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。 数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、 &hellip;">
+	<meta name="description" content="php PHP设计模式(七)-装饰器模式 1、模式定义 装饰器模式能够从一个对象的外部动态地给对象添加功能。 通常给对象添加功能，要么直接修改对象添加相应的功能，要么派生对应的子类来扩展，抑或是使用对象组合的方式。显然，直接修改对应的类这种方式并不可取。在面向对象的设计中， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,7 +79,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (18)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (20)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -138,7 +138,7 @@
   
 
 
-<time datetime="2016-06-06T11:24:26+08:00" data-updated="true" itemprop="datePublished"></time></div>
+<time datetime="2016-06-07T10:53:23+08:00" data-updated="true" itemprop="datePublished"></time></div>
 		<div class="tags">
 
 
@@ -148,20 +148,62 @@
 </div>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-4/" itemprop="url">PHP设计模式(四)-数据库对象映射模式</a></h1>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/07/php-design-7/" itemprop="url">PHP设计模式(七)-装饰器模式</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h1>1、模式定义</h1>
 
-<p>在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。</p>
+<p>装饰器模式能够从一个对象的外部动态地给对象添加功能。</p>
 
-<p>数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、以及数据映射本身三者相互独立、互不依赖。这个数据访问层由一个或多个映射器（或者数据访问对象）组成，用于实现数据传输。通用的数据访问层可以处理不同的实体类型，而专用的则处理一个或几个。</p>
+<p>通常给对象添加功能，要么直接修改对象添加相应的功能，要么派生对应的子类来扩展，抑或是使用对象组合的方式。显然，直接修改对应的类这种方式并不可取。在面向对象的设计中，我们也应该尽量使用对象组合，而不是对象继承来扩展和复用功能。装饰器模式就是基于对象组合的方式，可以很灵活的给对象添加所需要的功能。装饰器模式的本质就是动态组合。动态是手段，组合才是目的。</p>
 
-<p>数据映射模式的核心在于它的数据模型遵循单一职责原则（Single Responsibility Principle）, 这也是和 Active Record 模式的不同之处。最典型的数据映射模式例子就是数据库 ORM 模型 （Object Relational Mapper）。</p>
+<p>常见的使用示例：Web服务层 —— 为 REST 服务提供 JSON 和 XML 装饰器。</p>
 
-<p><strong>ha_cl表</strong>
-<img src="http://www.poluoluo.com/jzxy/UploadFiles_333/201603/2016030519294690.png?20162310358" alt="" /></p>
+<h1>2、UML类图</h1>
 
-<figure class='code'><figcaption><span>Hacl.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p><img src="http://laravelacademy.org/wp-content/uploads/2015/12/decorator-design-pattern.png" alt="" /></p>
+
+<h1>3、实例代码</h1>
+
+<p>定义接口：</p>
+
+<figure class='code'><figcaption><span>RendererInterface.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Decorator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * RendererInterface接口</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">interface</span> <span class="nx">RendererInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * render data</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return mixed</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">renderData</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>Webservice.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -188,39 +230,55 @@
 <span class='line-number'>25</span>
 <span class='line-number'>26</span>
 <span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hacl</span><span class="p">{</span>
-</span><span class='line'><span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
-</span><span class='line'><span class="k">public</span> <span class="nv">$haclname</span><span class="p">;</span>
-</span><span class='line'><span class="k">public</span> <span class="nv">$haclcode</span><span class="p">;</span>
-</span><span class='line'><span class="k">public</span> <span class="nv">$hacls</span><span class="p">;</span>
-</span><span class='line'><span class="k">protected</span> <span class="nv">$db</span><span class="p">;</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$id</span><span class="p">){</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Baobab\Database\Mysqli</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$res</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;select * from ha_cl where id = </span><span class="si">{</span><span class="nv">$id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$res</span><span class="o">-&gt;</span><span class="na">fetch_assoc</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclname</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ha_cl_name&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclcode</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;ha_cl_code&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hacls</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">[</span><span class="s1">&#39;hacls&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Decorator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Webservice类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Webservice</span> <span class="k">implements</span> <span class="nx">RendererInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var mixed</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$data</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @param mixed $data</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$data</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span> <span class="o">=</span> <span class="nv">$data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @return string</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">renderData</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">__destruct</span><span class="p">(){</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">db</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="s2">&quot;update ha_cl set</span>
-</span><span class='line'><span class="s2">ha_cl_code = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclcode</span><span class="si">}</span><span class="s2">&#39;,</span>
-</span><span class='line'><span class="s2">ha_cl_name = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">haclname</span><span class="si">}</span><span class="s2">&#39;,</span>
-</span><span class='line'><span class="s2">hacls = &#39;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hacls</span><span class="si">}</span><span class="s2">&#39;</span>
-</span><span class='line'><span class="s2">where ID = </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">id</span><span class="si">}</span><span class="s2"></span>
-</span><span class='line'><span class="s2">limit 1&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">个人感觉在这里没有必要实现RendererInterface接口，</span>
+</span><span class='line'><span class="nx">实现这个接口过后就必须实现renderData方法，而这个方法仅仅是用来返回数据。</span>
+</span><span class='line'><span class="nx">但是这个名字和后面装饰器的实现方法重名，很容易混乱。</span>
+</span><span class='line'><span class="nx">这里如果不实现RendererInterface接口，将renderData</span><span class="p">()</span><span class="nx">改为getData（）应该会好一些，至少程序没那么容易搞混。</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>装饰器抽象类：</p>
 
-
-<figure class='code'><figcaption><span>Factory.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Decorator.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -234,59 +292,56 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">//工厂模式</span>
-</span><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Factory</span><span class="p">{</span>
-</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">getHacl</span><span class="p">(</span><span class="nv">$id</span><span class="p">){</span>
-</span><span class='line'><span class="nv">$key</span> <span class="o">=</span> <span class="s1">&#39;user_&#39;</span><span class="o">.</span><span class="nv">$id</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="nx">\Baobab\Register</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="nv">$key</span><span class="p">);</span><span class="c1">//表中id不同表示的是不同的对象</span>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$user</span><span class="p">){</span>
-</span><span class='line'><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Baobab\Hacl</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
-</span><span class='line'><span class="nx">\Baobab\Register</span><span class="o">::</span><span class="na">set</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$user</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">return</span> <span class="nv">$user</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>Register.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
 </pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">namespace</span> <span class="nx">Baobab</span><span class="p">;</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Register</span><span class="p">{</span>
-</span><span class='line'><span class="k">protected</span> <span class="k">static</span> <span class="nv">$objects</span><span class="p">;</span>
-</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">set</span><span class="p">(</span><span class="nv">$alias</span><span class="p">,</span> <span class="nv">$object</span><span class="p">){</span>
-</span><span class='line'><span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$alias</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$object</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">_unset</span><span class="p">(</span><span class="nv">$alias</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'><span class="nb">unset</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$alias</span><span class="p">]);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">static</span> <span class="k">function</span> <span class="nf">get</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'><span class="k">return</span> <span class="nx">self</span><span class="o">::</span><span class="nv">$objects</span><span class="p">[</span><span class="nv">$name</span><span class="p">];</span>
-</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Decorator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 装饰器必须实现 RendererInterface 接口, 这是装饰器模式的主要特点，</span>
+</span><span class='line'><span class="sd"> * 否则的话就不是装饰器而只是个包裹类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Decorator类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">abstract</span> <span class="k">class</span> <span class="nc">Decorator</span> <span class="k">implements</span> <span class="nx">RendererInterface</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var RendererInterface</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$wrapped</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 必须类型声明装饰组件以便在子类中可以调用renderData()方法</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param RendererInterface $wrappable</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nx">RendererInterface</span> <span class="nv">$wrappable</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">wrapped</span> <span class="o">=</span> <span class="nv">$wrappable</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<figure class='code'><figcaption><span>index.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>RenderInXml.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -300,82 +355,101 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">class</span> <span class="nc">Page</span><span class="p">{</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">index</span><span class="p">(){</span>
-</span><span class='line'><span class="nv">$hacl</span> <span class="o">=</span> <span class="nx">Baobab\Factory</span><span class="o">::</span><span class="na">getHacl</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$hacl</span><span class="o">-&gt;</span><span class="na">haclname</span> <span class="o">=</span> <span class="s1">&#39;测试名称&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">test</span><span class="p">();</span>
-</span><span class='line'><span class="k">echo</span> <span class="s1">&#39;ok&#39;</span><span class="p">;</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Decorator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * RenderInXml类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">RenderInXml</span> <span class="k">extends</span> <span class="nx">Decorator</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * render data as XML</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return mixed|string</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">renderData</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">wrapped</span><span class="o">-&gt;</span><span class="na">renderData</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// do some fancy conversion to xml from array ...</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$doc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\DOMDocument</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$output</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$val</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$doc</span><span class="o">-&gt;</span><span class="na">appendChild</span><span class="p">(</span><span class="nv">$doc</span><span class="o">-&gt;</span><span class="na">createElement</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$val</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$doc</span><span class="o">-&gt;</span><span class="na">saveXML</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">test</span><span class="p">(){</span>
-</span><span class='line'><span class="nv">$hacl</span> <span class="o">=</span> <span class="nx">Baobab\Factory</span><span class="o">::</span><span class="na">getHacl</span><span class="p">(</span><span class="mi">13</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$hacl</span><span class="o">-&gt;</span><span class="na">hacls</span> <span class="o">=</span> <span class="s1">&#39;测试内容&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="nv">$page</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Page</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$page</span><span class="o">-&gt;</span><span class="na">index</span><span class="p">();</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-		
-		
-	</div>
-
-</article>
 
 
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
+<figure class='code'><figcaption><span>RenderInJson.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Decorator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * RenderInJson类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">RenderInJson</span> <span class="k">extends</span> <span class="nx">Decorator</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * render data as JSON</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return mixed|string</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">renderData</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$output</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">wrapped</span><span class="o">-&gt;</span><span class="na">renderData</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">json_encode</span><span class="p">(</span><span class="nv">$output</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-06-06T10:32:22+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-3/" itemprop="url">PHP设计模式(三)-策略模式</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
-
-<h1>一、策略模式概念</h1>
-
-<p>策略模式针对一组算法，将每一个算法封装到具有共同接口的独立的类中,此模式让算法的变化独立于使用算法的客户。从而让程序结构更灵活，具有更好的扩展性和维护性。</p>
-
-<p>策略模式:定义了算法族,分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户。</p>
-
-<p>封装:把行为用接口封装起来，我们可以把那些经常变化的部分，从当前的类中单独取出来，用接口进行单独的封装。
-互相替换:我们封装好了接口，通过指定不同的接口实现类进行算法的变化。</p>
-
-<h1>二、策略模式结构图</h1>
-
-<p><img src="http://www.phpddt.com/usr/uploads/2014/01/2390999757.jpg" alt="" /></p>
-
-<h1>三、策略模式角色说明</h1>
-
-<p> 抽象策略(Strategy）角色：定义所有支持的算法的公共接口。通常是以一个接口或抽象来实现。Context使用这个接口来调用其ConcreteStrategy定义的算法。</p>
-
-<p>具体策略(ConcreteStrategy)角色：以Strategy接口实现某具体算法</p>
-
-<p>环境(Context)角色：持有一个Strategy类的引用，用一个ConcreteStrategy对象来配置</p>
-
-<h1>四、实例一</h1>
-
-<p>比如说购物车系统，在给商品计算总价的时候，普通会员肯定是商品单价乘以数量，但是对中级会员提供8者折扣，对高级会员提供7折折扣，这种场景就可以使用策略模式实现：</p>
+<h1>4、测试代码</h1>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -438,104 +512,154 @@
 <span class='line-number'>59</span>
 <span class='line-number'>60</span>
 <span class='line-number'>61</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * 策略模式实例</span>
-</span><span class='line'><span class="sd"> * </span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Decorator\Tests</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Structural\Decorator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * DecoratorTest 用于测试装饰器模式</span>
 </span><span class='line'><span class="sd"> */</span>
-</span><span class='line'><span class="c1">//抽象策略角色《为接口或者抽象类，给具体策略类继承》</span>
-</span><span class='line'><span class="k">interface</span> <span class="nx">Strategy</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">DecoratorTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
 </span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'><span class="c1">//具体策略角色-普通会员策略类</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">GenernalMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$service</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">protected</span> <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span>
 </span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//具体策略角色-中级会员策略类</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">MiddleMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//具体策略角色-高级会员策略类</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">HignMember</span> <span class="k">implements</span> <span class="nx">Strategy</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$price</span> <span class="o">*</span> <span class="mf">0.7</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//环境角色实现类</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Price</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="c1">//具体策略对象</span>
-</span><span class='line'>    <span class="k">private</span> <span class="nv">$strategyInstance</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//构造函数</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$instance</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">strategyInstance</span> <span class="o">=</span> <span class="nv">$instance</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">service</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Decorator\Webservice</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;bar&#39;</span><span class="p">));</span><span class="c1">//实例化 Webservice 类</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">compute</span><span class="p">(</span><span class="nv">$price</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testJsonDecorator</span><span class="p">()</span>
 </span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">strategyInstance</span><span class="o">-&gt;</span><span class="na">computePrice</span><span class="p">(</span><span class="nv">$price</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// Wrap service with a JSON decorator for renderers</span>
+</span><span class='line'>        <span class="nv">$service</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Decorator\RenderInJson</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">service</span><span class="p">);</span><span class="c1">//给实例化的类添加装饰器</span>
+</span><span class='line'>        <span class="c1">// Our Renderer will now output JSON instead of an array</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span><span class="s1">&#39;{&quot;foo&quot;:&quot;bar&quot;}&#39;</span><span class="p">,</span> <span class="nv">$service</span><span class="o">-&gt;</span><span class="na">renderData</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testXmlDecorator</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// Wrap service with a XML decorator for renderers</span>
+</span><span class='line'>        <span class="nv">$service</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Decorator\RenderInXml</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">service</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// Our Renderer will now output XML instead of an array</span>
+</span><span class='line'>        <span class="nv">$xml</span> <span class="o">=</span> <span class="s1">&#39;&lt;?xml version=&quot;1.0&quot;?&gt;&lt;foo&gt;bar&lt;/foo&gt;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertXmlStringEqualsXmlString</span><span class="p">(</span><span class="nv">$xml</span><span class="p">,</span> <span class="nv">$service</span><span class="o">-&gt;</span><span class="na">renderData</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * The first key-point of this pattern :</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testDecoratorMustImplementsRenderer</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$className</span> <span class="o">=</span> <span class="s1">&#39;DesignPatterns\Structural\Decorator\Decorator&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$interfaceName</span> <span class="o">=</span> <span class="s1">&#39;DesignPatterns\Structural\Decorator\RendererInterface&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nb">is_subclass_of</span><span class="p">(</span><span class="nv">$className</span><span class="p">,</span> <span class="nv">$interfaceName</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Second key-point of this pattern : the decorator is type-hinted</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @expectedException \PHPUnit_Framework_Error</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testDecoratorTypeHinted</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nb">version_compare</span><span class="p">(</span><span class="k">PHP_VERSION</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;=&#39;</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nx">\PHPUnit_Framework_Error</span><span class="p">(</span><span class="s1">&#39;Skip test for PHP 7&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">__FILE__</span><span class="p">,</span> <span class="k">__LINE__</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getMockForAbstractClass</span><span class="p">(</span><span class="s1">&#39;DesignPatterns\Structural\Decorator\Decorator&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="k">new</span> <span class="nx">\stdClass</span><span class="p">()));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Second key-point of this pattern : the decorator is type-hinted</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @requires PHP 7</span>
+</span><span class='line'><span class="sd">     * @expectedException TypeError</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testDecoratorTypeHintedForPhp7</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getMockForAbstractClass</span><span class="p">(</span><span class="s1">&#39;DesignPatterns\Structural\Decorator\Decorator&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="k">new</span> <span class="nx">\stdClass</span><span class="p">()));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * The decorator implements and wraps the same interface</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testDecoratorOnlyAcceptRenderer</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$mock</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getMock</span><span class="p">(</span><span class="s1">&#39;DesignPatterns\Structural\Decorator\RendererInterface&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$dec</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getMockForAbstractClass</span><span class="p">(</span><span class="s1">&#39;DesignPatterns\Structural\Decorator\Decorator&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="nv">$mock</span><span class="p">));</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertNotNull</span><span class="p">(</span><span class="nv">$dec</span><span class="p">);</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//客户端使用</span>
-</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Price</span><span class="p">(</span><span class="k">new</span> <span class="nx">HignMember</span><span class="p">());</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$totalPrice</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">compute</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">echo</span> <span class="nv">$totalPrice</span><span class="p">;</span> <span class="c1">//70</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h1>实例二</h1>
+		
+		
+	</div>
 
-<p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
-
-<p>我来解释下这个思维导图的过程：</p>
-
-<p>1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
-
-<p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
-
-<p> 问题来了：</p>
-
-<ul>
-<li>原来Duck的子类中竟然有橡皮鸭，橡皮鸭是不会飞的。——Joe用重载的方式，把橡皮鸭的fly()方法设置为空.</li>
-<li>覆盖fly()，我们看到了橡皮鸭的fly()里，没有任何代码，如果以后我们再添加别的不会飞的鸭子，那我么还要这么处理吗?——那么代码重复了!</li>
-</ul>
+</article>
 
 
-<p>3.上面2的方式我们知道是有问题的，所以Joe想到把Duck做成接口，这样每个子类必须实现Duck里的方法。这样就保证每个鸭子都能根据自己的需要添加行为。</p>
-
-<p>问题来了：</p>
-
-<ul>
-<li>产品经常处于更新中，规格也在不断的变化。导致每当有新鸭子的时候，Joe就要被迫检查一遍子类是否覆盖了fly()方法。——当你修改某个行为的时候，你必须得往下追踪并在每一个定义此行为的类中修改它。</li>
-</ul>
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
 
 
-<p>4.综合以上问题，Joe想到了把那些变化的部分从不变化的位置中抽出来。比如，我们对fly()行为，做了单独的接口FlyBehavior。如果鸭子想要飞行功能的时候，我们就让鸭子实现FlyBehavior.</p>
 
-<p>5.深造:我们想让鸭子有不同的飞行功能，让它在运行时候做不同的飞行动作。让鸭子类实现接口，只能让鸭子有一种行为。</p>
 
-<p>所以Joe，想到用组合的防止，当鸭子需要其他飞行功能要求的时候，我们可以用setBehavior()方式，指定性的飞行方式。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+
+
+
+  
+
+
+<time datetime="2016-06-07T10:22:51+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/07/php-design-6/" itemprop="url">PHP设计模式(六)-原型模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h1>1、模式定义</h1>
+
+<p>通过创建原型使用克隆方法实现对象创建而不是使用标准的<code>new</code> 方式。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2015/12/120b8c2b-9cad-44e8-a286-3347d32d57dd.png" alt="" /></p>
+
+<h1>3、示例代码</h1>
+
+<figure class='code'><figcaption><span>BookPrototype.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -573,59 +697,705 @@
 <span class='line-number'>36</span>
 <span class='line-number'>37</span>
 <span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">interface</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
 </span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">FlyWithWings</span> <span class="k">implements</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">(){</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;Fly With Wings </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">FlyWithNo</span> <span class="k">implements</span> <span class="nx">FlyBehavior</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">fly</span><span class="p">(){</span>
-</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;Fly With No Wings </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Duck</span><span class="p">{</span>
-</span><span class='line'>    <span class="k">private</span> <span class="nv">$_flyBehavior</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">performFly</span><span class="p">(){</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_flyBehavior</span><span class="o">-&gt;</span><span class="na">fly</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">setFlyBehavior</span><span class="p">(</span><span class="nx">FlyBehavior</span> <span class="nv">$behavior</span><span class="p">){</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_flyBehavior</span> <span class="o">=</span> <span class="nv">$behavior</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">RubberDuck</span> <span class="k">extends</span> <span class="nx">Duck</span><span class="p">{</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="c1">// Test Case</span>
-</span><span class='line'><span class="nv">$duck</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RubberDuck</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/*  想让鸭子用翅膀飞行 */</span>
-</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">setFlyBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">FlyWithWings</span><span class="p">());</span>
-</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">performFly</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/*  想让鸭子不用翅膀飞行 */</span>
-</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">setFlyBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">FlyWithNo</span><span class="p">());</span>
-</span><span class='line'><span class="nv">$duck</span><span class="o">-&gt;</span><span class="na">performFly</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">namespace</span> <span class="nx">DesignPatterns\Creational\Prototype</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="sd">/**</span>
+</span><span class='line'><span class="sd">  * BookPrototype类</span>
+</span><span class='line'><span class="sd">  */</span>
+</span><span class='line'>  <span class="k">abstract</span> <span class="k">class</span> <span class="nc">BookPrototype</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="sd">/**</span>
+</span><span class='line'><span class="sd">      * @var string</span>
+</span><span class='line'><span class="sd">      */</span>
+</span><span class='line'>      <span class="k">protected</span> <span class="nv">$title</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="sd">/**</span>
+</span><span class='line'><span class="sd">      * @var string</span>
+</span><span class='line'><span class="sd">      */</span>
+</span><span class='line'>      <span class="k">protected</span> <span class="nv">$category</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="sd">/**</span>
+</span><span class='line'><span class="sd">      * @abstract</span>
+</span><span class='line'><span class="sd">      * @return void</span>
+</span><span class='line'><span class="sd">      */</span>
+</span><span class='line'>      <span class="k">abstract</span> <span class="k">public</span> <span class="k">function</span> <span class="nf">__clone</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="sd">/**</span>
+</span><span class='line'><span class="sd">      * @return string</span>
+</span><span class='line'><span class="sd">      */</span>
+</span><span class='line'>      <span class="k">public</span> <span class="k">function</span> <span class="nf">getTitle</span><span class="p">()</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">title</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="sd">/**</span>
+</span><span class='line'><span class="sd">      * @param string $title</span>
+</span><span class='line'><span class="sd">      */</span>
+</span><span class='line'>      <span class="k">public</span> <span class="k">function</span> <span class="nf">setTitle</span><span class="p">(</span><span class="nv">$title</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">title</span> <span class="o">=</span> <span class="nv">$title</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h1>五、策略模式的控制和反转</h1>
 
-<p>使用策略模式可以实现Ioc，依赖倒置和控制反转</p>
 
-<p>在原本的类中，存在一个A类中调用B类，则A类是依赖于B类的。</p>
+<figure class='code'><figcaption><span>BarBookPrototype.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Creational\Prototype</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * BarBookPrototype类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">BarBookPrototype</span> <span class="k">extends</span> <span class="nx">BookPrototype</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var string</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$category</span> <span class="o">=</span> <span class="s1">&#39;Bar&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * empty clone</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__clone</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>通过几个接口的设置和策略的解耦，就把依赖进行了反转，也就是我们在写A类的时候不需要去实现B类。</p>
 
-<p>只有在最后执行的时候才进行绑定。</p>
+
+
+<figure class='code'><figcaption><span>FooBookPrototype.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Creational\Prototype</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * FooBookPrototype类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">FooBookPrototype</span> <span class="k">extends</span> <span class="nx">BookPrototype</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$category</span> <span class="o">=</span> <span class="s1">&#39;Foo&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * empty clone</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__clone</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>4、测试代码</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Creational\Prototype\Tests</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Creational\Prototype\BookPrototype</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Creational\Prototype\FooBookPrototype</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Creational\Prototype\BarBookPrototype</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * PrototypeTest tests the prototype pattern</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">PrototypeTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">//实例化得到类的原型</span>
+</span><span class='line'>     <span class="k">public</span> <span class="k">function</span> <span class="nf">getPrototype</span><span class="p">(){</span>
+</span><span class='line'>         <span class="k">return</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>             <span class="k">array</span><span class="p">(</span><span class="k">new</span> <span class="nx">FooBookPrototype</span><span class="p">()),</span>
+</span><span class='line'>             <span class="k">array</span><span class="p">(</span><span class="k">new</span> <span class="nx">BarBookPrototype</span><span class="p">())</span>
+</span><span class='line'>         <span class="p">);</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="sd">/**</span>
+</span><span class='line'><span class="sd">   * 克隆类</span>
+</span><span class='line'><span class="sd">      * @dataProvider getPrototype</span>
+</span><span class='line'><span class="sd">      */</span>
+</span><span class='line'>     <span class="k">public</span> <span class="k">function</span> <span class="nf">testCreation</span><span class="p">(</span><span class="nx">BookPrototype</span> <span class="nv">$prototype</span><span class="p">)</span>
+</span><span class='line'>     <span class="p">{</span>
+</span><span class='line'>         <span class="nv">$book</span> <span class="o">=</span> <span class="k">clone</span> <span class="nv">$prototype</span><span class="p">;</span>
+</span><span class='line'>         <span class="nv">$book</span><span class="o">-&gt;</span><span class="na">setTitle</span><span class="p">(</span><span class="nv">$book</span><span class="o">-&gt;</span><span class="na">getCategory</span><span class="p">()</span><span class="o">.</span><span class="s1">&#39; Book&#39;</span><span class="p">);</span>
+</span><span class='line'>         <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertInstanceOf</span><span class="p">(</span><span class="s1">&#39;DesignPatterns\Creational\Prototype\BookPrototype&#39;</span><span class="p">,</span> <span class="nv">$book</span><span class="p">);</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>5、总结</h1>
+
+<p>原型模式的主要思想是基于现有的对象克隆一个新的对象出来，一般是用对象内部提供的克隆方法，通过该方法返回一个对象的副本，这种创建对象的方式，相比我们之前说的几类创建型模式还是有区别的，之前的讲述的工厂方法模式与抽象工厂都是通过工厂封装具体的 new 操作的过程，返回一个新的对象，有的时候我们通过这样的创建工厂创建对象不值得，特别是以下的几个场景，可能使用原型模式更简单、效率更高：</p>
+
+<ul>
+<li>如果说我们的对象类型不是刚开始就能确定，而是在运行时确定的话，那么我们通过这个类型的对象克隆出一个新的类型更容易。</li>
+<li>有的时候我们可能在实际的项目中需要一个对象在某个状态下的副本，这个前提很重要，这点怎么理解呢，例如有的时候我们需要对比一个对象经过处理后的状态和处理前的状态是否发生过改变，可能我们就需要在执行某段处理之前，克隆这个对象此时状态的副本，然后等执行后的状态进行相应的对比，这样的应用在项目中也是经常会出现的。</li>
+<li>当我们处理的对象比较简单，并且对象之间的区别很小，可能只是很固定的几个属性不同的时候，使用原型模式更合适。</li>
+</ul>
+
 
 		
 		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-06T23:06:22+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-5/" itemprop="url">PHP设计模式(5)-观察者模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h1>1、模式定义</h1>
+
+<p>观察者模式有时也被称作发布/订阅模式，该模式用于为对象实现发布/订阅功能：一旦主体对象状态发生改变，与之关联的观察者对象会收到通知，并进行相应操作。</p>
+
+<p>将一个系统分割成一个一些类相互协作的类有一个不好的副作用，那就是需要维护相关对象间的一致性。我们不希望为了维持一致性而使各类紧密耦合，这样会给维护、扩展和重用都带来不便。观察者就是解决这类的耦合关系的。</p>
+
+<p>消息队列系统、事件都使用了观察者模式。</p>
+
+<p>PHP 为观察者模式定义了两个接口：<code>SplSubject</code> 和 <code>SplObserver</code>。<code>SplSubject</code> 可以看做主体对象的抽象，<code>SplObserver</code> 可以看做观察者对象的抽象，要实现观察者模式，只需让主体对象实现 <code>SplSubject</code> ，观察者对象实现 <code>SplObserver</code>，并实现相应方法即可。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2016/01/Observer-Design-Pattern-Uml.png" alt="" /></p>
+
+<h1>3、示例代码</h1>
+
+<figure class='code'><figcaption><span>User.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Observer</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 观察者模式 : 被观察对象 (主体对象)</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> * 主体对象维护观察者列表并发送通知</span>
+</span><span class='line'><span class="sd"> *</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">User</span> <span class="k">implements</span> <span class="nx">\SplSubject</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * user data</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @var array</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * observers</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @var \SplObjectStorage</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$observers</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observers</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\SplObjectStorage</span><span class="p">();</span><span class="c1">//PHP SPL标准库之数据结构对象容器</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 附加观察者</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param \SplObserver $observer</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">attach</span><span class="p">(</span><span class="nx">\SplObserver</span> <span class="nv">$observer</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observers</span><span class="o">-&gt;</span><span class="na">attach</span><span class="p">(</span><span class="nv">$observer</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 取消观察者</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param \SplObserver $observer</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">detach</span><span class="p">(</span><span class="nx">\SplObserver</span> <span class="nv">$observer</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observers</span><span class="o">-&gt;</span><span class="na">detach</span><span class="p">(</span><span class="nv">$observer</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 通知观察者方法</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">notify</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="sd">/** @var \SplObserver $observer */</span>
+</span><span class='line'>        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observers</span> <span class="k">as</span> <span class="nv">$observer</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$observer</span><span class="o">-&gt;</span><span class="na">update</span><span class="p">(</span><span class="nv">$this</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param string $name</span>
+</span><span class='line'><span class="sd">     * @param mixed  $value</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__set</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[</span><span class="nv">$name</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 通知观察者用户被改变</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">notify</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>UserObserver.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Observer</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * UserObserver 类（观察者对象）</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">UserObserver</span> <span class="k">implements</span> <span class="nx">\SplObserver</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 观察者要实现的唯一方法</span>
+</span><span class='line'><span class="sd">     * 也是被 Subject 调用的方法</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param \SplSubject $subject</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">update</span><span class="p">(</span><span class="nx">\SplSubject</span> <span class="nv">$subject</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="nb">get_class</span><span class="p">(</span><span class="nv">$subject</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39; has been updated&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>Tests/ObserverTest.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Observer\Tests</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Behavioral\Observer\UserObserver</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Behavioral\Observer\User</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * ObserverTest 测试观察者模式</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">ObserverTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$observer</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">protected</span> <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">UserObserver</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 测试通知</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testNotify</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">expectOutputString</span><span class="p">(</span><span class="s1">&#39;DesignPatterns\Behavioral\Observer\User has been updated&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$subject</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$subject</span><span class="o">-&gt;</span><span class="na">attach</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observer</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$subject</span><span class="o">-&gt;</span><span class="na">property</span> <span class="o">=</span> <span class="mi">123</span><span class="p">;</span><span class="c1">//访问不存在的属性自动调用__set方法</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 测试订阅</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testAttachDetach</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$subject</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">();</span>
+</span><span class='line'>        <span class="nv">$reflection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\ReflectionProperty</span><span class="p">(</span><span class="nv">$subject</span><span class="p">,</span> <span class="s1">&#39;observers&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$reflection</span><span class="o">-&gt;</span><span class="na">setAccessible</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="sd">/** @var \SplObjectStorage $observers */</span>
+</span><span class='line'>        <span class="nv">$observers</span> <span class="o">=</span> <span class="nv">$reflection</span><span class="o">-&gt;</span><span class="na">getValue</span><span class="p">(</span><span class="nv">$subject</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertInstanceOf</span><span class="p">(</span><span class="s1">&#39;SplObjectStorage&#39;</span><span class="p">,</span> <span class="nv">$observers</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertFalse</span><span class="p">(</span><span class="nv">$observers</span><span class="o">-&gt;</span><span class="na">contains</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observer</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$subject</span><span class="o">-&gt;</span><span class="na">attach</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observer</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nv">$observers</span><span class="o">-&gt;</span><span class="na">contains</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observer</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$subject</span><span class="o">-&gt;</span><span class="na">detach</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observer</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertFalse</span><span class="p">(</span><span class="nv">$observers</span><span class="o">-&gt;</span><span class="na">contains</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">observer</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 测试 update() 调用</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testUpdateCalling</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$subject</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">();</span>
+</span><span class='line'>        <span class="nv">$observer</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getMock</span><span class="p">(</span><span class="s1">&#39;SplObserver&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$subject</span><span class="o">-&gt;</span><span class="na">attach</span><span class="p">(</span><span class="nv">$observer</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$observer</span><span class="o">-&gt;</span><span class="na">expects</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">once</span><span class="p">())</span>
+</span><span class='line'>            <span class="o">-&gt;</span><span class="na">method</span><span class="p">(</span><span class="s1">&#39;update&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="o">-&gt;</span><span class="na">with</span><span class="p">(</span><span class="nv">$subject</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$subject</span><span class="o">-&gt;</span><span class="na">notify</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>4、总结</h1>
+
+<p>观察者模式解除了主体和具体观察者的耦合，让耦合的双方都依赖于抽象，而不是依赖具体。从而使得各自的变化都不会影响另一边的变化。</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-06T11:24:26+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-4/" itemprop="url">PHP设计模式(四)-数据库对象映射模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h1>1、模式定义</h1>
+
+<p>在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。</p>
+
+
+		
+		<a href="/blog/2016/06/06/php-design-4/" class="more-link">阅读全文&rarr;</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-06T10:32:22+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-3/" itemprop="url">PHP设计模式(三)-策略模式</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
+
+
+		
+		<a href="/blog/2016/06/06/php-design-3/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>
@@ -700,64 +1470,9 @@
 	<div class="entry-content" itemprop="articleBody">
 		<blockquote><p>今天同事，发的项目过来在我的Ubuntu上打不开，发现是URL重写模式没启动，然后用如下方法解决。</p></blockquote>
 
-<h1>开启Apache的Rewrite功能</h1>
-
-<p>在终端中执行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo a2enmode rewrite</span></code></pre></td></tr></table></div></figure>
-
-
-<p>指令后，即启用了 Mod_rewrite 模块</p>
-
-<p>另外，也可以通过将</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/apache2/mods-available/rewrite.load</span></code></pre></td></tr></table></div></figure>
-
-
-<p> 连接到</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
-
-
-<p> 来打开 Mod_rewrite 模块。用指令操作就是：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后发现并无法正常rewrite网址</p>
-
-<p>这里，还有一点需要注意的地方：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo vim /etc/apache2/sites-enabled/000-default</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将其中的</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride None</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>修改为</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>AllowOverride All</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的 /etc/apache2/sites-enabled/000-default 实则为 /etc/apache2/sites-available/default 的连接。而 AllowwOverride None 则会完全忽略 .htaccess 文件，自然其中所定义的 rewrite 规则也就不能生效了。</p>
-
-<p>最后，重新启动Apache2 服务即可</p>
-
-<p>service apache2 restart</p>
 
 		
-		
+		<a href="/blog/2016/06/04/ubuntu-apache2-rewrite/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>
@@ -1940,125 +2655,6 @@ having就是来弥补where在分组数据判断时的不足。因为where要快�
 
 		
 		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-06-01T23:45:06+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/javascript/'>javascript</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/06/01/js-dom-ying-yong/" itemprop="url">JS-DOM-操作</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下</p></blockquote>
-
-
-		
-		<a href="/blog/2016/06/01/js-dom-ying-yong/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-31T13:28:27+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/javascript/'>javascript</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/31/js-jin-jie/" itemprop="url">JS进阶之DOM</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>这段时间开始实习，拿到手一个项目。都没什么时间写博客了，在写这个项目的实际过程中，发现对JS还是很陌生了。所以决定在空余时间提升下JS。在过了一遍基本的之后看到DOM的时候发现这个东西不太好懂，就觉得写个博文。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/31/js-jin-jie/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-24T10:38:59+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/24/php-jia-mi/" itemprop="url">Php加密</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h1>PHP中几种常见的加密方式</h1>
-
-<ul>
-<li>Md5()加密算法</li>
-<li>Crypt()加密算法</li>
-<li>Sha1()加密算法</li>
-<li>URL编码加密</li>
-<li>Base64编码加密</li>
-</ul>
-
-
-<hr />
-
-
-		
-		<a href="/blog/2016/05/24/php-jia-mi/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>
