@@ -9,7 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="javascript JS-DOM-操作 DOM操作HTML用起来感觉总有点没理解透。希望借这个机会好好深入一下 阅读全文&rarr; javascript JS进阶之DOM 这段时间开始实习，拿到手一个项目。都没什么时间写博客了，在写这个项目的实际过程中，发现对JS还是很陌生了。 &hellip;">
+	<meta name="description" content="git GIT远程操作 很早以前就接触GIT了，但是一直是很简单的应用，只是把项目网上面挂，并没有用到git的好处。这次想把实习的项目挂到GIT上去，多方应用。 一、 git remote 为了便于管理，Git要求每个远程主机都必须指定一个主机名。git remote命令就用于管理主机名。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,7 +79,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (20)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (22)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -122,6 +122,1099 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-02T20:37:22+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/git/'>git</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/02/git-remote/" itemprop="url">GIT远程操作</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>很早以前就接触GIT了，但是一直是很简单的应用，只是把项目网上面挂，并没有用到git的好处。这次想把实习的项目挂到GIT上去，多方应用。</p></blockquote>
+
+<h1>一、 git remote</h1>
+
+<p>为了便于管理，Git要求每个远程主机都必须指定一个主机名。<code>git remote</code>命令就用于管理主机名。</p>
+
+<p>不带选项的时候，<code>git remote</code>命令列出所有远程主机。</p>
+
+<p>使用 <strong>-v</strong> 选项，可以查看远程主机的网址。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">remote</span> <span class="o">-</span><span class="nx">v</span>
+</span><span class='line'><span class="nx">origin</span>  <span class="nx">git</span><span class="o">@</span><span class="nx">github</span><span class="o">.</span><span class="nx">com</span><span class="o">:</span><span class="nx">jquery</span><span class="o">/</span><span class="nx">jquery</span><span class="o">.</span><span class="nx">git</span> <span class="p">(</span><span class="nx">fetch</span><span class="p">)</span>
+</span><span class='line'><span class="nx">origin</span>  <span class="nx">git</span><span class="o">@</span><span class="nx">github</span><span class="o">.</span><span class="nx">com</span><span class="o">:</span><span class="nx">jquery</span><span class="o">/</span><span class="nx">jquery</span><span class="o">.</span><span class="nx">git</span> <span class="p">(</span><span class="nx">push</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面便是，当前有一台远程主机叫做 origin 以及他的网址。</p>
+
+<p>克隆版本库的时候，所使用的远程主机自动被Git命名为origin。如果想用其他的主机名，需要用git clone命令的-o选项指定。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="k">clone</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">jQuery</span> <span class="nx">https</span><span class="o">://</span><span class="nx">github</span><span class="o">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">jquery</span><span class="o">/</span><span class="nx">jquery</span><span class="o">.</span><span class="nx">git</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">remote</span>
+</span><span class='line'><span class="nx">jQuery</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面命令表示，克隆的时候，指定远程主机叫做jQuery。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">remote</span> <span class="nx">add</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令用于添加远程主机。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">remote</span> <span class="nx">add</span> <span class="o">&lt;</span><span class="nx">主机名</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nx">网址</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">remote</span> <span class="nx">rm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令用于删除远程主机。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">remote</span> <span class="nb">rename</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令用于远程主机的改名。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">remote</span> <span class="nb">rename</span> <span class="o">&lt;</span><span class="nx">原主机名</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nx">新主机名</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>二、git fetch</h1>
+
+<p>一旦远程主机的版本库有了更新（Git术语叫做commit），需要将这些更新取回本地，这时就要用到</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">fetch</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">fetch</span> <span class="o">&lt;</span><span class="nx">远程主机名</span><span class="o">&gt;</span>
+</span><span class='line'><span class="c1">//上面命令将某个远程主机的更新，全部取回本地。</span>
+</span><span class='line'><span class="c1">//git fetch命令通常用来查看其他人的进程，因为它取回的代码对你本地的开发代码没有影响。</span>
+</span><span class='line'><span class="c1">//默认情况下，git fetch取回所有分支（branch）的更新。如果只想取回特定分支的更新，可以指定分支名。</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">fetch</span> <span class="o">&lt;</span><span class="nx">远程主机名</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nx">分支名</span><span class="o">&gt;</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">fetch</span> <span class="nx">origin</span> <span class="nx">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所取回的更新，在本地主机上要用"远程主机名/分支名"的形式读取。比如origin主机的master，就要用<code>origin/master</code>读取。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">branch</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令的<code>-r</code>选项，可以用来查看远程分支，<code>-a</code>选项查看所有分支。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">branch</span> <span class="o">-</span><span class="nx">r</span>
+</span><span class='line'><span class="nx">origin</span><span class="o">/</span><span class="nx">master</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">branch</span> <span class="o">-</span><span class="nx">a</span>
+</span><span class='line'><span class="o">*</span> <span class="nx">master</span>
+</span><span class='line'>  <span class="nx">remotes</span><span class="o">/</span><span class="nx">origin</span><span class="o">/</span><span class="nx">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面命令表示，本地主机的当前分支是<code>master</code>，远程分支是<code>origin/master</code>。</p>
+
+<p>取回远程主机的更新以后，可以在它的基础上，使用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">checkout</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令创建一个新的分支。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">checkout</span> <span class="o">-</span><span class="nx">b</span> <span class="nx">newBrach</span> <span class="nx">origin</span><span class="o">/</span><span class="nx">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面命令表示，在<code>origin/master</code>的基础上，创建一个新分支。</p>
+
+<p>此外，也可以使用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">merge</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令或者</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">git</span> <span class="nx">rebase</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令，在本地分支上合并远程分支。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">merge</span> <span class="nx">origin</span><span class="o">/</span><span class="nx">master</span>
+</span><span class='line'> <span class="nx">或者</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">rebase</span> <span class="nx">origin</span><span class="o">/</span><span class="nx">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面命令表示在当前分支上，合并<code>origin/master</code>。</p>
+
+<h1>三、 git pull</h1>
+
+<p>git pull命令的作用是，取回远程主机某个分支的更新，再与本地的指定分支合并。它的完整格式稍稍有点复杂。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">pull</span> <span class="o">&lt;</span><span class="nx">远程主机名</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nx">远程分支名</span><span class="o">&gt;:&lt;</span><span class="nx">本地分支名</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nx">比如，取回origin主机的next分支，与本地的master分支合并，需要写成下面这样。</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">pull</span> <span class="nx">origin</span> <span class="nb">next</span><span class="o">:</span><span class="nx">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果远程分支是与当前分支合并，则冒号后面的部分可以省略。</p>
+
+<p>上面命令表示，取回origin/next分支，再与当前分支合并。实质上，这等同于先做git fetch，再做git merge。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">fetch</span> <span class="nx">origin</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">merge</span> <span class="nx">origin</span><span class="o">/</span><span class="nb">next</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果远程主机删除了某个分支，默认情况下，git pull 不会在拉取远程分支的时候，删除对应的本地分支。这是为了防止，由于其他人操作了远程主机，导致git pull不知不觉删除了本地分支。</p>
+
+<p>但是，你可以改变这个行为，加上参数 -p 就会在本地删除远程已经删除的分支。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">pull</span> <span class="o">-</span><span class="nx">p</span>
+</span><span class='line'><span class="c1"># 等同于下面的命令</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">fetch</span> <span class="o">--</span><span class="nx">prune</span> <span class="nx">origin</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">fetch</span> <span class="o">-</span><span class="nx">p</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>四、git push</h1>
+
+<p>git push命令用于将本地分支的更新，推送到远程主机。它的格式与git pull命令相仿。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">push</span> <span class="o">&lt;</span><span class="nx">远程主机名</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="nx">本地分支名</span><span class="o">&gt;:&lt;</span><span class="nx">远程分支名</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，分支推送顺序的写法是&lt;来源地>:&lt;目的地>，所以git pull是&lt;远程分支>:&lt;本地分支>，而git push是&lt;本地分支>:&lt;远程分支>。</p>
+
+<p>如果省略远程分支名，则表示将本地分支推送与之存在"追踪关系"的远程分支（通常两者同名），如果该远程分支不存在，则会被新建。</p>
+
+<h1>五、分支</h1>
+
+<p><strong> 创建分支</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">branch</span> <span class="nx">test</span>
+</span><span class='line'><span class="nx">切换到分支</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">checkout</span> <span class="nx">test</span>
+</span><span class='line'><span class="nx">删除本地分支</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">branch</span> <span class="o">-</span><span class="nx">d</span> <span class="nx">xxxxx</span>
+</span><span class='line'><span class="nx">创建分支并切换</span>
+</span><span class='line'><span class="nv">$git</span> <span class="nx">checkout</span> <span class="o">-</span><span class="nx">b</span> <span class="nx">xxx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>分支的合并</strong></p>
+
+<p>假设有两个分支 develop 和 master</p>
+
+<ul>
+<li><p>快速合并</p>
+
+<p>  我们把develop分支合并到master分支上，来到master分支后，键入下述命令：</p>
+
+<p>  git merge develop</p></li>
+<li><p>普通合并</p>
+
+<p>  &ndash;no-ff参数表示禁用快速合并！</p>
+
+<p>  git merge &ndash;no-ff -m &ldquo;合并的信息(TAG)&rdquo; develop</p></li>
+</ul>
+
+
+<p><strong>解决合并冲突</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">merge</span> <span class="nx">issue3</span>
+</span><span class='line'><span class="nx">Auto</span><span class="o">-</span><span class="nx">merging</span> <span class="nx">myfile</span><span class="o">.</span><span class="nx">txt</span>
+</span><span class='line'><span class="nx">CONFLICT</span> <span class="p">(</span><span class="nx">content</span><span class="p">)</span><span class="o">:</span> <span class="nx">Merge</span> <span class="nx">conflict</span> <span class="nx">in</span> <span class="nx">myfile</span><span class="o">.</span><span class="nx">txt</span>
+</span><span class='line'><span class="nx">Automatic</span> <span class="nx">merge</span> <span class="nx">failed</span><span class="p">;</span> <span class="nx">fix</span> <span class="nx">conflicts</span> <span class="k">and</span> <span class="nx">then</span> <span class="nx">commit</span> <span class="nx">the</span> <span class="nx">result</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>自动合并失败。由于在同一行进行了修改，所以产生了冲突。这时myfile.txt的内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">连猴子都懂的Git命令</span>
+</span><span class='line'><span class="nx">add</span> <span class="nx">把变更录入到索引中</span>
+</span><span class='line'><span class="o">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span> <span class="nx">HEAD</span>
+</span><span class='line'><span class="nx">commit</span> <span class="nx">记录索引的状态</span>
+</span><span class='line'><span class="o">=======</span>
+</span><span class='line'><span class="nx">pull</span> <span class="nx">取得远端数据库的内容</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span> <span class="nx">issue3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在发生冲突的地方，Git生成了内容的差异。请做以下修改</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">连猴子都懂的Git命令</span>
+</span><span class='line'><span class="nx">add</span> <span class="nx">把变更录入到索引中</span>
+</span><span class='line'><span class="nx">commit</span> <span class="nx">记录索引的状态</span>
+</span><span class='line'><span class="nx">pull</span> <span class="nx">取得远端数据库的内容</span>   
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改冲突的部分，重新提交</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">add</span> <span class="nx">myfile</span><span class="o">.</span><span class="nx">txt</span>
+</span><span class='line'><span class="err">$</span> <span class="nx">git</span> <span class="nx">commit</span> <span class="o">-</span><span class="nx">m</span> <span class="s2">&quot;合并issue3分支&quot;</span>
+</span><span class='line'><span class="c1"># On branch master</span>
+</span><span class='line'><span class="nx">nothing</span> <span class="nx">to</span> <span class="nx">commit</span> <span class="p">(</span><span class="nx">working</span> <span class="nx">directory</span> <span class="nx">clean</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-02T11:14:38+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/mysql/'>mysql</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/02/mysql-better-select/" itemprop="url">MySQL高级查询</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>前段时间了解了点数据库优化的内容，但是发现自己对很多数据库的高级查询还不是很数据。</p></blockquote>
+
+<p>下面就整理下最近看的一些高级查询：</p>
+
+<table>
+<thead>
+<tr>
+<th> emp_id </th>
+<th style="text-align:center;"> emp_name </th>
+<th style="text-align:center;"> emp_age </th>
+<th style="text-align:center;"> emp_sal </th>
+<th style="text-align:center;"> emp_bir </th>
+<th style="text-align:left;"> emp_sex </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100001 </td>
+<td style="text-align:center;"> 红枫 </td>
+<td style="text-align:center;"> 29 </td>
+<td style="text-align:center;"> 9000 </td>
+<td style="text-align:center;"> 1977-01-01 </td>
+<td style="text-align:left;"> male </td>
+</tr>
+<tr>
+<td> 100002 </td>
+<td style="text-align:center;"> 丽鹃 </td>
+<td style="text-align:center;"> 27 </td>
+<td style="text-align:center;"> 8000 </td>
+<td style="text-align:center;"> 1979-12-31 </td>
+<td style="text-align:left;"> fmale </td>
+</tr>
+<tr>
+<td> 100005 </td>
+<td style="text-align:center;"> 啸天 </td>
+<td style="text-align:center;"> 27 </td>
+<td style="text-align:center;"> 4000 </td>
+<td style="text-align:center;"> 1979-07-10 </td>
+<td style="text-align:left;"> male </td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>查询结果的字段联合和重新命名</strong></p>
+
+<ul>
+<li><code>select concat(emp_id," ",emp_name) from emp;</code></li>
+</ul>
+
+
+<p>查询结果：</p>
+
+<table>
+<thead>
+<tr>
+<th> concat(emp_id,&ldquo; &rdquo;,emp_name) </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100005 啸天 </td>
+</tr>
+<tr>
+<td> 100001 红枫 </td>
+</tr>
+<tr>
+<td> 100002 丽鹃 </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>用AS关键字重新给输出结果命名标题</p>
+
+<ul>
+<li><code>select concat(emp_id," ",emp_name) as info from emp;</code></li>
+</ul>
+
+
+<p>查询结果：</p>
+
+<table>
+<thead>
+<tr>
+<th> info </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 100005 啸天 </td>
+</tr>
+<tr>
+<td> 100001 红枫 </td>
+</tr>
+<tr>
+<td> 100002 丽鹃 </td>
+</tr>
+</tbody>
+</table>
+
+
+<hr />
+
+<p><strong>GROUP BY</strong></p>
+
+<blockquote><p>group by语法可以根据给定数据列的每个成员对查询结果进行分组统计，最终得到一个分组汇总表。</p>
+
+<p>SELECT子句中的列名必须为分组列或列函数。列函数对于GROUP BY子句定义的每个组各返回一个结果。</p></blockquote>
+
+<ul>
+<li><code>select emp_sex,count(*) from emp group by emp_sex;</code></li>
+</ul>
+
+
+<p>查询结果如下：</p>
+
+<table>
+<thead>
+<tr>
+<th> emp_sex </th>
+<th style="text-align:left;"> count(*) </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> fmale </td>
+<td style="text-align:left;"> 1 </td>
+</tr>
+<tr>
+<td> male </td>
+<td style="text-align:left;"> 2 </td>
+</tr>
+</tbody>
+</table>
+
+
+<ol>
+<li>满足“SELECT子句中的列名必须为分组列或列函数”，因为SELECT有GROUP BY emp_sex中包含的列emp_sex。</li>
+<li>“列函数对于GROUP BY子句定义的每个组各返回一个结果”，根据性别分组，对每个性别返回一个结果，就是每个性别人人数。</li>
+</ol>
+
+
+<p><strong>从多个数据表中检索信息</strong></p>
+
+<ul>
+<li><code>select emp.emp_name,dept.dept_name from emp,dept
+-&gt; where emp.emp_id=dept.dept_id;</code></li>
+</ul>
+
+
+<p><strong>UNIN 用法</strong></p>
+
+<p>union:联合的意思，即把两次或多次查询结果合并起来。</p>
+
+<ul>
+<li>要求：两次查询的列数必须一致</li>
+<li>推荐：列的类型可以不一样，但推荐查询的每一列，相对应的类型一样</li>
+<li>可以来自多张表的数据：多次sql语句取出的列名可以不一致，此时以第一个sql语句的列名为准。</li>
+</ul>
+
+
+<p> 如果不同的语句中取出的行，有完全相同(这里表示的是每个列的值都相同)，那么<code>union</code>会将相同的行合并，最终只保留一行。也可以这样理解，<code>union</code>会去掉重复的行。</p>
+
+<p>如果不想去掉重复的行，可以使用<code>union all``。
+ 如果子句中有</code>order by,limit```，需用括号()包起来。推荐放到所有子句之后，即对最终合并的结果来排序或筛选。</p>
+
+<p>如：(select * from a order by id) union (select * from b order id);</p>
+
+<p>在子句中，order by 需要配合limit使用才有意义。如果不配合limit使用，会被语法分析器优化分析时去除。</p>
+
+<p>注意一点表项的结构必须相同，比如两个表的<code>id int(10)</code>   如果其中一个换成<code>id int(9)</code> 也不行，查询将会报错。但可以有不同的名称（不推荐），查询结果列将以SQL收到的第一份列名为准输出</p>
+
+<pre class="prettyprint linenums">
+$hotnews=mysql_query("SELECT id,title,pageview,tablenm FROM News   
+UNION  
+SELECT id,title,pageview,tablenm FROM Informs  
+UNION  
+SELECT id,title,pageview,tablenm FROM Article  
+UNION  
+SELECT id,title,pageview,tablenm FROM IntroORDER BY pageview DESC limit 15",$conn);//获取在四个表中按浏览数高低排序的前15个文章
+</pre>
+
+
+<hr />
+
+<h1>Join</h1>
+
+<blockquote><p>join 用于多表中字段之间的联系，语法如下：</p></blockquote>
+
+<p>from table1 INNER|LEFT|RIGHT JOIN table2 ON conditiona</p>
+
+<p>table1:左表；table2:右表。</p>
+
+<p>join按照功能大致分为如下三类：</p>
+
+<p>inner join（内连接,或等值连接）：取得两个表中存在连接匹配关系的记录。</p>
+
+<p>LEFT JOIN（左连接）：取得左表（table1）完全记录，即是右表（table2）并无对应匹配记录。</p>
+
+<p>RIGHT JOIN（右连接）：与 LEFT JOIN 相反，取得右表（table2）完全记录，即是左表（table1）并无匹配对应记录。</p>
+
+<p>注意：mysql不支持Full join,不过可以通过UNION 关键字来合并 LEFT JOIN 与 RIGHT JOIN来模拟FULL join.</p>
+
+<p>接下来给出一个列子用于解释下面几种分类。如下两个表(A,B)</p>
+
+<p>mysql> select A.id,A.name,B.name from A,B where A.id=B.id;</p>
+
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name       </th>
+<th style="text-align:left;"> name             </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate       </td>
+<td style="text-align:left;"> Rutabaga      </td>
+</tr>
+<tr>
+<td>  2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:left;"> Pirate            </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja         </td>
+<td style="text-align:left;"> Darth Vader </td>
+</tr>
+<tr>
+<td>  4 </td>
+<td style="text-align:center;"> Spaghetti  </td>
+<td style="text-align:left;"> Ninja             </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>4 rows in set (0.00 sec)</p>
+
+<p><strong>Inner join</strong></p>
+
+<blockquote><p>内连接，也叫等值连接，inner join产生同时符合A和B的一组数据。</p></blockquote>
+
+<p>mysql> select * from A inner join B on A.name = B.name;</p>
+
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name   </th>
+<th style="text-align:center;"> id </th>
+<th style="text-align:left;"> name   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate </td>
+<td style="text-align:center;">  2 </td>
+<td style="text-align:left;"> Pirate </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja  </td>
+<td style="text-align:center;">  4 </td>
+<td style="text-align:left;"> Ninja  </td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>Left join</strong></p>
+
+<p>mysql> select * from A left join B on A.name = B.name;</p>
+
+<p>或者：select * from A left outer join B on A.name = B.name;</p>
+
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name      </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate    </td>
+<td style="text-align:center;">    2 </td>
+<td style="text-align:left;"> Pirate </td>
+</tr>
+<tr>
+<td>  2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL   </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja     </td>
+<td style="text-align:center;">    4 </td>
+<td style="text-align:left;"> Ninja  </td>
+</tr>
+<tr>
+<td>  4 </td>
+<td style="text-align:center;"> Spaghetti </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL   </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>4 rows in set (0.00 sec)</p>
+
+<p>left join,（或left outer join:在Mysql中两者等价，推荐使用left join.）左连接从左表(A)产生一套完整的记录,与匹配的记录(右表(B)) .如果没有匹配,右侧将包含null。</p>
+
+<p>如果想只从左表(A)中产生一套记录，但不包含右表(B)的记录，可以通过设置where语句来执行，如下：</p>
+
+<p>mysql> select * from A left join B on A.name=B.name where A.id is null or B.id is null;</p>
+
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name      </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL </td>
+</tr>
+<tr>
+<td>  4 </td>
+<td style="text-align:center;"> Spaghetti </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>2 rows in set (0.00 sec)</p>
+
+<p>同理，还可以模拟inner join. 如下：</p>
+
+<p>mysql> select * from A left join B on A.name=B.name where A.id is not null and B.id is not null;</p>
+
+<table>
+<thead>
+<tr>
+<th> id </th>
+<th style="text-align:center;"> name   </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>  1 </td>
+<td style="text-align:center;"> Pirate </td>
+<td style="text-align:center;">    2 </td>
+<td style="text-align:left;"> Pirate </td>
+</tr>
+<tr>
+<td>  3 </td>
+<td style="text-align:center;"> Ninja  </td>
+<td style="text-align:center;">    4 </td>
+<td style="text-align:left;"> Ninja  </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>2 rows in set (0.00 sec)</p>
+
+<p>求差集：</p>
+
+<p>根据上面的例子可以求差集，如下：</p>
+
+<p>SELECT * FROM A LEFT JOIN B ON A.name = B.name
+WHERE B.id IS NULL
+union</p>
+
+<p>SELECT * FROM A right JOIN B ON A.name = B.name
+WHERE A.id IS NULL;</p>
+
+<p> 结果</p>
+
+<table>
+<thead>
+<tr>
+<th> id   </th>
+<th style="text-align:center;"> name      </th>
+<th style="text-align:center;"> id   </th>
+<th style="text-align:left;"> name        </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>    2 </td>
+<td style="text-align:center;"> Monkey    </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL        </td>
+</tr>
+<tr>
+<td>    4 </td>
+<td style="text-align:center;"> Spaghetti </td>
+<td style="text-align:center;"> NULL </td>
+<td style="text-align:left;"> NULL        </td>
+</tr>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL      </td>
+<td style="text-align:center;">    1 </td>
+<td style="text-align:left;"> Rutabaga    </td>
+</tr>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL      </td>
+<td style="text-align:center;">    3 </td>
+<td style="text-align:left;"> Darth Vader </td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>Right join</strong></p>
+
+<p>mysql> select * from A right join B on A.name = B.name;</p>
+
+<table>
+<thead>
+<tr>
+<th> id   </th>
+<th style="text-align:center;"> name   </th>
+<th style="text-align:center;"> id </th>
+<th style="text-align:left;"> name        </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL   </td>
+<td style="text-align:center;">  1 </td>
+<td style="text-align:left;"> Rutabaga    </td>
+</tr>
+<tr>
+<td>    1 </td>
+<td style="text-align:center;"> Pirate </td>
+<td style="text-align:center;">  2 </td>
+<td style="text-align:left;"> Pirate      </td>
+</tr>
+<tr>
+<td> NULL </td>
+<td style="text-align:center;"> NULL   </td>
+<td style="text-align:center;">  3 </td>
+<td style="text-align:left;"> Darth Vader </td>
+</tr>
+<tr>
+<td>    3 </td>
+<td style="text-align:center;"> Ninja  </td>
+<td style="text-align:center;">  4 </td>
+<td style="text-align:left;"> Ninja       </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>4 rows in set (0.00 sec)</p>
+
+<p><strong>USING(column_list)子句</strong>
+用于为一系列的列进行命名，这些列必须同时在两个表中存在
+SELECT java.<em>,mysql.</em> FROM java LEFT JOIN mysql USING (name);</p>
+
+<p>关于join的一个小测试：</p>
+
+<p>有这样两个表：</p>
+
+<p>message:</p>
+
+<table>
+<thead>
+<tr>
+<th>id </th>
+<th style="text-align:center;">   username </th>
+<th>message </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1  </td>
+<td style="text-align:center;">ewan   </td>
+<td>123</td>
+</tr>
+<tr>
+<td>2  </td>
+<td style="text-align:center;">wean2</td>
+<td> 123</td>
+</tr>
+<tr>
+<td>3  </td>
+<td style="text-align:center;">1  </td>
+<td>??</td>
+</tr>
+<tr>
+<td>4  </td>
+<td style="text-align:center;">1  </td>
+<td>2343</td>
+</tr>
+<tr>
+<td>5  </td>
+<td style="text-align:center;">1  </td>
+<td>sdfjkl</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>user:</p>
+
+<table>
+<thead>
+<tr>
+<th>id </th>
+<th style="text-align:center;">   username </th>
+<th>password </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1  </td>
+<td style="text-align:center;">1</td>
+<td>22</td>
+</tr>
+<tr>
+<td>2  </td>
+<td style="text-align:center;">2</td>
+<td> 111</td>
+</tr>
+<tr>
+<td>3  </td>
+<td style="text-align:center;">Ewan2  </td>
+<td>22</td>
+</tr>
+<tr>
+<td>4  </td>
+<td style="text-align:center;">Ewan5  </td>
+<td>22</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>测试如下:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$dsn</span><span class="o">=</span><span class="s2">&quot;mysql:host=127.0.0.1;dbname=test&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">try</span><span class="p">{</span>
+</span><span class='line'>  <span class="nv">$pdo</span><span class="o">=</span> <span class="k">new</span> <span class="nx">PDO</span><span class="p">(</span><span class="nv">$dsn</span><span class="p">,</span><span class="nv">$username</span><span class="p">,</span><span class="nv">$password</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">PDOException</span> <span class="nv">$e</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">echo</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nv">$sql</span><span class="o">=</span><span class="s2">&quot;SELECT * FROM message LEFT JOIN user ON message.id=user.id&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$back</span><span class="o">=</span><span class="nv">$pdo</span><span class="o">-&gt;</span><span class="na">query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>
+</span><span class='line'><span class="nv">$back</span><span class="o">=</span><span class="nv">$back</span><span class="o">-&gt;</span><span class="na">fetchAll</span><span class="p">(</span><span class="nx">PDO</span><span class="o">::</span><span class="na">FETCH_ASSOC</span><span class="p">);</span>
+</span><span class='line'><span class="nb">print_r</span><span class="p">(</span><span class="nv">$back</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果：</p>
+
+<pre><code>Array
+(
+[0] =&gt; Array
+    (
+        [id] =&gt; 1
+        [username] =&gt; 1
+        [message] =&gt; 123
+        [password] =&gt; 22
+    )
+
+[1] =&gt; Array
+    (
+        [id] =&gt; 2
+        [username] =&gt; 2
+        [message] =&gt; 123
+        [password] =&gt; 111
+    )
+
+[2] =&gt; Array
+    (
+        [id] =&gt; 3
+        [username] =&gt; Ewan2
+        [message] =&gt; ??
+        [password] =&gt; 22
+    )
+
+[3] =&gt; Array
+    (
+        [id] =&gt; 
+        [username] =&gt; 
+        [message] =&gt; 2343
+        [password] =&gt; 
+    )
+
+[4] =&gt; Array
+    (
+        [id] =&gt; 
+        [username] =&gt; 
+        [message] =&gt; sdfjkl
+        [password] =&gt; 
+    )
+
+)
+</code></pre>
+
+<p><strong>可以看到在两个表都有username的情况下只取了前面的那个username而舍弃了后一个。</strong></p>
+
+<hr />
+
+<p><strong>HAVING</strong></p>
+
+<blockquote><p>HAVING 子句对 GROUP BY 子句设置条件的方式与 WHERE 和 SELECT 的交互方式类似。WHERE 搜索条件在进行分组操作之前应用；而 HAVING 搜索条件在进行分组操作之后应用。HAVING 语法与 WHERE 语法类似，但 HAVING 可以包含聚合函数。HAVING 子句可以引用选择列表中显示的任意项。</p></blockquote>
+
+<p>显示每个地区的总人口数和总面积．仅显示那些面积超过1000000的地区。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">SELECT</span> <span class="nx">region</span><span class="p">,</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">population</span><span class="p">),</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">area</span><span class="p">)</span>
+</span><span class='line'><span class="nx">FROM</span> <span class="nx">bbc</span>
+</span><span class='line'><span class="nx">GROUP</span> <span class="nx">BY</span> <span class="nx">region</span>
+</span><span class='line'><span class="nx">HAVING</span> <span class="nx">SUM</span><span class="p">(</span><span class="nx">area</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1000000</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这里，我们不能用where来筛选超过1000000的地区，因为表中不存在这样一条记录。</p>
+
+<p>我们在写sql语句的时候,经常会使用where语句,很少会用到having,其实在mysql中having子句也是设定条件的语句与where有相似之处但也有区别。having子句在查询过程中慢于聚合语句(sum,min,max,avg,count).而where子句在查询过程中则快于聚合语句(sum,min,max,avg,count)。</p>
+
+<p>简单说来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">where子句：</span>
+</span><span class='line'><span class="nx">select</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">num</span><span class="p">)</span> <span class="k">as</span> <span class="nx">rmb</span> <span class="nx">from</span> <span class="nx">order</span> <span class="nx">where</span> <span class="nx">id</span><span class="o">&gt;</span><span class="mi">10</span>
+</span><span class='line'><span class="c1">//先查询出id大于10的记录才能进行聚合语句  </span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">having子句</span><span class="o">:</span>
+</span><span class='line'><span class="nx">select</span> <span class="nx">reportsto</span> <span class="k">as</span> <span class="nx">manager</span><span class="p">,</span> <span class="nb">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">as</span> <span class="nx">reports</span> <span class="nx">from</span> <span class="nx">employees</span>
+</span><span class='line'><span class="nx">group</span> <span class="nx">by</span> <span class="nx">reportsto</span> <span class="nx">having</span> <span class="nb">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>having条件表达示为聚合语句。肯定的说having子句查询过程慢于聚合语句。<br/>
+再换句说话说把上面的having换成where则会出错。统计分组数据时用到聚合语句。</p>
+
+<p>对分组数据再次判断时要用having。如果不用这些关系就不存在使用having。直接使用where就行了。<br/>
+having就是来弥补where在分组数据判断时的不足。因为where要快于聚合语句。</p>
+
+<p><strong>这几个关键字执行的顺序</strong></p>
+
+<p>关键字是按照如下顺序进行执行的：</p>
+
+<ul>
+<li>Where</li>
+<li>Group By</li>
+<li>Having</li>
+<li>Order by</li>
+</ul>
+
+
+<p>首先where将最原始记录中不满足条件的记录删除(所以应该在where语句中尽量的将不符合条件的记录筛选掉，这样可以减少分组的次数)</p>
+
+<p>然后通过Group By关键字后面指定的分组条件将筛选得到的视图进行分组
+接着系统根据Having关键字后面指定的筛选条件，将分组视图后不满足条件的记录筛选掉</p>
+
+<p>最后按照Order By语句对视图进行排序，这样最终的结果就产生了。</p>
+
+<p>注意：</p>
+
+<p>凡是在group by后面出现的字段，必须同时在select后面出现；</p>
+
+<p>凡是在select后面出现的、同时未在聚合函数中出现的字段，必须同时出现在group by后面.</p>
+
+<p>having 子句被限制子已经在SELECT语句中定义的列和聚合表达式上。</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -420,78 +1513,6 @@
 
 		
 		<a href="/blog/2016/05/18/php-namespace-use/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-18T14:18:15+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/18/php-get-remote-file/" itemprop="url">PHP获取远程文件的几种方式</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/18/php-get-remote-file/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-17T23:38:25+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/17/wechat-auto-vote/" itemprop="url">PHP爬虫和微信自动投票</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天接触了PHP的模拟登陆和爬虫实战，涉及到了PHP获取远程文件的几种方式，防采集的一些方法，以及微信自动投票实战。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/17/wechat-auto-vote/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

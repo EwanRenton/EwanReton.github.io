@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-07T11:36:47+08:00</updated>
+  <updated>2016-06-07T23:34:42+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,507 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(九)-代理模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/07/php-design-9/"/>
+    <updated>2016-06-07T23:30:32+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/07/php-design-9</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>代理模式（Proxy）为其他对象提供一种代理以控制对这个对象的访问。使用代理模式创建代理对象，让代理对象控制目标对象的访问（目标对象可以是远程的对象、创建开销大的对象或需要安全控制的对象），并且可以在不改变目标对象的情况下添加一些额外的功能。</p>
+
+<p>在某些情况下，一个客户不想或者不能直接引用另一个对象，而代理对象可以在客户端和目标对象之间起到中介的作用，并且可以通过代理对象去掉客户不能看到的内容和服务或者添加客户需要的额外服务。</p>
+
+<p>经典例子就是网络代理，你想访问 Facebook 或者 Twitter ，如何绕过 GFW？找个代理网站。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2015/12/Proxy-Design-Pattern-UML.png" alt="" /></p>
+
+<h1>3、示例代码</h1>
+
+<pre><code class="php Record.php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Proxy;
+
+    /**
+     * Record类
+     */
+    class Record
+    {
+        /**
+         * @var array|null
+         */
+        protected $data;
+
+        /**
+         * @param null $data
+         */
+        public function __construct($data = null)
+        {
+            $this-&gt;data = (array) $data;
+        }
+
+        /**
+         * magic setter
+         *
+         * @param string $name
+         * @param mixed  $value
+         *
+         * @return void
+         */
+        public function __set($name, $value)
+        {
+            $this-&gt;data[(string) $name] = $value;
+        }
+
+        /**
+         * magic getter
+         *
+         * @param string $name
+         *
+         * @return mixed|null
+         */
+        public function __get($name)
+        {
+            if (array_key_exists($name, $this-&gt;data)) {
+                return $this-&gt;data[(string) $name];
+            } else {
+                return null;
+            }
+        }
+    }
+</code></pre>
+
+<pre><code class="php RecordProxy.php">    &lt;?php
+
+    namespace DesignPatterns\Structural\Proxy;
+
+    /**
+     * RecordProxy类
+     */
+    class RecordProxy extends Record
+    {
+        /**
+         * @var bool
+         */
+        protected $isDirty = false;
+
+        /**
+         * @var bool
+         */
+        protected $isInitialized = false;
+
+        /**
+         * @param array $data
+         */
+        public function __construct($data)
+        {
+            parent::__construct($data);
+
+            // when the record has data, mark it as initialized
+            // since Record will hold our business logic, we don't want to
+            // implement this behaviour there, but instead in a new proxy class
+            // that extends the Record class
+            if (null !== $data) {
+                $this-&gt;isInitialized = true;
+                $this-&gt;isDirty = true;
+            }
+        }
+
+        /**
+         * magic setter
+         *
+         * @param string $name
+         * @param mixed  $value
+         *
+         * @return void
+         */
+        public function __set($name, $value)
+        {
+            $this-&gt;isDirty = true;
+            parent::__set($name, $value);
+        }
+    }
+</code></pre>
+
+<h1>4、测试代码</h1>
+
+<pre><code class="php ProxyTest.php">
+    &lt;?php
+
+    namespace DesignPatterns\Structural\Proxy\Tests;
+
+    use DesignPatterns\Structural\Proxy\Record;
+    use DesignPatterns\Structural\Proxy\RecordProxy;
+
+    class ProxyTest extends \PHPUnit_Framework_TestCase
+    {
+        public function testSetAttribute(){
+            $data = [];
+            $proxy = new RecordProxy($data);
+            $proxy-&gt;xyz = false;
+            $this-&gt;assertTrue($proxy-&gt;xyz===false);
+        }
+    }
+</code></pre>
+
+<h1>5、总结</h1>
+
+<p>代理模式在很多情况下都非常有用，特别是你想强行控制一个对象的时候，比如延迟加载、监视状态变更的方法等等。</p>
+
+<p>与类似接口的区别：</p>
+
+<ul>
+<li>适配器模式 —— 适配器模式为它所适配的对象提供了一个不同的接口，而代理提供了与它的实体相同的接口。</li>
+<li>装饰器模式 —— 两者目的不同：装饰器为对象添加一个或多个功能，而代理则控制对对象的访问。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(八)-迭代器模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/07/php-design-8/"/>
+    <updated>2016-06-07T12:59:44+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/07/php-design-8</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>迭代器模式（Iterator），又叫做游标（Cursor）模式。提供一种方法访问一个容器（Container）对象中各个元素，而又不需暴露该对象的内部细节。</p>
+
+<p>当你需要访问一个聚合对象，而且不管这些对象是什么都需要遍历的时候，就应该考虑使用迭代器模式。另外，当需要对聚集有多种方式遍历时，可以考虑去使用迭代器模式。迭代器模式为遍历不同的聚集结构提供如开始、下一个、是否结束、当前哪一项等统一的接口。</p>
+
+<p>PHP标准库（SPL）中提供了迭代器接口 Iterator，要实现迭代器模式，实现该接口即可。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2016/01/Iterator-Design-Pattern-UML.png" alt="" /></p>
+
+<h1>3、实例代码</h1>
+
+<pre><code class="php Book.php">    &lt;?php
+
+    namespace DesignPatterns\Behavioral\Iterator;
+
+    class Book
+    {
+
+        private $author;
+
+        private $title;
+
+        public function __construct($title, $author)
+        {
+            $this-&gt;author = $author;
+            $this-&gt;title = $title;
+        }
+
+        public function getAuthor()
+        {
+            return $this-&gt;author;
+        }
+
+        public function getTitle()
+        {
+            return $this-&gt;title;
+        }
+
+        public function getAuthorAndTitle()
+        {
+            return $this-&gt;getTitle() . ' by ' . $this-&gt;getAuthor();
+        }
+    }
+</code></pre>
+
+<pre><code class="php BookList.php">    &lt;?php
+
+    namespace DesignPatterns\Behavioral\Iterator;
+
+    class BookList implements \Countable
+    {
+
+        private $books;
+
+        public function getBook($bookNumberToGet)
+        {
+            if (isset($this-&gt;books[$bookNumberToGet])) {
+                return $this-&gt;books[$bookNumberToGet];
+            }
+
+            return null;
+        }
+
+        public function addBook(Book $book)
+        {
+            $this-&gt;books[] = $book;
+        }
+
+        public function removeBook(Book $bookToRemove)
+        {
+            foreach ($this-&gt;books as $key =&gt; $book) {
+                /** @var Book $book */
+                if ($book-&gt;getAuthorAndTitle() === $bookToRemove-&gt;getAuthorAndTitle()) {
+                    unset($this-&gt;books[$key]);
+                }
+            }
+        }
+
+        public function count()
+        {
+            return count($this-&gt;books);
+        }
+    }
+</code></pre>
+
+<pre><code class="php BookListIterator.php">    &lt;?php
+
+    namespace DesignPatterns\Behavioral\Iterator;
+
+    class BookListIterator implements \Iterator
+    {
+
+        /**
+         * @var BookList
+         */
+        private $bookList;
+
+        /**
+         * @var int
+         */
+        protected $currentBook = 0;
+
+        public function __construct(BookList $bookList)
+        {
+            $this-&gt;bookList = $bookList;
+        }
+
+        /**
+         * Return the current book
+         * @link http://php.net/manual/en/iterator.current.php
+         * @return Book Can return any type.
+         */
+        public function current()
+        {
+            return $this-&gt;bookList-&gt;getBook($this-&gt;currentBook);
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Move forward to next element
+         * @link http://php.net/manual/en/iterator.next.php
+         * @return void Any returned value is ignored.
+         */
+        public function next()
+        {
+            $this-&gt;currentBook++;
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Return the key of the current element
+         * @link http://php.net/manual/en/iterator.key.php
+         * @return mixed scalar on success, or null on failure.
+         */
+        public function key()
+        {
+            return $this-&gt;currentBook;
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Checks if current position is valid
+         * @link http://php.net/manual/en/iterator.valid.php
+         * @return boolean The return value will be casted to boolean and then evaluated.
+         *       Returns true on success or false on failure.
+         */
+        public function valid()
+        {
+            return null !== $this-&gt;bookList-&gt;getBook($this-&gt;currentBook);
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Rewind the Iterator to the first element
+         * @link http://php.net/manual/en/iterator.rewind.php
+         * @return void Any returned value is ignored.
+         */
+        public function rewind()
+        {
+            $this-&gt;currentBook = 0;
+        }
+    }
+</code></pre>
+
+<pre><code class="php BookListReverseIterator.php">
+    &lt;?php
+
+    namespace DesignPatterns\Behavioral\Iterator;
+
+    class BookListReverseIterator implements \Iterator
+    {
+
+        /**
+         * @var BookList
+         */
+        private $bookList;
+
+        /**
+         * @var int
+         */
+        protected $currentBook = 0;
+
+        public function __construct(BookList $bookList)
+        {
+            $this-&gt;bookList = $bookList;
+            $this-&gt;currentBook = $this-&gt;bookList-&gt;count() - 1;
+        }
+
+        /**
+         * Return the current book
+         * @link http://php.net/manual/en/iterator.current.php
+         * @return Book Can return any type.
+         */
+        public function current()
+        {
+            return $this-&gt;bookList-&gt;getBook($this-&gt;currentBook);
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Move forward to next element
+         * @link http://php.net/manual/en/iterator.next.php
+         * @return void Any returned value is ignored.
+         */
+        public function next()
+        {
+            $this-&gt;currentBook--;
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Return the key of the current element
+         * @link http://php.net/manual/en/iterator.key.php
+         * @return mixed scalar on success, or null on failure.
+         */
+        public function key()
+        {
+            return $this-&gt;currentBook;
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Checks if current position is valid
+         * @link http://php.net/manual/en/iterator.valid.php
+         * @return boolean The return value will be casted to boolean and then evaluated.
+         *       Returns true on success or false on failure.
+         */
+        public function valid()
+        {
+            return null !== $this-&gt;bookList-&gt;getBook($this-&gt;currentBook);
+        }
+
+        /**
+         * (PHP 5 &gt;= 5.0.0)
+         *
+         * Rewind the Iterator to the first element
+         * @link http://php.net/manual/en/iterator.rewind.php
+         * @return void Any returned value is ignored.
+         */
+        public function rewind()
+        {
+            $this-&gt;currentBook = $this-&gt;bookList-&gt;count() - 1;
+        }
+    }
+</code></pre>
+
+<h1>4、测试代码</h1>
+
+<pre><code class="php Tests/IteratorTest.php">&lt;?php
+
+namespace DesignPatterns\Behavioral\Iterator\Tests;
+
+use DesignPatterns\Behavioral\Iterator\Book;
+use DesignPatterns\Behavioral\Iterator\BookList;
+use DesignPatterns\Behavioral\Iterator\BookListIterator;
+use DesignPatterns\Behavioral\Iterator\BookListReverseIterator;
+
+class IteratorTest extends \PHPUnit_Framework_TestCase
+{
+
+    /**
+     * @var BookList
+     */
+    protected $bookList;
+
+    protected function setUp()
+    {
+        $this-&gt;bookList = new BookList();
+        $this-&gt;bookList-&gt;addBook(new Book('Learning PHP Design Patterns', 'William Sanders'));
+        $this-&gt;bookList-&gt;addBook(new Book('Professional Php Design Patterns', 'Aaron Saray'));
+        $this-&gt;bookList-&gt;addBook(new Book('Clean Code', 'Robert C. Martin'));
+    }
+
+    public function expectedAuthors()
+    {
+        return array(
+            array(
+                array(
+                    'Learning PHP Design Patterns by William Sanders',
+                    'Professional Php Design Patterns by Aaron Saray',
+                    'Clean Code by Robert C. Martin'
+                )
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider expectedAuthors
+     */
+    public function testUseAIteratorAndValidateAuthors($expected)
+    {
+        $iterator = new BookListIterator($this-&gt;bookList);
+
+        while ($iterator-&gt;valid()) {
+            $expectedBook = array_shift($expected);
+            $this-&gt;assertEquals($expectedBook, $iterator-&gt;current()-&gt;getAuthorAndTitle());
+            $iterator-&gt;next();
+        }
+    }
+
+    /**
+     * @dataProvider expectedAuthors
+     */
+    public function testUseAReverseIteratorAndValidateAuthors($expected)
+    {
+        $iterator = new BookListReverseIterator($this-&gt;bookList);
+
+        while ($iterator-&gt;valid()) {
+            $expectedBook = array_pop($expected);
+            $this-&gt;assertEquals($expectedBook, $iterator-&gt;current()-&gt;getAuthorAndTitle());
+            $iterator-&gt;next();
+        }
+    }
+
+    /**
+     * Test BookList Remove
+     */
+    public function testBookRemove()
+    {
+        $this-&gt;bookList-&gt;removeBook($this-&gt;bookList-&gt;getBook(0));
+        $this-&gt;assertEquals($this-&gt;bookList-&gt;count(), 2);
+    }
+}
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP设计模式(七)-装饰器模式]]></title>
@@ -507,273 +1008,6 @@
     }
     $page = new Page();
     $page-&gt;index(); 
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP设计模式(三)-策略模式]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/06/06/php-design-3/"/>
-    <updated>2016-06-06T10:32:22+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/06/06/php-design-3</id>
-    <content type="html"><![CDATA[<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
-
-<!--more-->
-
-
-<h1>一、策略模式概念</h1>
-
-<p>策略模式针对一组算法，将每一个算法封装到具有共同接口的独立的类中,此模式让算法的变化独立于使用算法的客户。从而让程序结构更灵活，具有更好的扩展性和维护性。</p>
-
-<p>策略模式:定义了算法族,分别封装起来，让它们之间可以互相替换，此模式让算法的变化独立于使用算法的客户。</p>
-
-<p>封装:把行为用接口封装起来，我们可以把那些经常变化的部分，从当前的类中单独取出来，用接口进行单独的封装。
-互相替换:我们封装好了接口，通过指定不同的接口实现类进行算法的变化。</p>
-
-<h1>二、策略模式结构图</h1>
-
-<p><img src="http://www.phpddt.com/usr/uploads/2014/01/2390999757.jpg" alt="" /></p>
-
-<h1>三、策略模式角色说明</h1>
-
-<p> 抽象策略(Strategy）角色：定义所有支持的算法的公共接口。通常是以一个接口或抽象来实现。Context使用这个接口来调用其ConcreteStrategy定义的算法。</p>
-
-<p>具体策略(ConcreteStrategy)角色：以Strategy接口实现某具体算法</p>
-
-<p>环境(Context)角色：持有一个Strategy类的引用，用一个ConcreteStrategy对象来配置</p>
-
-<h1>四、实例一</h1>
-
-<p>比如说购物车系统，在给商品计算总价的时候，普通会员肯定是商品单价乘以数量，但是对中级会员提供8者折扣，对高级会员提供7折折扣，这种场景就可以使用策略模式实现：</p>
-
-<pre><code class="php">/**
- * 策略模式实例
- * 
- */
-//抽象策略角色《为接口或者抽象类，给具体策略类继承》
-interface Strategy
-{
-    public function computePrice($price);
-}
-
-//具体策略角色-普通会员策略类
-class GenernalMember implements Strategy
-{
-    public function computePrice($price)
-    {
-        return $price;
-    }
-}
-
-//具体策略角色-中级会员策略类
-class MiddleMember implements Strategy
-{
-    public function computePrice($price)
-    {
-        return $price * 0.8;
-    }
-}
-
-//具体策略角色-高级会员策略类
-class HignMember implements Strategy
-{
-    public function computePrice($price)
-    {
-        return $price * 0.7;
-    }
-}
-
-//环境角色实现类
-class Price 
-{
-    //具体策略对象
-    private $strategyInstance;
-
-    //构造函数
-    public function __construct($instance)
-    {
-        $this-&gt;strategyInstance = $instance;
-    }
-
-    public function compute($price)
-    {
-        return $this-&gt;strategyInstance-&gt;computePrice($price);
-    }
-}
-
-//客户端使用
-$p = new Price(new HignMember());
-
-$totalPrice = $p-&gt;compute(100);
-
-echo $totalPrice; //70
-</code></pre>
-
-<h1>实例二</h1>
-
-<p><img src="http://pic002.cnblogs.com/images/2012/152332/2012022715404617.png" alt="" /></p>
-
-<p>我来解释下这个思维导图的过程：</p>
-
-<p>1.Joe做了一套相当成功的模拟鸭子的游戏。设计了一个超类Duck,然后让各种鸭子继承这个类。</p>
-
-<p>2.后来客户提出要让鸭子有飞的能力。所以Joe就在超类中加了个fly()方法，这样下面的子类都有飞行的行为。</p>
-
-<p> 问题来了：</p>
-
-<ul>
-<li>原来Duck的子类中竟然有橡皮鸭，橡皮鸭是不会飞的。——Joe用重载的方式，把橡皮鸭的fly()方法设置为空.</li>
-<li>覆盖fly()，我们看到了橡皮鸭的fly()里，没有任何代码，如果以后我们再添加别的不会飞的鸭子，那我么还要这么处理吗?——那么代码重复了!</li>
-</ul>
-
-
-<p>3.上面2的方式我们知道是有问题的，所以Joe想到把Duck做成接口，这样每个子类必须实现Duck里的方法。这样就保证每个鸭子都能根据自己的需要添加行为。</p>
-
-<p>问题来了：</p>
-
-<ul>
-<li>产品经常处于更新中，规格也在不断的变化。导致每当有新鸭子的时候，Joe就要被迫检查一遍子类是否覆盖了fly()方法。——当你修改某个行为的时候，你必须得往下追踪并在每一个定义此行为的类中修改它。</li>
-</ul>
-
-
-<p>4.综合以上问题，Joe想到了把那些变化的部分从不变化的位置中抽出来。比如，我们对fly()行为，做了单独的接口FlyBehavior。如果鸭子想要飞行功能的时候，我们就让鸭子实现FlyBehavior.</p>
-
-<p>5.深造:我们想让鸭子有不同的飞行功能，让它在运行时候做不同的飞行动作。让鸭子类实现接口，只能让鸭子有一种行为。</p>
-
-<p>所以Joe，想到用组合的防止，当鸭子需要其他飞行功能要求的时候，我们可以用setBehavior()方式，指定性的飞行方式。</p>
-
-<pre><code class="php">interface FlyBehavior{
-    public function fly();
-}
-
-class FlyWithWings implements FlyBehavior{
-    public function fly(){
-        echo "Fly With Wings \n";
-    }
-}
-
-class FlyWithNo implements FlyBehavior{
-    public function fly(){
-        echo "Fly With No Wings \n";
-    }
-}
-class Duck{
-    private $_flyBehavior;
-    public function performFly(){
-        $this-&gt;_flyBehavior-&gt;fly();
-    }
-
-    public function setFlyBehavior(FlyBehavior $behavior){
-        $this-&gt;_flyBehavior = $behavior;
-    }
-}
-
-class RubberDuck extends Duck{
-}
-// Test Case
-$duck = new RubberDuck();
-
-/*  想让鸭子用翅膀飞行 */
-$duck-&gt;setFlyBehavior(new FlyWithWings());
-$duck-&gt;performFly();            
-
-/*  想让鸭子不用翅膀飞行 */
-$duck-&gt;setFlyBehavior(new FlyWithNo());
-$duck-&gt;performFly();
-</code></pre>
-
-<h1>五、策略模式的控制和反转</h1>
-
-<p>使用策略模式可以实现Ioc，依赖倒置和控制反转</p>
-
-<p>在原本的类中，存在一个A类中调用B类，则A类是依赖于B类的。</p>
-
-<p>通过几个接口的设置和策略的解耦，就把依赖进行了反转，也就是我们在写A类的时候不需要去实现B类。</p>
-
-<p>只有在最后执行的时候才进行绑定。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP设计模式(二)-适配器模式]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/06/04/php-design-2/"/>
-    <updated>2016-06-04T12:21:09+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/06/04/php-design-2</id>
-    <content type="html"><![CDATA[<h1>适配器模式</h1>
-
-<ol>
-<li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
-</ol>
-
-
-<!--more-->
-
-
-<ol>
-<li>实际应用举例，PHP的数据库操作有mysql，mysqli，pdo3种，可以用适配器模式改成统一致的，类似的还有cache适配器，将memcache，redis，file，apc等不同的缓存函数，统一成一致的。</li>
-</ol>
-
-
-<p>角色：</p>
-
-<ul>
-<li>Target适配目标，该角色定义把其他类转换为何种接口，也就是我们的期望接口。</li>
-<li>Adaptee被适配者，就是需要被适配的接口。</li>
-<li>Adapter适配器，其他的两个角色都是已经存在的角色，而适配器角色是需要新建立的，它用来对Adaptee与Target接口进行适配。</li>
-</ul>
-
-
-<p>优势：</p>
-
-<p>被适配者通过适配器完成对适配目标的适配，以达到对客户使用透明的目的。</p>
-
-<pre><code class="php">//适配目标，规定的接口将被适配对象实现
-interface IDatabase
-{
-    public function connect($host, $username, $password, $database);
-    public function query($sql);
-}
- 
-//适配器
-class Mysql implements IDatabase
-{
-    protected $connect;
- 
-    public function connect($host, $username, $password, $database)
-    {
-        $connect = mysql_connect($host, $username, $password);
-        mysql_select_db($database, $connect);
-        $this-&gt;connect = $connect;
-        //...
-    }
- 
-    public function query($sql)
-    {
-        //...
-    }
-}
- 
-//适配器
-class Postgresql implements IDatabase
-{
-    protected $connect;
- 
-    public function connect($host, $username, $password, $database)
-    {
-        $this-&gt;connect = pg_connect("host=$host dbname=$database user=$username password=$password");
-        //...
-    }
- 
-    public function query($sql)
-    {
-        //...
-    }
-}
- 
- 
-//客户端使用
-$client = new Postgresql();
-$client-&gt;query($sql);
 </code></pre>
 ]]></content>
   </entry>

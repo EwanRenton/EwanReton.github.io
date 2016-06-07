@@ -4,7 +4,7 @@
   <title><![CDATA[Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-07T11:36:47+08:00</updated>
+  <updated>2016-06-07T23:34:42+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,948 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(九)-代理模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/07/php-design-9/"/>
+    <updated>2016-06-07T23:30:32+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/07/php-design-9</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>代理模式（Proxy）为其他对象提供一种代理以控制对这个对象的访问。使用代理模式创建代理对象，让代理对象控制目标对象的访问（目标对象可以是远程的对象、创建开销大的对象或需要安全控制的对象），并且可以在不改变目标对象的情况下添加一些额外的功能。</p>
+
+<p>在某些情况下，一个客户不想或者不能直接引用另一个对象，而代理对象可以在客户端和目标对象之间起到中介的作用，并且可以通过代理对象去掉客户不能看到的内容和服务或者添加客户需要的额外服务。</p>
+
+<p>经典例子就是网络代理，你想访问 Facebook 或者 Twitter ，如何绕过 GFW？找个代理网站。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2015/12/Proxy-Design-Pattern-UML.png" alt="" /></p>
+
+<h1>3、示例代码</h1>
+
+<figure class='code'><figcaption><span>Record.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Proxy</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * Record类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Record</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var array|null</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$data</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @param null $data</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$data</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span> <span class="o">=</span> <span class="p">(</span><span class="k">array</span><span class="p">)</span> <span class="nv">$data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * magic setter</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param string $name</span>
+</span><span class='line'><span class="sd">     * @param mixed  $value</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__set</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[(</span><span class="nx">string</span><span class="p">)</span> <span class="nv">$name</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * magic getter</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param string $name</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return mixed|null</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__get</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nb">array_key_exists</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">[(</span><span class="nx">string</span><span class="p">)</span> <span class="nv">$name</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>RecordProxy.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Proxy</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * RecordProxy类</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">RecordProxy</span> <span class="k">extends</span> <span class="nx">Record</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var bool</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$isDirty</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var bool</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$isInitialized</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @param array $data</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$data</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">parent</span><span class="o">::</span><span class="na">__construct</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// when the record has data, mark it as initialized</span>
+</span><span class='line'>        <span class="c1">// since Record will hold our business logic, we don&#39;t want to</span>
+</span><span class='line'>        <span class="c1">// implement this behaviour there, but instead in a new proxy class</span>
+</span><span class='line'>        <span class="c1">// that extends the Record class</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="k">null</span> <span class="o">!==</span> <span class="nv">$data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">isInitialized</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">isDirty</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * magic setter</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @param string $name</span>
+</span><span class='line'><span class="sd">     * @param mixed  $value</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * @return void</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__set</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">isDirty</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">parent</span><span class="o">::</span><span class="na">__set</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>4、测试代码</h1>
+
+<figure class='code'><figcaption><span>ProxyTest.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Structural\Proxy\Tests</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Structural\Proxy\Record</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Structural\Proxy\RecordProxy</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">ProxyTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testSetAttribute</span><span class="p">(){</span>
+</span><span class='line'>        <span class="nv">$data</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>        <span class="nv">$proxy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RecordProxy</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$proxy</span><span class="o">-&gt;</span><span class="na">xyz</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertTrue</span><span class="p">(</span><span class="nv">$proxy</span><span class="o">-&gt;</span><span class="na">xyz</span><span class="o">===</span><span class="k">false</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>5、总结</h1>
+
+<p>代理模式在很多情况下都非常有用，特别是你想强行控制一个对象的时候，比如延迟加载、监视状态变更的方法等等。</p>
+
+<p>与类似接口的区别：</p>
+
+<ul>
+<li>适配器模式 —— 适配器模式为它所适配的对象提供了一个不同的接口，而代理提供了与它的实体相同的接口。</li>
+<li>装饰器模式 —— 两者目的不同：装饰器为对象添加一个或多个功能，而代理则控制对对象的访问。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP设计模式(八)-迭代器模式]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/07/php-design-8/"/>
+    <updated>2016-06-07T12:59:44+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/07/php-design-8</id>
+    <content type="html"><![CDATA[<h1>1、模式定义</h1>
+
+<p>迭代器模式（Iterator），又叫做游标（Cursor）模式。提供一种方法访问一个容器（Container）对象中各个元素，而又不需暴露该对象的内部细节。</p>
+
+<p>当你需要访问一个聚合对象，而且不管这些对象是什么都需要遍历的时候，就应该考虑使用迭代器模式。另外，当需要对聚集有多种方式遍历时，可以考虑去使用迭代器模式。迭代器模式为遍历不同的聚集结构提供如开始、下一个、是否结束、当前哪一项等统一的接口。</p>
+
+<p>PHP标准库（SPL）中提供了迭代器接口 Iterator，要实现迭代器模式，实现该接口即可。</p>
+
+<h1>2、UML类图</h1>
+
+<p><img src="http://laravelacademy.org/wp-content/uploads/2016/01/Iterator-Design-Pattern-UML.png" alt="" /></p>
+
+<h1>3、实例代码</h1>
+
+<figure class='code'><figcaption><span>Book.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Iterator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Book</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$author</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$title</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$title</span><span class="p">,</span> <span class="nv">$author</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">author</span> <span class="o">=</span> <span class="nv">$author</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">title</span> <span class="o">=</span> <span class="nv">$title</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getAuthor</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">author</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getTitle</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">title</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getAuthorAndTitle</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getTitle</span><span class="p">()</span> <span class="o">.</span> <span class="s1">&#39; by &#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getAuthor</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>BookList.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Iterator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">BookList</span> <span class="k">implements</span> <span class="nx">\Countable</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$books</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getBook</span><span class="p">(</span><span class="nv">$bookNumberToGet</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">books</span><span class="p">[</span><span class="nv">$bookNumberToGet</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">books</span><span class="p">[</span><span class="nv">$bookNumberToGet</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">addBook</span><span class="p">(</span><span class="nx">Book</span> <span class="nv">$book</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">books</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$book</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">removeBook</span><span class="p">(</span><span class="nx">Book</span> <span class="nv">$bookToRemove</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">books</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$book</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="sd">/** @var Book $book */</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nv">$book</span><span class="o">-&gt;</span><span class="na">getAuthorAndTitle</span><span class="p">()</span> <span class="o">===</span> <span class="nv">$bookToRemove</span><span class="o">-&gt;</span><span class="na">getAuthorAndTitle</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nb">unset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">books</span><span class="p">[</span><span class="nv">$key</span><span class="p">]);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">count</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">books</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>BookListIterator.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Iterator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">BookListIterator</span> <span class="k">implements</span> <span class="nx">\Iterator</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var BookList</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$bookList</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var int</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$currentBook</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nx">BookList</span> <span class="nv">$bookList</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span> <span class="o">=</span> <span class="nv">$bookList</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Return the current book</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.current.php</span>
+</span><span class='line'><span class="sd">     * @return Book Can return any type.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">current</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">getBook</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Move forward to next element</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.next.php</span>
+</span><span class='line'><span class="sd">     * @return void Any returned value is ignored.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">next</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Return the key of the current element</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.key.php</span>
+</span><span class='line'><span class="sd">     * @return mixed scalar on success, or null on failure.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">key</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Checks if current position is valid</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.valid.php</span>
+</span><span class='line'><span class="sd">     * @return boolean The return value will be casted to boolean and then evaluated.</span>
+</span><span class='line'><span class="sd">     *       Returns true on success or false on failure.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">valid</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">null</span> <span class="o">!==</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">getBook</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Rewind the Iterator to the first element</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.rewind.php</span>
+</span><span class='line'><span class="sd">     * @return void Any returned value is ignored.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">rewind</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>BookListReverseIterator.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Iterator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">BookListReverseIterator</span> <span class="k">implements</span> <span class="nx">\Iterator</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var BookList</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">private</span> <span class="nv">$bookList</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var int</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$currentBook</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nx">BookList</span> <span class="nv">$bookList</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span> <span class="o">=</span> <span class="nv">$bookList</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Return the current book</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.current.php</span>
+</span><span class='line'><span class="sd">     * @return Book Can return any type.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">current</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">getBook</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Move forward to next element</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.next.php</span>
+</span><span class='line'><span class="sd">     * @return void Any returned value is ignored.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">next</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="o">--</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Return the key of the current element</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.key.php</span>
+</span><span class='line'><span class="sd">     * @return mixed scalar on success, or null on failure.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">key</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Checks if current position is valid</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.valid.php</span>
+</span><span class='line'><span class="sd">     * @return boolean The return value will be casted to boolean and then evaluated.</span>
+</span><span class='line'><span class="sd">     *       Returns true on success or false on failure.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">valid</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">null</span> <span class="o">!==</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">getBook</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * (PHP 5 &gt;= 5.0.0)</span>
+</span><span class='line'><span class="sd">     *</span>
+</span><span class='line'><span class="sd">     * Rewind the Iterator to the first element</span>
+</span><span class='line'><span class="sd">     * @link http://php.net/manual/en/iterator.rewind.php</span>
+</span><span class='line'><span class="sd">     * @return void Any returned value is ignored.</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">rewind</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">currentBook</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>4、测试代码</h1>
+
+<figure class='code'><figcaption><span>Tests/IteratorTest.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nx">DesignPatterns\Behavioral\Iterator\Tests</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Behavioral\Iterator\Book</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Behavioral\Iterator\BookList</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Behavioral\Iterator\BookListIterator</span><span class="p">;</span>
+</span><span class='line'><span class="k">use</span> <span class="nx">DesignPatterns\Behavioral\Iterator\BookListReverseIterator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">IteratorTest</span> <span class="k">extends</span> <span class="nx">\PHPUnit_Framework_TestCase</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @var BookList</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">protected</span> <span class="nv">$bookList</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">protected</span> <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BookList</span><span class="p">();</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">addBook</span><span class="p">(</span><span class="k">new</span> <span class="nx">Book</span><span class="p">(</span><span class="s1">&#39;Learning PHP Design Patterns&#39;</span><span class="p">,</span> <span class="s1">&#39;William Sanders&#39;</span><span class="p">));</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">addBook</span><span class="p">(</span><span class="k">new</span> <span class="nx">Book</span><span class="p">(</span><span class="s1">&#39;Professional Php Design Patterns&#39;</span><span class="p">,</span> <span class="s1">&#39;Aaron Saray&#39;</span><span class="p">));</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">addBook</span><span class="p">(</span><span class="k">new</span> <span class="nx">Book</span><span class="p">(</span><span class="s1">&#39;Clean Code&#39;</span><span class="p">,</span> <span class="s1">&#39;Robert C. Martin&#39;</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">expectedAuthors</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>                    <span class="s1">&#39;Learning PHP Design Patterns by William Sanders&#39;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s1">&#39;Professional Php Design Patterns by Aaron Saray&#39;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s1">&#39;Clean Code by Robert C. Martin&#39;</span>
+</span><span class='line'>                <span class="p">)</span>
+</span><span class='line'>            <span class="p">),</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @dataProvider expectedAuthors</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testUseAIteratorAndValidateAuthors</span><span class="p">(</span><span class="nv">$expected</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$iterator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BookListIterator</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="nv">$iterator</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$expectedBook</span> <span class="o">=</span> <span class="nb">array_shift</span><span class="p">(</span><span class="nv">$expected</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span><span class="nv">$expectedBook</span><span class="p">,</span> <span class="nv">$iterator</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getAuthorAndTitle</span><span class="p">());</span>
+</span><span class='line'>            <span class="nv">$iterator</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * @dataProvider expectedAuthors</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testUseAReverseIteratorAndValidateAuthors</span><span class="p">(</span><span class="nv">$expected</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$iterator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BookListReverseIterator</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="nv">$iterator</span><span class="o">-&gt;</span><span class="na">valid</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$expectedBook</span> <span class="o">=</span> <span class="nb">array_pop</span><span class="p">(</span><span class="nv">$expected</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span><span class="nv">$expectedBook</span><span class="p">,</span> <span class="nv">$iterator</span><span class="o">-&gt;</span><span class="na">current</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getAuthorAndTitle</span><span class="p">());</span>
+</span><span class='line'>            <span class="nv">$iterator</span><span class="o">-&gt;</span><span class="na">next</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * Test BookList Remove</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">testBookRemove</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">removeBook</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">getBook</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">bookList</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">(),</span> <span class="mi">2</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP设计模式(七)-装饰器模式]]></title>
@@ -6099,850 +7041,6 @@ spl_autoload会把类名转化为小写进行文件搜索，
 </span><span class='line'><span class="nv">$foo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bar</span><span class="p">();</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP获取远程文件的几种方式]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file/"/>
-    <updated>2016-05-18T14:18:15+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/18/php-get-remote-file</id>
-    <content type="html"><![CDATA[<blockquote><p>接上次的内容，今天结合代码来分析下PHP获取远程文件的几种方式。</p></blockquote>
-
-<!--more-->
-
-
-<ul>
-<li>fopen
-
-<ul>
-<li>获取本地文件</li>
-<li>获取到的资源绑定到一个流上面</li>
-</ul>
-</li>
-<li>file_get_centents
-
-<ul>
-<li>获取一些Get获得的数据，也可以POST，</li>
-<li>可以做断点续传</li>
-</ul>
-</li>
-<li>socket</li>
-<li>curl
-
-<ul>
-<li>可以保存cookie 并且在下一次发送出去</li>
-<li>做模拟登陆</li>
-</ul>
-</li>
-</ul>
-
-
-<h1>fopen</h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;fopen获取文件测试&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="cm">/*fopen打开本地文件*/</span>
-</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;test.html&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$fp</span><span class="o">=</span><span class="nb">fopen</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span><span class="s2">&quot;r+&quot;</span><span class="p">);</span><span class="c1">//r+ 只读，+表示如果不存在则创建</span>
-</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$fc</span><span class="o">.=</span><span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span><span class="mi">1024</span><span class="p">);</span><span class="c1">//获取到的资源绑定到流上。这样来获取流数据</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;本地文件：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="cm">/*fopen打开远程url*/</span>
-</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.html&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$fp</span><span class="o">=</span><span class="nb">fopen</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出stream_get_meta_data&lt;/h4&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">dumpArr</span><span class="p">(</span><span class="nb">stream_get_meta_data</span><span class="p">(</span><span class="nv">$fp</span><span class="p">));</span>
-</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$fc</span><span class="o">=</span><span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span><span class="mi">1024</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="nb">fclose</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;远程url：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>file_get_centents</h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;file_get_contents获取文件测试&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="cm">/*file_get_contents打开本地文件*/</span>
-</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;test.html&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;本地文件：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="cm">/*fopen打开远程url  get方法*/</span>
-</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$fc</span><span class="o">=</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;get方法获取远程url：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="cm">/*fopen打开远程url  post方法*/</span>
-</span><span class='line'>  <span class="nv">$filename</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="cm">/*构建请求头信息*/</span>
-</span><span class='line'>  <span class="nv">$post</span> <span class="o">=</span> <span class="k">array</span> <span class="p">(</span><span class="s1">&#39;type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;1&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$content</span> <span class="o">=</span> <span class="nb">http_build_query</span><span class="p">(</span><span class="nv">$post</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$content_length</span> <span class="o">=</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$content</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$options</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>      <span class="s1">&#39;http&#39;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
-</span><span class='line'>          <span class="s1">&#39;method&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s1">&#39;header&#39;</span> <span class="o">=&gt;</span>
-</span><span class='line'>          <span class="s2">&quot;Content-type: application/x-www-form-urlencoded</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">.</span>
-</span><span class='line'>          <span class="s2">&quot;Content-length: </span><span class="si">$content_length\r\n</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="s1">&#39;content&#39;</span> <span class="o">=&gt;</span> <span class="nv">$content</span>
-</span><span class='line'>      <span class="p">)</span>
-</span><span class='line'>  <span class="p">);</span>
-</span><span class='line'>  <span class="nv">$fc</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$filename</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="nb">stream_context_create</span><span class="p">(</span><span class="nv">$options</span><span class="p">));</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h4&gt;输出http_response_header&lt;/h4&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">dumpout</span><span class="p">(</span><span class="nv">$http_response_header</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h3&gt;post方法获取远程url：&quot;</span><span class="o">.</span><span class="nv">$fc</span><span class="o">.</span><span class="s2">&quot;&lt;/h3&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  
-</span><span class='line'>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>socket</h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="cm">/*Accept: */</span>
-</span><span class='line'>  <span class="cm">/* Accept-Language: zh-cn,en-us;q=0.5</span>
-</span><span class='line'><span class="cm">     Content-Type: application/x-www-form-urlencoded</span>
-</span><span class='line'><span class="cm">     /*模拟浏览器信息*/</span>
-</span><span class='line'>      <span class="nx">User</span><span class="o">-</span><span class="nx">Agent</span><span class="o">:</span> <span class="nx">Mozilla</span><span class="o">/</span><span class="mf">4.0</span> <span class="p">(</span><span class="nx">compatible</span><span class="p">;</span> <span class="nx">MSIE</span> <span class="mf">5.0</span><span class="p">;</span> <span class="nx">Windows</span> <span class="nx">NT</span><span class="p">;</span> <span class="o">.</span><span class="nx">NET</span> <span class="nx">CLR</span> <span class="mf">1.0</span><span class="o">.</span><span class="mi">3705</span><span class="p">;</span> <span class="o">.</span><span class="nx">NET</span> <span class="nx">CLR</span> <span class="mf">1.1</span><span class="o">.</span><span class="mi">4322</span><span class="p">)</span>
-</span><span class='line'>      <span class="nx">Host</span><span class="o">:</span> <span class="nx">要发送到的主机地址</span>
-</span><span class='line'>      <span class="nx">Content</span><span class="o">-</span><span class="nx">Length</span><span class="o">:</span> <span class="nx">发送数据的长度</span>
-</span><span class='line'>      <span class="nx">Pragma</span><span class="o">:</span> <span class="nx">no</span><span class="o">-</span><span class="nx">cache</span>
-</span><span class='line'>      <span class="nx">Cache</span><span class="o">-</span><span class="nx">Control</span><span class="o">:</span> <span class="nx">no</span><span class="o">-</span><span class="nx">cache</span>
-</span><span class='line'>      <span class="nx">username</span><span class="o">=</span><span class="nx">php</span><span class="o">&amp;</span><span class="nx">password</span><span class="o">=</span><span class="nx">iask</span>   <span class="c1">//post发送的数据</span>
-</span><span class='line'>   <span class="o">*</span>
-</span><span class='line'>   <span class="o">*/</span>
-</span><span class='line'>  
-</span><span class='line'>  
-</span><span class='line'>  <span class="cm">/*fsocket模拟get提交*/</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;fsocket模拟get提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php?type=1&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fsockopen</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span> <span class="mi">80</span><span class="p">,</span> <span class="nv">$errno</span><span class="p">,</span> <span class="nv">$errstr</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">=</span> <span class="s2">&quot;GET &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;?&quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot; HTTP/1.0</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Host: &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$write</span> <span class="o">=</span> <span class="nb">fputs</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span> <span class="nv">$head</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$line</span><span class="o">.</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="cm">/*fsocket模拟post提交*/</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;fsocket模拟post提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$query</span><span class="o">=</span><span class="s2">&quot;type=1&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$fp</span> <span class="o">=</span> <span class="nb">fsockopen</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span> <span class="mi">80</span><span class="p">,</span> <span class="nv">$errno</span><span class="p">,</span> <span class="nv">$errstr</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">=</span> <span class="s2">&quot;POST &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot; HTTP/1.0</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Host: &quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Referer: http://&quot;</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="o">.</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Content-type: application/x-www-form-urlencoded</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;Content-Length: &quot;</span><span class="o">.</span><span class="nb">strlen</span><span class="p">(</span><span class="nb">trim</span><span class="p">(</span><span class="nv">$query</span><span class="p">))</span><span class="o">.</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$head</span> <span class="o">.=</span> <span class="nb">trim</span><span class="p">(</span><span class="nv">$query</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$write</span> <span class="o">=</span> <span class="nb">fputs</span><span class="p">(</span><span class="nv">$fp</span><span class="p">,</span> <span class="nv">$head</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nb">feof</span><span class="p">(</span><span class="nv">$fp</span><span class="p">))</span>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nv">$fp</span><span class="p">);</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="nv">$line</span><span class="o">.</span><span class="s2">&quot;&lt;br&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>cURL</h1>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'>  <span class="k">require_once</span><span class="p">(</span><span class="s1">&#39;common.php&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="cm">/*curl模拟get提交*/</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;curl模拟get提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php?type=1&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//初始化</span>
-</span><span class='line'>  <span class="nv">$ch</span><span class="o">=</span><span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>  <span class="c1">//设置选项，包括URL</span>
-</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>  <span class="c1">//执行并获取HTML文档内容</span>
-</span><span class='line'>  <span class="nv">$output</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;输出curl_getinfo相关信息&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">dumpArr</span><span class="p">(</span><span class="nv">$info</span><span class="p">);</span>
-</span><span class='line'>  <span class="c1">//释放curl句柄</span>
-</span><span class='line'>  <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>  <span class="c1">//打印获得的数据</span>
-</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$output</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;curl模拟post提交&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$url</span><span class="o">=</span><span class="s2">&quot;http://localhost/Login/02/test.php&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$post_data</span> <span class="o">=</span> <span class="k">array</span> <span class="p">(</span><span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;1&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>  <span class="c1">// post数据</span>
-</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>  <span class="c1">// post的变量</span>
-</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$post_data</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$output</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;&lt;h2&gt;输出curl_getinfo相关信息&lt;/h2&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">dumpArr</span><span class="p">(</span><span class="nv">$info</span><span class="p">);</span>
-</span><span class='line'>  <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>  <span class="c1">//打印获得的数据</span>
-</span><span class='line'>  <span class="nb">print_r</span><span class="p">(</span><span class="nv">$output</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的文件引用的common.php</p>
-
-<figure class='code'><figcaption><span>common.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="nb">header</span><span class="p">(</span><span class="s2">&quot;Content-type:text/html;charset:utf-8&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cm">/*获取当前访问用户IP*/</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">GetIP</span><span class="p">(){</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;HTTP_CLIENT_IP&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;HTTP_CLIENT_IP&quot;</span><span class="p">),</span> <span class="s2">&quot;unknown&quot;</span><span class="p">)){</span>
-</span><span class='line'>      <span class="nv">$ip</span> <span class="o">=</span> <span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;HTTP_CLIENT_IP&quot;</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;HTTP_X_FORWARDED_FOR&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;HTTP_X_FORWARDED_FOR&quot;</span><span class="p">),</span> <span class="s2">&quot;unknown&quot;</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$ip</span> <span class="o">=</span> <span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;HTTP_X_FORWARDED_FOR&quot;</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;REMOTE_ADDR&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;REMOTE_ADDR&quot;</span><span class="p">),</span> <span class="s2">&quot;unknown&quot;</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$ip</span> <span class="o">=</span> <span class="nb">getenv</span><span class="p">(</span><span class="s2">&quot;REMOTE_ADDR&quot;</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;REMOTE_ADDR&#39;</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;REMOTE_ADDR&#39;</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nb">strcasecmp</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;REMOTE_ADDR&#39;</span><span class="p">],</span> <span class="s2">&quot;unknown&quot;</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$ip</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;REMOTE_ADDR&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nv">$ip</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="k">return</span><span class="p">(</span><span class="nv">$ip</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'> <span class="cm">/*格式化header*/</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">parseHeaders</span><span class="p">(</span> <span class="nv">$headers</span> <span class="p">){</span>
-</span><span class='line'>    <span class="nv">$head</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>    <span class="k">foreach</span><span class="p">(</span> <span class="nv">$headers</span> <span class="k">as</span> <span class="nv">$k</span><span class="o">=&gt;</span><span class="nv">$v</span> <span class="p">){</span>
-</span><span class='line'>        <span class="nv">$t</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="mi">2</span> <span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="nb">isset</span><span class="p">(</span> <span class="nv">$t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">){</span>
-</span><span class='line'>            <span class="nv">$head</span><span class="p">[</span> <span class="nb">trim</span><span class="p">(</span><span class="nv">$t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">]</span> <span class="o">=</span> <span class="nb">trim</span><span class="p">(</span> <span class="nv">$t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">{</span>
-</span><span class='line'>            <span class="nv">$head</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$v</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">if</span><span class="p">(</span> <span class="nb">preg_match</span><span class="p">(</span> <span class="s2">&quot;#HTTP/[0-9\.]+\s+([0-9]+)#&quot;</span><span class="p">,</span><span class="nv">$v</span><span class="p">,</span> <span class="nv">$out</span> <span class="p">)</span> <span class="p">){</span>
-</span><span class='line'>                <span class="nv">$head</span><span class="p">[</span><span class="s1">&#39;reponse_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">intval</span><span class="p">(</span><span class="nv">$out</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-</span><span class='line'>              <span class="p">}</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nv">$head</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cm">/*数组格式化输出header*/</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">dumpout</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="nv">$label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$return</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nv">$vars</span><span class="o">=</span><span class="nx">parseHeaders</span><span class="p">(</span><span class="nv">$vars</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">ini_get</span><span class="p">(</span><span class="s1">&#39;html_errors&#39;</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="s2">&quot;&lt;pre&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$label</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nv">$content</span> <span class="o">.=</span> <span class="s2">&quot;&lt;strong&gt;</span><span class="si">{</span><span class="nv">$label</span><span class="si">}</span><span class="s2"> :&lt;/strong&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="nb">htmlspecialchars</span><span class="p">(</span><span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">));</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;/pre&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$label</span> <span class="o">.</span> <span class="s2">&quot; :</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">.</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nv">$return</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nv">$content</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$content</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cm">/*数组格式化输出arr*/</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">dumpArr</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="nv">$label</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$return</span> <span class="o">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">ini_get</span><span class="p">(</span><span class="s1">&#39;html_errors&#39;</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="s2">&quot;&lt;pre&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$label</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nv">$content</span> <span class="o">.=</span> <span class="s2">&quot;&lt;strong&gt;</span><span class="si">{</span><span class="nv">$label</span><span class="si">}</span><span class="s2"> :&lt;/strong&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="nb">htmlspecialchars</span><span class="p">(</span><span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">));</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">.=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;/pre&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$label</span> <span class="o">.</span> <span class="s2">&quot; :</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">.</span> <span class="nb">print_r</span><span class="p">(</span><span class="nv">$vars</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nv">$return</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nv">$content</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>    <span class="k">echo</span> <span class="nv">$content</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>以上几种方式用得较为多的是cURl,因为它可以保存COOKIE的特性，在PHP的网络爬虫中都离不开它。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP爬虫和微信自动投票]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote/"/>
-    <updated>2016-05-17T23:38:25+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/05/17/wechat-auto-vote</id>
-    <content type="html"><![CDATA[<blockquote><p>今天接触了PHP的模拟登陆和爬虫实战，涉及到了PHP获取远程文件的几种方式，防采集的一些方法，以及微信自动投票实战。</p></blockquote>
-
-<!--more-->
-
-
-<h1>PHP获取远程文件</h1>
-
-<p>PHP获取远程文件主要有以下几种方式：</p>
-
-<ul>
-<li>fopen</li>
-<li>file_get_centents</li>
-<li>socket</li>
-<li>curl</li>
-</ul>
-
-
-<p>过几天我们在结合实际代码分析这几种方式</p>
-
-<h1>防采集的一些方法</h1>
-
-<p>防采集的方法有很多，这里主要列出几种比较有效的</p>
-
-<ul>
-<li>短时间访问次数限制</li>
-<li>ip校验</li>
-<li>机器特征校验</li>
-<li>复杂加密</li>
-<li>混淆代码</li>
-</ul>
-
-
-<h1>微信自动投票工具</h1>
-
-<blockquote><p>这次主要分析这个。</p></blockquote>
-
-<p>首先，我们需要将微信投票界面分析到PC端，并用浏览器F12里的功能抓取到投票的请求地址和返回数据。如下：</p>
-
-<pre class="prettyprint linenums">
-http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=index&token=jdfsam1432614294&wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&id=27&sgssz=mp.weixin.qq.com
-
-http://wx.asplay.cn/index.php?
-g=Wap&
-m=Vote&
-a=index&                    //ThinkPHP里面一些参数
-token=jdfsam1432614294&     //当前主用户标示
-wecha_id=oQIrdjjmrAZXwKOh3Y6-1HeuwvEc&
-id=27&      //当前投票ID
-sgssz=mp.weixin.qq.com
-下面是请求的地址：
-http://wx.asplay.cn/index.php?g=Wap&m=Vote&a=add_vote&token=jdfsam1432614294&wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc
-发送的数据：
-wecha_id=oQIrdjjArAZYwKOh3Y6-1HeuwvEc&tid=27&chid=53%2C&token=jdfsam1432614294&action=add_vote、
-投票成功返回的数据：
-{"success":1,"token":"jdfsam1432614294","wecha_id":"oQIrdjjArAZYwKOh3Y6-1HeuwvEc","tid":"27","chid":"53","arrpre":{"53":33.33,"54":0,"55":0,"56":66.67}}
-</pre>
-
-
-<p>基于以上的这些信息，我们就能自己模拟POST的数据，和用户标示了。但是仅仅做到这些是不够的，我们还需要模拟微信的内核。</p>
-
-<pre class="prettyprint linenums">
-微信内核的ua：//网上能找到
-Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0
-</pre>
-
-
-<figure class='code'><figcaption><span>../03/curlajax.class.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">curlajax</span><span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$cookiejar</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$cookiefile</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$ua</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">public</span> <span class="nv">$debug</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">__construct</span><span class="p">(){</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">debug</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">ua</span> <span class="o">=</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.158888800.95 Safari/537.36 SE 2.X MetaSr 1.0&#39;</span><span class="p">;</span> <span class="c1">//这里模拟微信内核</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiejar</span> <span class="o">=</span> <span class="s1">&#39;cookie.txt&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiefile</span> <span class="o">=</span> <span class="s1">&#39;cookie.txt&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="sd">/****************************</span>
-</span><span class='line'><span class="sd">    *get 请求资源</span>
-</span><span class='line'><span class="sd">    *@param string 地址</span>
-</span><span class='line'><span class="sd">    *@param string referer</span>
-</span><span class='line'><span class="sd">    *@param boolen 是否返回头部</span>
-</span><span class='line'><span class="sd">    *@param array 头部附加cookie</span>
-</span><span class='line'><span class="sd">    ****************************/</span>
-</span><span class='line'>    <span class="k">function</span> <span class="nf">httpget</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$referer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nv">$withhead</span><span class="o">=</span><span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>        <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_URL</span><span class="p">,</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEJAR</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiejar</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEFILE</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiefile</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_HEADER</span><span class="p">,</span><span class="nv">$withhead</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//curl_setopt($ch,CURLOPT_AUTOREFERER,1);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_USERAGENT</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">ua</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_REFERER</span><span class="p">,</span><span class="nv">$referer</span><span class="p">);</span>
-</span><span class='line'>        <span class="nv">$r</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">debug</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="s1">&#39;&lt;pre&gt;&#39;</span><span class="p">;</span>
-</span><span class='line'>            <span class="nb">var_dump</span><span class="p">(</span><span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">));</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$r</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="sd">/****************************</span>
-</span><span class='line'><span class="sd">    *post 请求资源</span>
-</span><span class='line'><span class="sd">    *@param string 地址</span>
-</span><span class='line'><span class="sd">    *@param string referer</span>
-</span><span class='line'><span class="sd">    *@param array 提交数据</span>
-</span><span class='line'><span class="sd">    *@param boolen 是否返回头部</span>
-</span><span class='line'><span class="sd">    ****************************/</span>
-</span><span class='line'>    <span class="k">function</span> <span class="nf">httppost</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$referer</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nv">$postdata</span><span class="o">=</span><span class="k">array</span><span class="p">(),</span><span class="nv">$withhead</span><span class="o">=</span><span class="mi">0</span><span class="p">){</span>
-</span><span class='line'>        <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_URL</span><span class="p">,</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_HEADER</span><span class="p">,</span><span class="nv">$withhead</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="c1">//curl_setopt($ch,CURLOPT_AUTOREFERER,1);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEJAR</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiejar</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_COOKIEFILE</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cookiefile</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_USERAGENT</span><span class="p">,</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">ua</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_REFERER</span><span class="p">,</span><span class="nv">$referer</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_POST</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span><span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span><span class="nv">$postdata</span><span class="p">);</span>
-</span><span class='line'>        <span class="nv">$r</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">debug</span><span class="p">){</span>
-</span><span class='line'>            <span class="k">echo</span> <span class="s1">&#39;&lt;pre&gt;&#39;</span><span class="p">;</span>
-</span><span class='line'>            <span class="nb">var_dump</span><span class="p">(</span><span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">));</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nv">$r</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>网上的cURL方法，我们这里有要用到</p>
-
-<figure class='code'><figcaption><span>autoVote.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">require_once</span><span class="p">(</span><span class="s2">&quot;../03/curlajax.class.php&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;</span>
-</span><span class='line'><span class="x">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span>
-</span><span class='line'><span class="x">&lt;head&gt;</span>
-</span><span class='line'><span class="x">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;</span>
-</span><span class='line'><span class="x">&lt;title&gt;微信自动投票工具&lt;/title&gt;</span>
-</span><span class='line'><span class="x">&lt;/head&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="x">&lt;body&gt;</span>
-</span><span class='line'><span class="cp">&lt;?php</span>
-</span><span class='line'><span class="cm">/*模拟POST登录*/</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;&lt;h1&gt;这是微信自动投票工具&lt;/h1&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$jkxy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">curlajax</span><span class="p">();</span>
-</span><span class='line'><span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">debug</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">cookiejar</span> <span class="o">=</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;\cookie1.txt&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">cookiefile</span> <span class="o">=</span> <span class="nb">dirname</span><span class="p">(</span><span class="k">__FILE__</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;\cookie1.txt&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="cm">/*模拟提交信息*/</span>
-</span><span class='line'><span class="nv">$username</span><span class="o">=</span><span class="s2">&quot;oQIrdjj&quot;</span><span class="o">.</span><span class="nb">rand</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span><span class="mi">50000</span><span class="p">)</span><span class="o">.</span><span class="s2">&quot;wKOh3Y6-1HeuwvEc&quot;</span><span class="p">;</span><span class="c1">//用随机数来产生不同的用户ID</span>
-</span><span class='line'><span class="nv">$data</span> <span class="o">=</span> <span class="s2">&quot;wecha_id=&quot;</span><span class="o">.</span><span class="nv">$username</span><span class="o">.</span><span class="s2">&quot;&amp;tid=27&amp;chid=53%2C&amp;token=jdfsam1432614294&amp;action=add_vote&quot;</span><span class="p">;</span><span class="c1">//模拟不同的用户提交的数据</span>
-</span><span class='line'><span class="nv">$url</span> <span class="o">=</span> <span class="s1">&#39;http://wx.asplay.cn/index.php?g=Wap&amp;m=Vote&amp;a=add_vote&amp;token=jdfsam1432614294&amp;wecha_id=&#39;</span><span class="o">.</span><span class="nv">$username</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nv">$jkxy</span><span class="o">-&gt;</span><span class="na">httppost</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$data</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span><span class="c1">//获取返回数据</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="nx">checkstr</span><span class="p">(</span><span class="nv">$r</span><span class="p">,</span><span class="s1">&#39;&quot;success&quot;:1&#39;</span><span class="p">)</span><span class="o">==</span><span class="k">true</span><span class="p">){</span> <span class="c1">//根据返回的数据判断是否投票成功</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;投票成功&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>  <span class="k">echo</span> <span class="s2">&quot;投票失败&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>    <span class="sd">/****************************</span>
-</span><span class='line'><span class="sd">    *检查$needle中是否含有$findstr</span>
-</span><span class='line'><span class="sd">    *@param string needle </span>
-</span><span class='line'><span class="sd">    *@param string findstr</span>
-</span><span class='line'><span class="sd">    ****************************/</span>
-</span><span class='line'><span class="k">function</span> <span class="nf">checkstr</span><span class="p">(</span><span class="nv">$needle</span><span class="p">,</span><span class="nv">$findstr</span><span class="p">){</span>
-</span><span class='line'>  <span class="nv">$tempstr</span><span class="o">=</span><span class="nb">explode</span><span class="p">(</span><span class="nv">$findstr</span><span class="p">,</span><span class="nv">$needle</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nv">$tempstr</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">){</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="k">else</span><span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span><span class='line'><span class="x">&lt;/body&gt;</span>
-</span><span class='line'><span class="x">&lt;/html&gt; </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过这个实战，感觉突然打开了一扇大门。要仔细研究下爬虫的相关知识了。</p>
 ]]></content>
   </entry>
   
