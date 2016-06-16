@@ -9,7 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="git GIT远程操作 很早以前就接触GIT了，但是一直是很简单的应用，只是把项目网上面挂，并没有用到git的好处。这次想把实习的项目挂到GIT上去，多方应用。 一、 git remote 为了便于管理，Git要求每个远程主机都必须指定一个主机名。git remote命令就用于管理主机名。 &hellip;">
+	<meta name="description" content="git GIT分支 今天在学习git的远程操作的时候发现了一篇关于分支(branch)的文章，讲得非常好。让我对分支的理解更深了一步. 先贴上原地址http://www.tuicool.com/articles/U73q63V 然后就照搬了0 0 git的分支是什么 顾名思义， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,7 @@
 <nav id="main-nav"><section>
   <ul id="categories">
     <li class='category'><a href='/blog/categories/git/'>git (3)</a></li>
+<li class='category'><a href='/blog/categories/java/'>java (1)</a></li>
 <li class='category'><a href='/blog/categories/javascript/'>javascript (2)</a></li>
 <li class='category'><a href='/blog/categories/linux/'>linux (6)</a></li>
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
@@ -122,6 +123,95 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-02T21:29:24+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/git/'>git</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/02/git-branch/" itemprop="url">GIT分支</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>今天在学习git的远程操作的时候发现了一篇关于分支(branch)的文章，讲得非常好。让我对分支的理解更深了一步.</p></blockquote>
+
+<p>先贴上原地址<a href="http://www.tuicool.com/articles/U73q63V">http://www.tuicool.com/articles/U73q63V</a></p>
+
+<p>然后就照搬了0 0</p>
+
+<h1>git的分支是什么</h1>
+
+<p>顾名思义，分支就是从主线上分离出来进行另外的操作，而又不影响线，主线又可以继续干它的事，是不是有点像线程，最后分支做完事后合并到主线上而分支的任务完成可以删掉了。这样是不是很方便，主线继续做它的事，分支用来解决临时需求，二者互不相干。</p>
+
+<p> git的分支功能特别的强大，它不需要将所有数据进行复制，只要重新创建一个分支的指针指向你需要从哪里开始创建分支的提交对象(commit)，然后进行修改再提交，那么新分支的指针就会指向你最新提交的这个commit对象，而原来分支的指针则指向你原来开发的位置，当你在哪个分支开发，HEAD就指向那个分支的最新提交对象commt。没弄清楚没关系，先有这么一个概念，后面慢慢就会弄清的。</p>
+
+<h1>分支的新建与合并</h1>
+
+<p>我们可以用命令git branch来查看我们的git仓库有几个分支，而我们目前工作处于那个分支，前面有个*号的就为我们目前所处的分支。我们可以通过命令git branch name来创建分支，而这个分支的指针就指向最新的commit对象，也就和HEAD指向同一对象。我们可以通过命令git checkout name来切换到目的分支，我们默认的主分支为master。在分支的创建和切换，其实只是简单的创建指针找指针而已，而根据找到的指针找到所指向的commit对象，然后将工作空间恢复成该commit对象所指的文件快照让我们来工作。当提交一次，指针就重新指向这个最新提交的对象，特别的简单。</p>
+
+<p><img src="http://img2.tuicool.com/UBBV3m.jpg!web" alt="" /></p>
+
+<p><img src="http://img1.tuicool.com/6zEZRr.jpg!web" alt="" /></p>
+
+<p>当我们建立分支teset之前，只有master一个主分支，如图一，我们所有的开发都是在这个分支上，而且HEAD是指向最近一次提交的commit对象c3，c3以前还有两次提交c1和c2，这时我们通过git branch test创建test分支，如图二，这时HEAD还是指向master分支最近一次提交的c3，当git checkout test切换到test分支后，HEAD就指向test分支的最近一次提交c3，这个时候其实在.git里面都是指向同样一份数据c3。</p>
+
+<p><img src="http://img2.tuicool.com/iuAN3y.jpg!web" alt="" /></p>
+
+<p>这个时候，当我们在test分支上进行了几次开发提交了c4和c5两个版本后，那么test和HEAD都指向test分支的最近一次提交c5，如图三，而master此时还没有变化，任然指向的是c3，如果这个时候将test分支合并到master分支，那么git根本不用做什么，只要将master移动，指向c5就可以了，这个过程称之为Fast-forward快进。如果此时test的任务完成，我们就可以通过git branch -d test将它删除掉，继续在主分支master上进行开发。如果是这样的话，那么test分支就白建了。</p>
+
+<p><img src="http://img1.tuicool.com/YFBnqi.jpg!web" alt="" /></p>
+
+<p>那么如果此时master分支上又进行另外的开发，提交了两个版本c6和c7，那么此时的master和HEAD指针都指向的是c7，如图四，可以看出在哪个分支上开发，那么HEAD就指向的是哪个分支上的commit，这个时候合并两个分支的话，就如下。</p>
+
+<p><img src="http://img2.tuicool.com/Vzmemqm.jpg!web" alt="" /></p>
+
+<p>如图五，我们先切换到master分支，然后通过git merge test将test分支合并到master分支，这个时候，git就不是简单的移动指针了，因为两边都有开发，所以git就要对于两个分支的最新提交c5和c7还有两个分支共同的祖先commit对象c3来进行一次简单的三方合并，产生新的文件快照并用新的commit对象c8记录，这个合并的过程不需要太在意，如果产生了冲突，也就是两个分支对同一个文件进行了修改，那么git就会停下合并操作，让你处理好冲突后，再提交(c8)，然后再进行合并。这时master和HEAD都指向c8，但是test是没有移动的，此时还可以在test上继续开发，再合并到master，如果test已经没有利用价值了就可以删掉了。</p>
+
+<h1>本地分支，追踪分支和远程分支</h1>
+
+<p>这里有三个概念，本地分支就是我们可以通过git branch查看到的分支，也就是我们自己git仓库所拥有的分支，我们都可以利用。远程分支是对远程仓库的分支的索引，它其实也是本地分支，只是我们无法移动它，必须要在和中心服务器交互根据服务器更新到本地来的代码移动的，远程分支的作用就是我们上次和中心服务器交互更新得到的最新版本，它也是个指针。追踪分支比较难理解，它也是一个本地分支，只是它对应了一个远程分支，如果我们本地的某个分支对应了一个特定的远程分支，那么它就是追踪分支，比如我们最初的master分支就是一个追踪分支，它对应远程分支origin/master，这里origin是远程仓库名，当我们在master分支里执行更新(fetch，pull)或是推送(push)，在不指定分支的情况下，默认就是从origin/master分支更新来或者提交到origin/mster分支。</p>
+
+<p><img src="http://img2.tuicool.com/MJZb6f.jpg!web" alt="" /></p>
+
+<p><img src="http://img.blog.csdn.net/20140417173323859" alt="" /></p>
+
+<p>从图七和图八很容易看出来，和我们本地创建分支很相似，只是origin/master远程分支只有在连接服务器并更新服务器代码到本地后才会移动，如下图九：</p>
+
+<p><img src="http://img0.tuicool.com/zERfum.jpg!web" alt="" /></p>
+
+<p>更新远程代码到本地有两个命令，fetch和pull，fetch是将远程代码更新到本地，但是不会执行合并操作，需要自己查看，解决冲突什么的，然后自己再执行merge将更新来的代码合并到我们自己制定的分支，但是pull就将这两个操作合成了一步，直接更新服务器代码更新并合并到到本地指定分支，当然遇到冲突也必须要自己解决。所以我们一般都使用fetch来实现更新，虽然麻烦了点，但是不容易出问题。</p>
+
+<p>将本地代码推送到远程仓库，也就是中心服务器，一般我们推送数据都是git push origin master:master，这里指定远程仓库名，本地分支名和远端分支，也就是将我们本地master分支的数据推送到远程仓库origin的master分支。如果本地的master分支是追踪分支，那么在不指定的情况下，它会自己找到远程仓库中对应的分支来推送数据。或者我们直接进行git push origin操作，只指定远程仓库名，那么git会根据我们目前所在分支和它所对应的远程仓库的分支来实现数据推送，前提是我们目前所在分支必须是追踪分支。当然如果是git push origin :master，这里本地分支名是空的，这个操作就是将空分支推送到远程仓库的master分支，结果就是将master分支删除。</p>
+
+<p>既然追踪分支这么好用，那么我们怎么建立追踪分支呢，有两种方式，第一种方式就是不指定该追踪分支的名字，默认和远程仓库的分支名字一样：git checkout &ndash;track 远程仓库名/test，这样我们就建立了一个名为test的追踪分支，第二种方式是重新指定追踪分支的名字：git checkout -b name 远程仓库名/test，这样我们就创建了一个名为name的追踪分支，它对应远程仓库的test分支。</p>
+
+<h1>git分支管理</h1>
+
+<p>git创建分支于合并分支是如此简单快捷，那么在我们的开发过程中可以疯狂的使用分支，而且git的核心玩法之一就是分支，非常提倡使用分支，但是是不是我们可以肆无忌惮的使用分支呢，创建这么多的分支我们要如何来管理呢，分支不在多而在恰到好处，如果分支创建多了，管理起来就麻烦了，所以推荐一种分支的管理策略，git-flow，同时推荐一篇文章来了解这种策略： <a href="http://nvie.com/posts/a-successful-git-branching-model/">http://nvie.com/posts/a-successful-git-branching-model/</a> ，让你的git使用更加顺手。</p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -1477,42 +1567,6 @@ having就是来弥补where在分组数据判断时的不足。因为where要快�
 
 		
 		<a href="/blog/2016/05/18/php-phone-location/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-18T22:14:17+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/05/18/php-namespace-use/" itemprop="url">PHP-namespace-use用法</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天在看视频的时候发现作者用到了namespce和use。以前只在ThinkPHP框架中看到过这种用法，以为是ThinkPHP框架特有的，也就一直没上心。今天有又看到了觉定深入了解下。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/05/18/php-namespace-use/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

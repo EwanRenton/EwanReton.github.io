@@ -9,7 +9,22 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php PHP设计模式(九)-代理模式 1、模式定义 代理模式（Proxy）为其他对象提供一种代理以控制对这个对象的访问。使用代理模式创建代理对象，让代理对象控制目标对象的访问（目标对象可以是远程的对象、创建开销大的对象或需要安全控制的对象），并且可以在不改变目标对象的情况下添加一些额外的功能 &hellip;">
+	<meta name="description" content="java Jsp三个编译指令和七个动作指令 最近开始学习JSP的相关知识，先作为一个入门的了解。 三个编译指令 page指令 page指令用户定义JSP页面中的全局属性，它的语法格式如下： 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+&lt;%page
+{language &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +89,7 @@
 <nav id="main-nav"><section>
   <ul id="categories">
     <li class='category'><a href='/blog/categories/git/'>git (3)</a></li>
+<li class='category'><a href='/blog/categories/java/'>java (1)</a></li>
 <li class='category'><a href='/blog/categories/javascript/'>javascript (2)</a></li>
 <li class='category'><a href='/blog/categories/linux/'>linux (6)</a></li>
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
@@ -122,6 +138,482 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-16T12:53:01+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/java/'>java</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/06/16/jsp-bianyizhiling-dongzuozhiling/" itemprop="url">Jsp三个编译指令和七个动作指令</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>最近开始学习JSP的相关知识，先作为一个入门的了解。</p></blockquote>
+
+<h1>三个编译指令</h1>
+
+<ol>
+<li>page指令</li>
+</ol>
+
+
+<p>page指令用户定义JSP页面中的全局属性，它的语法格式如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;%</span><span class="n">page</span>
+</span><span class='line'><span class="o">{</span><span class="n">language</span><span class="o">=</span><span class="s">&quot;java&quot;</span><span class="o">}</span>
+</span><span class='line'><span class="o">{</span><span class="kd">extends</span><span class="o">=</span><span class="s">&quot;package.class&quot;</span><span class="o">}</span>
+</span><span class='line'><span class="o">{</span><span class="n">import</span><span class="o">=</span><span class="s">&quot;{package.class|package.*},...&quot;</span><span class="o">}</span>
+</span><span class='line'><span class="o">{</span><span class="n">session</span><span class="o">=</span><span class="s">&quot;true | false&quot;</span><span class="o">}</span>
+</span><span class='line'><span class="o">{</span><span class="n">buffer</span><span class="o">=</span><span class="s">&quot;none | 8kb | sizekb&quot;</span><span class="o">}</span>
+</span><span class='line'><span class="o">{</span> <span class="kc">false</span><span class="s">&quot;}</span>
+</span><span class='line'><span class="s">{isThreadSafe=&quot;</span><span class="kc">true</span> <span class="o">|</span> <span class="kc">false</span><span class="s">&quot;}</span>
+</span><span class='line'><span class="s">{info=&quot;</span><span class="n">text</span><span class="s">&quot;}</span>
+</span><span class='line'><span class="s">{errorPage=&quot;</span><span class="n">relativeURL</span><span class="s">&quot;}</span>
+</span><span class='line'><span class="s">{contentType=&quot;</span><span class="n">mimeType</span> <span class="o">[;</span><span class="n">charset</span><span class="o">=</span><span class="n">characterSet</span><span class="o">]</span><span class="s">&quot; | &quot;</span><span class="n">text</span><span class="o">/</span><span class="n">html</span> <span class="o">;</span> <span class="n">charset</span><span class="o">=</span><span class="n">ISO</span><span class="o">-</span><span class="mi">8859</span><span class="o">-</span><span class="mi">1</span><span class="s">&quot;}</span>
+</span><span class='line'><span class="s">{isErrorPage=&quot;</span><span class="kc">true</span> <span class="o">|</span> <span class="kc">false</span><span class="s">&quot;}</span>
+</span><span class='line'><span class="s">{pageEncoding=&quot;</span><span class="n">charset</span><span class="o">=</span><span class="n">characrerSet</span> <span class="o">|</span> <span class="n">ISO</span><span class="o">-</span><span class="mi">8859</span><span class="o">-</span><span class="mi">1</span><span class="err">&quot;</span><span class="o">}</span>
+</span><span class='line'><span class="o">%&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> page指令对整个页面有效，包括静态的包含文件，但page指令不能用于被动态包含的文件，例如使用<code>&lt;jsp:include&gt;</code>包含的文件。在一个JSP页面中可以使用多个page指令，但page指令中的属性只能出现一次(import属性除外)。</p>
+
+<ol>
+<li>include指令</li>
+</ol>
+
+
+<p>include指令用于在JSP页面中包含其他文件，它的语法格式如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;%</span> <span class="n">include</span> <span class="n">file</span><span class="o">=</span><span class="s">&quot;路径名&quot;</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>include指令仅有一个属性file，其值为文件的相对路径。include指令包含的过程是静态的，包含的文件可以是JSP、HTML或者Inc文件等。</p>
+
+<ol>
+<li>taglib指令</li>
+</ol>
+
+
+<p>taglib指令允许用户使用标签库自定义新的标签，它的语法格式如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;%</span> <span class="n">taglib</span> <span class="n">uri</span><span class="o">=</span><span class="s">&quot;taglibURI&quot;</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&quot;tabPrefix&quot;</span><span class="o">%&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>taglib指令中的uri属性用于根据标签的前缀对自定义的标签进行唯一的命名，其值可以食相对路径，就对路径或标签库描述文件。属性prefix制定了标签的前缀。</p>
+
+<h1>七个动作指令</h1>
+
+<blockquote><p>动作指令与编译指令不间，编译指令是通知 Servlet 引擎的处理消息，而动作指令只是运行时的脚本动作。编译指令在将JSP 编译成 Servlet 时起作用:处理指令通常可替换成 Java脚本，是 JSP脚本的标准化写法。</p></blockquote>
+
+<p> JSP7 个 动作指令如下 ：</p>
+
+<ul>
+<li>jsp:forward: 执行页面转向，将请求的处理转发到下一个页面。</li>
+<li>jsp:param: 用于传递参数，必须与其他支持参数曲标签一起使用。</li>
+<li>jsp:include: 用于动态引入一个 JSP 页面。</li>
+<li>jsp:p1ugin: 用于下载 JavaBean 或 Applet 到客户端执行。</li>
+<li>jsp:useBean: 使用 JavaBean。</li>
+<li>jsp:setProperty: 修改 JavaBean 实例的属性值。</li>
+<li>jsp:getProperty: 获取 JavaBean 实例的属性值。</li>
+</ul>
+
+
+<p><strong>jsp:forward</strong></p>
+
+<blockquote><p>jsp:forward动作把请求转到另外的页面。可以转发静态的HTML页面，也可以转发动态的JSP页面，或者转发到容器中的servlet jsp:forward标记只有一个属性page。 page属性包含的是一个相对URL。 page的值既可以直接给出，也可以在请求的时候动态计算</p></blockquote>
+
+<figure class='code'><figcaption><span>index.jsp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;%</span><span class="err">@</span> <span class="n">page</span> <span class="n">language</span><span class="o">=</span><span class="s">&quot;java&quot;</span> <span class="n">contentType</span><span class="o">=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span>
+</span><span class='line'>    <span class="n">pageEncoding</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="o">%&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">forward</span> <span class="n">page</span><span class="o">=</span><span class="s">&quot;login.jsp&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">param</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;reton&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;userName&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">param</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;reton&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;passWord&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nl">jsp:</span><span class="n">forward</span><span class="o">&gt;</span> <span class="c1">//forward下面的代码不会被执行</span>
+</span><span class='line'><span class="n">dddddd</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>login.jsp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;%</span><span class="err">@</span> <span class="n">page</span> <span class="n">language</span><span class="o">=</span><span class="s">&quot;java&quot;</span> <span class="n">contentType</span><span class="o">=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span>
+</span><span class='line'>    <span class="n">pageEncoding</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="o">%&gt;</span>
+</span><span class='line'><span class="o">&lt;!</span><span class="n">DOCTYPE</span> <span class="n">html</span> <span class="n">PUBLIC</span> <span class="s">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="s">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">meta</span> <span class="n">http</span><span class="o">-</span><span class="n">equiv</span><span class="o">=</span><span class="s">&quot;Content-Type&quot;</span> <span class="n">content</span><span class="o">=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">Login</span> <span class="n">here</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;%</span>
+</span><span class='line'> <span class="n">String</span> <span class="n">userName</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;userName&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="n">String</span> <span class="n">passWord</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;passWord&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">userName</span><span class="o">);</span>
+</span><span class='line'> <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;br/&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">passWord</span><span class="o">);</span>
+</span><span class='line'><span class="o">%&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>jsp:include动作</strong></p>
+
+<blockquote><p>（拿目标页面插入原有页面）该动作是一个动态的include指令，也用于带入某个页面，他不会导入被include页面的编译指令，仅仅导入页面的body内容插入到本页面　　该动作把指定文件插入正在生成的页面。</p></blockquote>
+
+<ul>
+<li>flush：用于指定输出缓存是否转移到被导入的文件中，
+
+<ul>
+<li>true：包含在被导入的文件中</li>
+<li>false：包含在源文件中</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>　<span class="o">&lt;</span><span class="n">P</span><span class="o">&gt;</span>
+</span><span class='line'>　　<span class="n">Here</span> <span class="n">is</span> <span class="n">a</span> <span class="n">summary</span> <span class="n">of</span> <span class="n">our</span> <span class="n">four</span> <span class="n">most</span> <span class="n">recent</span> <span class="n">news</span> <span class="nl">stories:</span>
+</span><span class='line'>　　<span class="o">&lt;</span><span class="n">OL</span><span class="o">&gt;</span>
+</span><span class='line'>　　<span class="o">&lt;</span><span class="n">LI</span><span class="o">&gt;&lt;</span><span class="nl">jsp:</span><span class="n">include</span> <span class="n">page</span><span class="o">=</span><span class="s">&quot;news/Item1.html&quot;</span> <span class="n">flush</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'>　　<span class="o">&lt;</span><span class="n">LI</span><span class="o">&gt;&lt;</span><span class="nl">jsp:</span><span class="n">include</span> <span class="n">page</span><span class="o">=</span><span class="s">&quot;news/Item2.html&quot;</span> <span class="n">flush</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'>　　<span class="o">&lt;</span><span class="n">LI</span><span class="o">&gt;&lt;</span><span class="nl">jsp:</span><span class="n">include</span> <span class="n">page</span><span class="o">=</span><span class="s">&quot;news/Item3.html&quot;</span> <span class="n">flush</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'>　　<span class="o">&lt;</span><span class="n">LI</span><span class="o">&gt;&lt;</span><span class="nl">jsp:</span><span class="n">include</span> <span class="n">page</span><span class="o">=</span><span class="s">&quot;news/Item4.html&quot;</span> <span class="n">flush</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'>　　<span class="o">&lt;/</span><span class="n">OL</span><span class="o">&gt;</span>　
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　前面已经介绍过include指令，它是在JSP文件被转换成Servlet的时候引入文件，而这里的jsp:include动作不同，插入文件的时间是在页面被请求的时候。jsp:include动作的文件引入时间决定了它的效率要稍微差一点，而且被引用文件不能包含某些JSP代码（例如不能设置HTTP头），但它的灵活性却要好得多。</p>
+
+<p><strong>jsp:useBean</strong></p>
+
+<blockquote><p>jsp:useBean动作用来装载一个将在JSP页面中使用的JavaBean。这个功能非常有用，因为它使得我们既可以发挥Java组件重用的优势，同时也避免了损失JSP区别于Servlet的方便性。</p></blockquote>
+
+<p>jsp:useBean动作最简单的语法为：</p>
+
+<p>&lt;jsp:useBean id=&ldquo;user&rdquo; class=&ldquo;com.reton.entity.UserEntity&rdquo;>&lt;/jsp:useBean></p>
+
+<p>这行代码的含义是：“创建一个由class属性指定的类的实例，然后把它绑定到其名字由id属性给出的变量上”。不过，就象我们接下来会看到的，定义一个scope属性可以让Bean关联到更多的页面。此时，jsp:useBean动作只有在不存在同样id和scope的Bean时才创建新的对象实例，同时，获得现有Bean的引用就变得很有必要。</p>
+
+<p>获得Bean实例之后，要修改Bean的属性既可以通过jsp:setProperty动作进行，也可以在Scriptlet中利用id属性所命名的对象变量，通过调用该对象的方法显式地修改其属性。这使我们想起，当我们说“某个Bean有一个类型为X的属性foo”时，就意味着“这个类有一个返回值类型为X的getFoo方法，还有一个setFoo方法以X类型的值为参数”。</p>
+
+<p>有关jsp:setProperty动作的详细情况在后面讨论。但现在必须了解的是，我们既可以通过jsp:setProperty动作的value属性直接提供一个值，也可以通过param属性声明Bean的属性值来自指定的请求参数，还可以列出Bean属性表明它的值应该来自请求参数中的同名变量。</p>
+
+<p>在JSP表达式或Scriptlet中读取Bean属性通过调用相应的getXXX方法实现，或者更一般地，使用jsp:getProperty动作。</p>
+
+<p>注意包含Bean的类文件应该放到服务器正式存放Java类的目录下，而不是保留给修改后能够自动装载的类的目录。例如，对于Java Web Server来说，Bean和所有Bean用到的类都应该放入classes目录，或者封装进jar文件后放入lib目录，但不应该放到servlets下。</p>
+
+<p>一个简单的例子：</p>
+
+<figure class='code'><figcaption><span>JavaResources/src/com.reton.entity</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">reton</span><span class="o">.</span><span class="na">entity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.Serializable</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserEntity</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">userName</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">passWord</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">UserEntity</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">super</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUserName</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">userName</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserName</span><span class="o">(</span><span class="n">String</span> <span class="n">userName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">userName</span> <span class="o">=</span> <span class="n">userName</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPassWord</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">passWord</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPassWord</span><span class="o">(</span><span class="n">String</span> <span class="n">passWord</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">passWord</span> <span class="o">=</span> <span class="n">passWord</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>register.jsp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;%</span><span class="err">@</span> <span class="n">page</span> <span class="n">language</span><span class="o">=</span><span class="s">&quot;java&quot;</span> <span class="n">contentType</span><span class="o">=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span>
+</span><span class='line'>    <span class="n">pageEncoding</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="o">%&gt;</span>
+</span><span class='line'><span class="o">&lt;!</span><span class="n">DOCTYPE</span> <span class="n">html</span> <span class="n">PUBLIC</span> <span class="s">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="s">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">meta</span> <span class="n">http</span><span class="o">-</span><span class="n">equiv</span><span class="o">=</span><span class="s">&quot;Content-Type&quot;</span> <span class="n">content</span><span class="o">=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">Insert</span> <span class="n">title</span> <span class="n">here</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">form</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;do_register.jsp&quot;</span> <span class="n">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="n">用户名</span><span class="err">：</span><span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;userName&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'>  <span class="nl">密码:</span><span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s">&quot;password&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;passWord&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;提交&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>do_register.jsp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;%</span><span class="err">@</span> <span class="n">page</span> <span class="n">language</span><span class="o">=</span><span class="s">&quot;java&quot;</span> <span class="n">contentType</span><span class="o">=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span>
+</span><span class='line'>    <span class="n">pageEncoding</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="o">%&gt;</span>
+</span><span class='line'><span class="o">&lt;!</span><span class="n">DOCTYPE</span> <span class="n">html</span> <span class="n">PUBLIC</span> <span class="s">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="s">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">meta</span> <span class="n">http</span><span class="o">-</span><span class="n">equiv</span><span class="o">=</span><span class="s">&quot;Content-Type&quot;</span> <span class="n">content</span><span class="o">=</span><span class="s">&quot;text/html; charset=UTF-8&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">注册信息</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">useBean</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;user&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;com.reton.entity.UserEntity&quot;</span><span class="o">&gt;&lt;/</span><span class="nl">jsp:</span><span class="n">useBean</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">setProperty</span> <span class="n">property</span><span class="o">=</span><span class="s">&quot;userName&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;user&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">setProperty</span> <span class="n">property</span><span class="o">=</span><span class="s">&quot;passWord&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;user&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;%</span>
+</span><span class='line'><span class="n">request</span><span class="o">.</span><span class="na">setCharacterEncoding</span><span class="o">(</span><span class="s">&quot;utf-8&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">userName</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;userName&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">passWord</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;passWord&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">userName</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&lt;br/&gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">passWord</span><span class="o">);</span>
+</span><span class='line'><span class="o">%&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">getProperty</span> <span class="n">property</span><span class="o">=</span><span class="s">&quot;userName&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;user&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">getProperty</span> <span class="n">property</span><span class="o">=</span><span class="s">&quot;passWord&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;user&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>GetProperty</strong></p>
+
+<p>&lt;jsp:getProperty>标签表示获取BEAN的属性的值并将之转化为一个字符串，然后将其插入到输出的页面中。</p>
+
+<p>语法：</p>
+
+<p>&lt;jsp:getProperty name=&ldquo;name&rdquo; property=&ldquo;propertyName&rdquo; /></p>
+
+<p>注：</p>
+
+<p>1、在使用&lt;jsp:getProperty>之前，必须用&lt;jsp:useBean>来创建它。</p>
+
+<p>2、不能使用&lt;jsp:getProperty>来检索一个已经被索引了的属性。</p>
+
+<p>3、能够和JavaBeans组件一起使用&lt;jsp:getProperty>，但是不能与Enterprise Java Bean一起使用。</p>
+
+<p><strong>SetProperty指令</strong></p>
+
+<p>&lt;jsp:setProperty>标签表示用来设置Bean中的属性值。</p>
+
+<p>语法：</p>
+
+<p>&lt;jsp:setProperty name=&ldquo;beanName&rdquo; prop_expr /></p>
+
+<p>其中prop_expr有以下几种可能的情形：</p>
+
+<p>property=&ldquo;*&rdquo; | property=&ldquo;propertyName&rdquo; | property=&ldquo;propertyName&rdquo; param=&ldquo;parameterName&rdquo; | property=&ldquo;propertyName&rdquo; value=&ldquo;propertyValue&rdquo;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;!--</span> <span class="n">id表示实例名</span>  <span class="n">class表示类名</span> <span class="n">scope</span> <span class="n">表示作用的范围</span> <span class="o">--&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">useBean</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;pe&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;com.reton.entity&quot;</span> <span class="n">scope</span><span class="o">=</span><span class="s">&quot;page&quot;</span><span class="o">&gt;&lt;/</span><span class="nl">jsp:</span><span class="n">useBean</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;!--</span> <span class="n">name表示实例名</span>  <span class="n">property表示属性</span> <span class="n">vaue表示属性值</span> <span class="o">--&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">setProperty</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;pe&quot;</span>   <span class="n">property</span><span class="o">=</span><span class="s">&quot;name&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;xxx&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">setProperty</span> <span class="n">property</span><span class="o">=</span><span class="s">&quot;age&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;pe&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;23&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">getProperty</span> <span class="n">property</span><span class="o">=</span><span class="s">&quot;name&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;pe&quot;</span> <span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nl">jsp:</span><span class="n">getProperty</span> <span class="n">property</span><span class="o">=</span><span class="s">&quot;age&quot;</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;pe&quot;</span> <span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>param</strong></p>
+
+<p>param指令用于设置参数值，这个指令本身不能单独使用，单独的param没有实际意义，param指令可与一下三个指令结合使用：</p>
+
+<p>jsp:include</p>
+
+<p>jsp:forward</p>
+
+<p>jsp:plugin</p>
+
+<p>param指令的语法格式如下：</p>
+
+<p>&lt;jsp:param  name=&ldquo;paramName&rdquo; value=&ldquo;paramValue&rdquo;></p>
+
+<p><strong>Plugin</strong></p>
+
+<p> （用于下载服务器端的javaBean或applet到客户端）　　jsp:plugin动作用来根据浏览器的类型，插入通过Java插件运行Java Applet所必需的OBJECT或EMBED元素。</p>
+
+<p>&lt;jsp:plugin<br/>
+  type=&ldquo;bean | applet&rdquo;   : 被执行的java程序的类型
+  code=&ldquo;classFileName&rdquo; ：被执行的文件名，必须以  .class 结尾
+  codebase=&ldquo;classFileDirectoryName&rdquo;   ：被执行文件的所在目录
+  [ name=&ldquo;instanceName&rdquo; ] :给程序起一个名字用来标识该程序
+  [ archive=&ldquo;URIToArchive, &hellip;&rdquo; ] ：指向一些要预先载入的将要使用到的类
+  [ align=&ldquo;bottom | top | middle | left | right&rdquo; ] ：
+  [ height=&ldquo;displayPixels&rdquo; ]
+  [ width=&ldquo;displayPixels&rdquo; ]
+  [ hspace=&ldquo;leftRightPixels&rdquo; ]
+  [ vspace=&ldquo;topBottomPixels&rdquo; ]
+  [ jreversion=&ldquo;JREVersionNumber | 1.1&rdquo; ]   ：能正确运行改程序必须的JRE的版本
+  [ nspluginurl=&ldquo;URLToPlugin&rdquo; ]<br/>
+  [ iepluginurl=&ldquo;URLToPlugin&rdquo; ] >
+  [ &lt;jsp:params>
+  [ &lt;jsp:param name=&ldquo;parameterName&rdquo; value=&ldquo;{parameterValue | &lt;%= expression %>}&rdquo; /> ]+
+  &lt;/jsp:params> ]
+  [ &lt;jsp:fallback> text message for user &lt;/jsp:fallback> ]  ：当不能正确显示该Applet时，显示该指令中的文本提示
+ &lt;jsp:plugin></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -2467,95 +2959,6 @@
 
 		
 		<a href="/blog/2016/06/04/ubuntu-apache2-rewrite/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-06-02T21:29:24+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/git/'>git</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/06/02/git-branch/" itemprop="url">GIT分支</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>今天在学习git的远程操作的时候发现了一篇关于分支(branch)的文章，讲得非常好。让我对分支的理解更深了一步.</p></blockquote>
-
-<p>先贴上原地址<a href="http://www.tuicool.com/articles/U73q63V">http://www.tuicool.com/articles/U73q63V</a></p>
-
-<p>然后就照搬了0 0</p>
-
-<h1>git的分支是什么</h1>
-
-<p>顾名思义，分支就是从主线上分离出来进行另外的操作，而又不影响线，主线又可以继续干它的事，是不是有点像线程，最后分支做完事后合并到主线上而分支的任务完成可以删掉了。这样是不是很方便，主线继续做它的事，分支用来解决临时需求，二者互不相干。</p>
-
-<p> git的分支功能特别的强大，它不需要将所有数据进行复制，只要重新创建一个分支的指针指向你需要从哪里开始创建分支的提交对象(commit)，然后进行修改再提交，那么新分支的指针就会指向你最新提交的这个commit对象，而原来分支的指针则指向你原来开发的位置，当你在哪个分支开发，HEAD就指向那个分支的最新提交对象commt。没弄清楚没关系，先有这么一个概念，后面慢慢就会弄清的。</p>
-
-<h1>分支的新建与合并</h1>
-
-<p>我们可以用命令git branch来查看我们的git仓库有几个分支，而我们目前工作处于那个分支，前面有个*号的就为我们目前所处的分支。我们可以通过命令git branch name来创建分支，而这个分支的指针就指向最新的commit对象，也就和HEAD指向同一对象。我们可以通过命令git checkout name来切换到目的分支，我们默认的主分支为master。在分支的创建和切换，其实只是简单的创建指针找指针而已，而根据找到的指针找到所指向的commit对象，然后将工作空间恢复成该commit对象所指的文件快照让我们来工作。当提交一次，指针就重新指向这个最新提交的对象，特别的简单。</p>
-
-<p><img src="http://img2.tuicool.com/UBBV3m.jpg!web" alt="" /></p>
-
-<p><img src="http://img1.tuicool.com/6zEZRr.jpg!web" alt="" /></p>
-
-<p>当我们建立分支teset之前，只有master一个主分支，如图一，我们所有的开发都是在这个分支上，而且HEAD是指向最近一次提交的commit对象c3，c3以前还有两次提交c1和c2，这时我们通过git branch test创建test分支，如图二，这时HEAD还是指向master分支最近一次提交的c3，当git checkout test切换到test分支后，HEAD就指向test分支的最近一次提交c3，这个时候其实在.git里面都是指向同样一份数据c3。</p>
-
-<p><img src="http://img2.tuicool.com/iuAN3y.jpg!web" alt="" /></p>
-
-<p>这个时候，当我们在test分支上进行了几次开发提交了c4和c5两个版本后，那么test和HEAD都指向test分支的最近一次提交c5，如图三，而master此时还没有变化，任然指向的是c3，如果这个时候将test分支合并到master分支，那么git根本不用做什么，只要将master移动，指向c5就可以了，这个过程称之为Fast-forward快进。如果此时test的任务完成，我们就可以通过git branch -d test将它删除掉，继续在主分支master上进行开发。如果是这样的话，那么test分支就白建了。</p>
-
-<p><img src="http://img1.tuicool.com/YFBnqi.jpg!web" alt="" /></p>
-
-<p>那么如果此时master分支上又进行另外的开发，提交了两个版本c6和c7，那么此时的master和HEAD指针都指向的是c7，如图四，可以看出在哪个分支上开发，那么HEAD就指向的是哪个分支上的commit，这个时候合并两个分支的话，就如下。</p>
-
-<p><img src="http://img2.tuicool.com/Vzmemqm.jpg!web" alt="" /></p>
-
-<p>如图五，我们先切换到master分支，然后通过git merge test将test分支合并到master分支，这个时候，git就不是简单的移动指针了，因为两边都有开发，所以git就要对于两个分支的最新提交c5和c7还有两个分支共同的祖先commit对象c3来进行一次简单的三方合并，产生新的文件快照并用新的commit对象c8记录，这个合并的过程不需要太在意，如果产生了冲突，也就是两个分支对同一个文件进行了修改，那么git就会停下合并操作，让你处理好冲突后，再提交(c8)，然后再进行合并。这时master和HEAD都指向c8，但是test是没有移动的，此时还可以在test上继续开发，再合并到master，如果test已经没有利用价值了就可以删掉了。</p>
-
-<h1>本地分支，追踪分支和远程分支</h1>
-
-<p>这里有三个概念，本地分支就是我们可以通过git branch查看到的分支，也就是我们自己git仓库所拥有的分支，我们都可以利用。远程分支是对远程仓库的分支的索引，它其实也是本地分支，只是我们无法移动它，必须要在和中心服务器交互根据服务器更新到本地来的代码移动的，远程分支的作用就是我们上次和中心服务器交互更新得到的最新版本，它也是个指针。追踪分支比较难理解，它也是一个本地分支，只是它对应了一个远程分支，如果我们本地的某个分支对应了一个特定的远程分支，那么它就是追踪分支，比如我们最初的master分支就是一个追踪分支，它对应远程分支origin/master，这里origin是远程仓库名，当我们在master分支里执行更新(fetch，pull)或是推送(push)，在不指定分支的情况下，默认就是从origin/master分支更新来或者提交到origin/mster分支。</p>
-
-<p><img src="http://img2.tuicool.com/MJZb6f.jpg!web" alt="" /></p>
-
-<p><img src="http://img.blog.csdn.net/20140417173323859" alt="" /></p>
-
-<p>从图七和图八很容易看出来，和我们本地创建分支很相似，只是origin/master远程分支只有在连接服务器并更新服务器代码到本地后才会移动，如下图九：</p>
-
-<p><img src="http://img0.tuicool.com/zERfum.jpg!web" alt="" /></p>
-
-<p>更新远程代码到本地有两个命令，fetch和pull，fetch是将远程代码更新到本地，但是不会执行合并操作，需要自己查看，解决冲突什么的，然后自己再执行merge将更新来的代码合并到我们自己制定的分支，但是pull就将这两个操作合成了一步，直接更新服务器代码更新并合并到到本地指定分支，当然遇到冲突也必须要自己解决。所以我们一般都使用fetch来实现更新，虽然麻烦了点，但是不容易出问题。</p>
-
-<p>将本地代码推送到远程仓库，也就是中心服务器，一般我们推送数据都是git push origin master:master，这里指定远程仓库名，本地分支名和远端分支，也就是将我们本地master分支的数据推送到远程仓库origin的master分支。如果本地的master分支是追踪分支，那么在不指定的情况下，它会自己找到远程仓库中对应的分支来推送数据。或者我们直接进行git push origin操作，只指定远程仓库名，那么git会根据我们目前所在分支和它所对应的远程仓库的分支来实现数据推送，前提是我们目前所在分支必须是追踪分支。当然如果是git push origin :master，这里本地分支名是空的，这个操作就是将空分支推送到远程仓库的master分支，结果就是将master分支删除。</p>
-
-<p>既然追踪分支这么好用，那么我们怎么建立追踪分支呢，有两种方式，第一种方式就是不指定该追踪分支的名字，默认和远程仓库的分支名字一样：git checkout &ndash;track 远程仓库名/test，这样我们就建立了一个名为test的追踪分支，第二种方式是重新指定追踪分支的名字：git checkout -b name 远程仓库名/test，这样我们就创建了一个名为name的追踪分支，它对应远程仓库的test分支。</p>
-
-<h1>git分支管理</h1>
-
-<p>git创建分支于合并分支是如此简单快捷，那么在我们的开发过程中可以疯狂的使用分支，而且git的核心玩法之一就是分支，非常提倡使用分支，但是是不是我们可以肆无忌惮的使用分支呢，创建这么多的分支我们要如何来管理呢，分支不在多而在恰到好处，如果分支创建多了，管理起来就麻烦了，所以推荐一种分支的管理策略，git-flow，同时推荐一篇文章来了解这种策略： <a href="http://nvie.com/posts/a-successful-git-branching-model/">http://nvie.com/posts/a-successful-git-branching-model/</a> ，让你的git使用更加顺手。</p>
-
-		
-		
 	</div>
 
 </article>

@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: java | Ewan Reton]]></title>
+  <link href="http://ewanreton.github.io/blog/categories/java/atom.xml" rel="self"/>
+  <link href="http://ewanreton.github.io/"/>
+  <updated>2016-06-16T14:30:18+08:00</updated>
+  <id>http://ewanreton.github.io/</id>
+  <author>
+    <name><![CDATA[Ewan Reton]]></name>
+    <email><![CDATA[liukedi001@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[jsp三个编译指令和七个动作指令]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/06/16/jsp-bianyizhiling-dongzuozhiling/"/>
+    <updated>2016-06-16T12:53:01+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/06/16/jsp-bianyizhiling-dongzuozhiling</id>
+    <content type="html"><![CDATA[<blockquote><p>最近开始学习JSP的相关知识，先作为一个入门的了解。</p></blockquote>
+
+<h1>三个编译指令</h1>
+
+<ol>
+<li>page指令</li>
+</ol>
+
+
+<p>page指令用户定义JSP页面中的全局属性，它的语法格式如下：</p>
+
+<pre><code class="java">    &lt;%page
+    {language="java"}
+    {extends="package.class"}
+    {import="{package.class|package.*},..."}
+    {session="true | false"}
+    {buffer="none | 8kb | sizekb"}
+    { false"}
+    {isThreadSafe="true | false"}
+    {info="text"}
+    {errorPage="relativeURL"}
+    {contentType="mimeType [;charset=characterSet]" | "text/html ; charset=ISO-8859-1"}
+    {isErrorPage="true | false"}
+    {pageEncoding="charset=characrerSet | ISO-8859-1"}
+    %&gt; 
+</code></pre>
+
+<p> page指令对整个页面有效，包括静态的包含文件，但page指令不能用于被动态包含的文件，例如使用<code>&lt;jsp:include&gt;</code>包含的文件。在一个JSP页面中可以使用多个page指令，但page指令中的属性只能出现一次(import属性除外)。</p>
+
+<ol>
+<li>include指令</li>
+</ol>
+
+
+<p>include指令用于在JSP页面中包含其他文件，它的语法格式如下：</p>
+
+<pre><code class="java">    &lt;% include file="路径名"&gt;
+</code></pre>
+
+<p>include指令仅有一个属性file，其值为文件的相对路径。include指令包含的过程是静态的，包含的文件可以是JSP、HTML或者Inc文件等。</p>
+
+<ol>
+<li>taglib指令</li>
+</ol>
+
+
+<p>taglib指令允许用户使用标签库自定义新的标签，它的语法格式如下：</p>
+
+<pre><code class="java">    &lt;% taglib uri="taglibURI" prefix="tabPrefix"%&gt;
+</code></pre>
+
+<p>taglib指令中的uri属性用于根据标签的前缀对自定义的标签进行唯一的命名，其值可以食相对路径，就对路径或标签库描述文件。属性prefix制定了标签的前缀。</p>
+
+<h1>七个动作指令</h1>
+
+<blockquote><p>动作指令与编译指令不间，编译指令是通知 Servlet 引擎的处理消息，而动作指令只是运行时的脚本动作。编译指令在将JSP 编译成 Servlet 时起作用:处理指令通常可替换成 Java脚本，是 JSP脚本的标准化写法。</p></blockquote>
+
+<p> JSP7 个 动作指令如下 ：</p>
+
+<ul>
+<li>jsp:forward: 执行页面转向，将请求的处理转发到下一个页面。</li>
+<li>jsp:param: 用于传递参数，必须与其他支持参数曲标签一起使用。</li>
+<li>jsp:include: 用于动态引入一个 JSP 页面。</li>
+<li>jsp:p1ugin: 用于下载 JavaBean 或 Applet 到客户端执行。</li>
+<li>jsp:useBean: 使用 JavaBean。</li>
+<li>jsp:setProperty: 修改 JavaBean 实例的属性值。</li>
+<li>jsp:getProperty: 获取 JavaBean 实例的属性值。</li>
+</ul>
+
+
+<p><strong>jsp:forward</strong></p>
+
+<blockquote><p>jsp:forward动作把请求转到另外的页面。可以转发静态的HTML页面，也可以转发动态的JSP页面，或者转发到容器中的servlet jsp:forward标记只有一个属性page。 page属性包含的是一个相对URL。 page的值既可以直接给出，也可以在请求的时候动态计算</p></blockquote>
+
+<pre><code class="java index.jsp">    &lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+        pageEncoding="UTF-8"%&gt;
+    &lt;jsp:forward page="login.jsp"&gt;
+    &lt;jsp:param value="reton" name="userName"/&gt;
+    &lt;jsp:param value="reton" name="passWord"/&gt;
+    &lt;/jsp:forward&gt; //forward下面的代码不会被执行
+    dddddd
+</code></pre>
+
+<pre><code class="java login.jsp">    &lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+        pageEncoding="UTF-8"%&gt;
+    &lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;
+    &lt;title&gt;Login here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;%
+     String userName=request.getParameter("userName");
+     String passWord=request.getParameter("passWord");
+     out.println(userName);
+     out.println("&lt;br/&gt;");
+     out.println(passWord);
+    %&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p><strong>jsp:include动作</strong></p>
+
+<blockquote><p>（拿目标页面插入原有页面）该动作是一个动态的include指令，也用于带入某个页面，他不会导入被include页面的编译指令，仅仅导入页面的body内容插入到本页面　　该动作把指定文件插入正在生成的页面。</p></blockquote>
+
+<ul>
+<li>flush：用于指定输出缓存是否转移到被导入的文件中，
+
+<ul>
+<li>true：包含在被导入的文件中</li>
+<li>false：包含在源文件中</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="java">    　&lt;P&gt;
+    　　Here is a summary of our four most recent news stories:
+    　　&lt;OL&gt;
+    　　&lt;LI&gt;&lt;jsp:include page="news/Item1.html" flush="true"/&gt;
+    　　&lt;LI&gt;&lt;jsp:include page="news/Item2.html" flush="true"/&gt;
+    　　&lt;LI&gt;&lt;jsp:include page="news/Item3.html" flush="true"/&gt;
+    　　&lt;LI&gt;&lt;jsp:include page="news/Item4.html" flush="true"/&gt;
+    　　&lt;/OL&gt;　
+</code></pre>
+
+<p>　前面已经介绍过include指令，它是在JSP文件被转换成Servlet的时候引入文件，而这里的jsp:include动作不同，插入文件的时间是在页面被请求的时候。jsp:include动作的文件引入时间决定了它的效率要稍微差一点，而且被引用文件不能包含某些JSP代码（例如不能设置HTTP头），但它的灵活性却要好得多。</p>
+
+<p><strong>jsp:useBean</strong></p>
+
+<blockquote><p>jsp:useBean动作用来装载一个将在JSP页面中使用的JavaBean。这个功能非常有用，因为它使得我们既可以发挥Java组件重用的优势，同时也避免了损失JSP区别于Servlet的方便性。</p></blockquote>
+
+<p>jsp:useBean动作最简单的语法为：</p>
+
+<p>&lt;jsp:useBean id=&ldquo;user&rdquo; class=&ldquo;com.reton.entity.UserEntity&rdquo;>&lt;/jsp:useBean></p>
+
+<p>这行代码的含义是：“创建一个由class属性指定的类的实例，然后把它绑定到其名字由id属性给出的变量上”。不过，就象我们接下来会看到的，定义一个scope属性可以让Bean关联到更多的页面。此时，jsp:useBean动作只有在不存在同样id和scope的Bean时才创建新的对象实例，同时，获得现有Bean的引用就变得很有必要。</p>
+
+<p>获得Bean实例之后，要修改Bean的属性既可以通过jsp:setProperty动作进行，也可以在Scriptlet中利用id属性所命名的对象变量，通过调用该对象的方法显式地修改其属性。这使我们想起，当我们说“某个Bean有一个类型为X的属性foo”时，就意味着“这个类有一个返回值类型为X的getFoo方法，还有一个setFoo方法以X类型的值为参数”。</p>
+
+<p>有关jsp:setProperty动作的详细情况在后面讨论。但现在必须了解的是，我们既可以通过jsp:setProperty动作的value属性直接提供一个值，也可以通过param属性声明Bean的属性值来自指定的请求参数，还可以列出Bean属性表明它的值应该来自请求参数中的同名变量。</p>
+
+<p>在JSP表达式或Scriptlet中读取Bean属性通过调用相应的getXXX方法实现，或者更一般地，使用jsp:getProperty动作。</p>
+
+<p>注意包含Bean的类文件应该放到服务器正式存放Java类的目录下，而不是保留给修改后能够自动装载的类的目录。例如，对于Java Web Server来说，Bean和所有Bean用到的类都应该放入classes目录，或者封装进jar文件后放入lib目录，但不应该放到servlets下。</p>
+
+<p>一个简单的例子：</p>
+
+<pre><code class="java JavaResources/src/com.reton.entity">    package com.reton.entity;
+
+    import java.io.Serializable;
+
+    public class UserEntity implements Serializable {
+        private String userName;
+        private String passWord;
+
+        public UserEntity() {
+            super();
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getPassWord() {
+            return passWord;
+        }
+
+        public void setPassWord(String passWord) {
+            this.passWord = passWord;
+        }
+
+    }
+</code></pre>
+
+<pre><code class="java register.jsp">    &lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+        pageEncoding="UTF-8"%&gt;
+    &lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;
+    &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;form action="do_register.jsp" method="post"&gt;
+        用户名：&lt;input type="text" name="userName"/&gt;
+        密码:&lt;input type="password" name="passWord"/&gt;
+        &lt;input type="submit" value="提交"/&gt;
+    &lt;/form&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<pre><code class="java do_register.jsp">    &lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+        pageEncoding="UTF-8"%&gt;
+    &lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8"&gt;
+    &lt;title&gt;注册信息&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;jsp:useBean id="user" class="com.reton.entity.UserEntity"&gt;&lt;/jsp:useBean&gt;
+    &lt;jsp:setProperty property="userName" name="user"/&gt;
+    &lt;jsp:setProperty property="passWord" name="user"/&gt;
+    &lt;%
+    request.setCharacterEncoding("utf-8");
+        String userName=request.getParameter("userName");
+        String passWord=request.getParameter("passWord");
+        out.println(userName);
+        out.println("&lt;br/&gt;");
+        out.println(passWord);
+    %&gt;
+    &lt;br/&gt;
+    &lt;jsp:getProperty property="userName" name="user"/&gt;
+    &lt;jsp:getProperty property="passWord" name="user"/&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p><strong>GetProperty</strong></p>
+
+<p>&lt;jsp:getProperty>标签表示获取BEAN的属性的值并将之转化为一个字符串，然后将其插入到输出的页面中。</p>
+
+<p>语法：</p>
+
+<p>&lt;jsp:getProperty name=&ldquo;name&rdquo; property=&ldquo;propertyName&rdquo; /></p>
+
+<p>注：</p>
+
+<p>1、在使用&lt;jsp:getProperty>之前，必须用&lt;jsp:useBean>来创建它。</p>
+
+<p>2、不能使用&lt;jsp:getProperty>来检索一个已经被索引了的属性。</p>
+
+<p>3、能够和JavaBeans组件一起使用&lt;jsp:getProperty>，但是不能与Enterprise Java Bean一起使用。</p>
+
+<p><strong>SetProperty指令</strong></p>
+
+<p>&lt;jsp:setProperty>标签表示用来设置Bean中的属性值。</p>
+
+<p>语法：</p>
+
+<p>&lt;jsp:setProperty name=&ldquo;beanName&rdquo; prop_expr /></p>
+
+<p>其中prop_expr有以下几种可能的情形：</p>
+
+<p>property=&ldquo;*&rdquo; | property=&ldquo;propertyName&rdquo; | property=&ldquo;propertyName&rdquo; param=&ldquo;parameterName&rdquo; | property=&ldquo;propertyName&rdquo; value=&ldquo;propertyValue&rdquo;</p>
+
+<pre><code class="java">    &lt;!-- id表示实例名  class表示类名 scope 表示作用的范围 --&gt;  
+    &lt;jsp:useBean id="pe" class="com.reton.entity" scope="page"&gt;&lt;/jsp:useBean&gt;  
+    &lt;!-- name表示实例名  property表示属性 vaue表示属性值 --&gt;  
+    &lt;jsp:setProperty name="pe"   property="name" value="xxx"/&gt;  
+    &lt;jsp:setProperty property="age" name="pe" value="23"/&gt;  
+    &lt;jsp:getProperty property="name" name="pe" /&gt;  
+    &lt;jsp:getProperty property="age" name="pe" /&gt;  
+</code></pre>
+
+<p><strong>param</strong></p>
+
+<p>param指令用于设置参数值，这个指令本身不能单独使用，单独的param没有实际意义，param指令可与一下三个指令结合使用：</p>
+
+<p>jsp:include</p>
+
+<p>jsp:forward</p>
+
+<p>jsp:plugin</p>
+
+<p>param指令的语法格式如下：</p>
+
+<p>&lt;jsp:param  name=&ldquo;paramName&rdquo; value=&ldquo;paramValue&rdquo;></p>
+
+<p><strong>Plugin</strong></p>
+
+<p> （用于下载服务器端的javaBean或applet到客户端）　　jsp:plugin动作用来根据浏览器的类型，插入通过Java插件运行Java Applet所必需的OBJECT或EMBED元素。</p>
+
+<p>&lt;jsp:plugin<br/>
+  type=&ldquo;bean | applet&rdquo;   : 被执行的java程序的类型
+  code=&ldquo;classFileName&rdquo; ：被执行的文件名，必须以  .class 结尾
+  codebase=&ldquo;classFileDirectoryName&rdquo;   ：被执行文件的所在目录
+  [ name=&ldquo;instanceName&rdquo; ] :给程序起一个名字用来标识该程序
+  [ archive=&ldquo;URIToArchive, &hellip;&rdquo; ] ：指向一些要预先载入的将要使用到的类
+  [ align=&ldquo;bottom | top | middle | left | right&rdquo; ] ：
+  [ height=&ldquo;displayPixels&rdquo; ]
+  [ width=&ldquo;displayPixels&rdquo; ]
+  [ hspace=&ldquo;leftRightPixels&rdquo; ]
+  [ vspace=&ldquo;topBottomPixels&rdquo; ]
+  [ jreversion=&ldquo;JREVersionNumber | 1.1&rdquo; ]   ：能正确运行改程序必须的JRE的版本
+  [ nspluginurl=&ldquo;URLToPlugin&rdquo; ]<br/>
+  [ iepluginurl=&ldquo;URLToPlugin&rdquo; ] >
+  [ &lt;jsp:params>
+  [ &lt;jsp:param name=&ldquo;parameterName&rdquo; value=&ldquo;{parameterValue | &lt;%= expression %>}&rdquo; /> ]+
+  &lt;/jsp:params> ]
+  [ &lt;jsp:fallback> text message for user &lt;/jsp:fallback> ]  ：当不能正确显示该Applet时，显示该指令中的文本提示
+ &lt;jsp:plugin></p>
+]]></content>
+  </entry>
+  
+</feed>
