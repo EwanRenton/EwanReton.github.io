@@ -9,13 +9,7 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="java JSP九大内置对象详解 内置对象简介 JSP 内置对象是 Web 容器创建的一组对象，不需使用 new 关键字就可以直接使用的内置对象。 1
-2
-3
-4
-5
-6
-&lt;% int[] value = {10,20,30}; for(int i : value){ //Java &hellip;">
+	<meta name="description" content="php PHP异步调用 popen+curl 实现PHP异步调用 从上次开始复习到起已经好久没有写过博客了，最近实习期间遇到了很多问题，想写点东西来做个记录。 场景：用户在上传视频，根据所设定的帧间隔将视频切分成一帧一帧的图片。随着视频的增大，切分时间越来越长，导致出现超时的情况。 解决办法： &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -86,7 +80,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (22)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (23)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -129,6 +123,139 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-08-04T00:02:32+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/08/04/popen-plus-curl/" itemprop="url">PHP异步调用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h1>popen+curl 实现PHP异步调用</h1>
+
+<blockquote><p>从上次开始复习到起已经好久没有写过博客了，最近实习期间遇到了很多问题，想写点东西来做个记录。</p></blockquote>
+
+<p>场景：用户在上传视频，根据所设定的帧间隔将视频切分成一帧一帧的图片。随着视频的增大，切分时间越来越长，导致出现超时的情况。</p>
+
+<p>解决办法：将切分视频另外开一个线程。</p>
+
+<p>百度过后发现PHP的异步执行主要有以下几种形式：</p>
+
+<ul>
+<li>Ajax 这也是我们用的最多的一种。</li>
+<li>popen
+
+<ul>
+<li>打开一个指向进程的管道，该进程由派生给定的command命令而产生。所以，可以通过调用他，但忽略它的输出。</li>
+</ul>
+</li>
+<li>curl扩展</li>
+<li>fscokeopen函数，支持socket编程。</li>
+</ul>
+
+
+<p>经过选择过后popen最符合此次场景。</p>
+
+<p>在这个场景中，我们需要将切分的函数独立出来，通过popen来调用PHP脚本，然后再脚本执行完成过后通过curl产生一个回调，来触发回调函数。</p>
+
+<p>首先是 popen函数的使用，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$cmd</span><span class="o">=</span><span class="s2">&quot;php /path/to/test.php </span><span class="si">$parameter1</span><span class="s2"> </span><span class="si">$parameter2</span><span class="s2"> &amp;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">pclose</span><span class="p">(</span><span class="nb">popen</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">));</span> <span class="c1">//只有r和w两种形式，具体没有深入了解。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>很简单就实现了，首先如果你的PHP没有加入到环境变量，你需要将上面的PHP写到你的PHP安装目录，如<code>/usr/share/php/bin/php</code> 需要注意的是popen() 这样来使用并不能忽略它的输出，需要这样嵌套pclose(popen()),才能做到异步调用。</p>
+
+<p>并且你也可以通过fread函数来读取popen的返回值。</p>
+
+<p>通过上面我们已经实现了异步调用，下面我们就要通过一个curl来触发我们的回调函数，在这里就是把已经切好的图片信息存储到数据库中。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'>  <span class="nv">$url</span> <span class="o">=</span> <span class="nv">$UPDATE_FIN_URL</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span> <span class="s1">&#39;table_name&#39;</span><span class="o">=&gt;</span><span class="nv">$table_name</span><span class="p">,</span><span class="s1">&#39;txt_path&#39;</span><span class="o">=&gt;</span><span class="nv">$txtpath</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$ch</span><span class="o">=</span><span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>  <span class="c1">// 设置为post传递形式</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>  <span class="c1">// 设置post传递的数据</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>  <span class="c1">// 设置数据以文件流的形式返回</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>  <span class="c1">// 设置不显示头信息</span>
+</span><span class='line'>  <span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>  <span class="c1">//获取返回的结果</span>
+</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>   <span class="c1">// 获取本次访问资源的相关信息</span>
+</span><span class='line'>  <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面是以post方式想url地址发起请求，在这里我们就是在PHP脚本的最后，通过这个curl向我们项目的一个控制器发起请求，来执行回调函数实现数据入库。</p>
+
+<p>最后，还想记录下cmd命令中调用PHP的一些方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">php</span> <span class="o">/</span><span class="nx">path</span><span class="o">/</span><span class="nx">to</span><span class="o">/</span><span class="nx">test</span><span class="o">.</span><span class="nx">php</span> <span class="nv">$parameter1</span> <span class="nv">$parameter2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中两个参数在PHP脚本中被放到了$argv以数组的形式保存，$argc记录了参数的个数。</p>
+
+<h1>exec</h1>
+
+<p>最近也接触到了PHP 通过exec()函数调用外部命令。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nb">exec</span><span class="p">(</span><span class="nx">string</span> <span class="nx">command</span><span class="p">,</span><span class="nx">string</span> <span class="p">[</span><span class="k">array</span><span class="p">],</span><span class="nx">int</span> <span class="p">[</span><span class="nx">return_var</span><span class="p">])</span>
+</span><span class='line'><span class="nb">exec</span><span class="p">(</span><span class="s2">&quot;mkdir test&quot;</span><span class="p">,</span><span class="nv">$out</span><span class="p">,</span><span class="nv">$return</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>command-需要执行的命令,如shell等</li>
+<li>Array 输出值</li>
+<li>return_var 返回值，0表示成功其他为失败</li>
+</ul>
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -3439,47 +3566,6 @@
 
 		
 		<a href="/blog/2016/06/06/php-design-3/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-06-04T12:21:09+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/06/04/php-design-2/" itemprop="url">PHP设计模式(二)-适配器模式</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h1>适配器模式</h1>
-
-<ol>
-<li>适配器模式，可将一个类的接口转换成客户希望的另外一个接口，使得原本不兼容的接口能够一起工作。通俗的理解就是将不同接口适配成统一的API接口。</li>
-</ol>
-
-
-
-		
-		<a href="/blog/2016/06/04/php-design-2/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>

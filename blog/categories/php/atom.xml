@@ -4,7 +4,7 @@
   <title><![CDATA[Category: php | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-06-17T15:39:03+08:00</updated>
+  <updated>2016-08-04T00:34:00+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PHP异步调用]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/08/04/popen-plus-curl/"/>
+    <updated>2016-08-04T00:02:32+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/08/04/popen-plus-curl</id>
+    <content type="html"><![CDATA[<h1>popen+curl 实现PHP异步调用</h1>
+
+<blockquote><p>从上次开始复习到起已经好久没有写过博客了，最近实习期间遇到了很多问题，想写点东西来做个记录。</p></blockquote>
+
+<p>场景：用户在上传视频，根据所设定的帧间隔将视频切分成一帧一帧的图片。随着视频的增大，切分时间越来越长，导致出现超时的情况。</p>
+
+<p>解决办法：将切分视频另外开一个线程。</p>
+
+<p>百度过后发现PHP的异步执行主要有以下几种形式：</p>
+
+<ul>
+<li>Ajax 这也是我们用的最多的一种。</li>
+<li>popen
+
+<ul>
+<li>打开一个指向进程的管道，该进程由派生给定的command命令而产生。所以，可以通过调用他，但忽略它的输出。</li>
+</ul>
+</li>
+<li>curl扩展</li>
+<li>fscokeopen函数，支持socket编程。</li>
+</ul>
+
+
+<p>经过选择过后popen最符合此次场景。</p>
+
+<p>在这个场景中，我们需要将切分的函数独立出来，通过popen来调用PHP脚本，然后再脚本执行完成过后通过curl产生一个回调，来触发回调函数。</p>
+
+<p>首先是 popen函数的使用，</p>
+
+<pre><code class="php">$cmd="php /path/to/test.php $parameter1 $parameter2 &amp;";
+pclose(popen($cmd,"r")); //只有r和w两种形式，具体没有深入了解。
+</code></pre>
+
+<p>很简单就实现了，首先如果你的PHP没有加入到环境变量，你需要将上面的PHP写到你的PHP安装目录，如<code>/usr/share/php/bin/php</code> 需要注意的是popen() 这样来使用并不能忽略它的输出，需要这样嵌套pclose(popen()),才能做到异步调用。</p>
+
+<p>并且你也可以通过fread函数来读取popen的返回值。</p>
+
+<p>通过上面我们已经实现了异步调用，下面我们就要通过一个curl来触发我们的回调函数，在这里就是把已经切好的图片信息存储到数据库中。</p>
+
+<pre><code class="php">
+    $url = $UPDATE_FIN_URL;
+    $data = array( 'table_name'=&gt;$table_name,'txt_path'=&gt;$txtpath);
+    $ch=curl_init();
+
+    curl_setopt($ch, CURLOPT_POST, 1);  // 设置为post传递形式
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);  // 设置post传递的数据
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // 设置数据以文件流的形式返回
+
+    curl_setopt($ch, CURLOPT_HEADER, false);  // 设置不显示头信息
+    $result = curl_exec($ch);  //获取返回的结果
+    $info = curl_getinfo($ch);   // 获取本次访问资源的相关信息
+    curl_close($ch);
+</code></pre>
+
+<p>上面是以post方式想url地址发起请求，在这里我们就是在PHP脚本的最后，通过这个curl向我们项目的一个控制器发起请求，来执行回调函数实现数据入库。</p>
+
+<p>最后，还想记录下cmd命令中调用PHP的一些方法。</p>
+
+<pre><code class="php">
+php /path/to/test.php $parameter1 $parameter2
+</code></pre>
+
+<p>其中两个参数在PHP脚本中被放到了$argv以数组的形式保存，$argc记录了参数的个数。</p>
+
+<h1>exec</h1>
+
+<p>最近也接触到了PHP 通过exec()函数调用外部命令。
+```</p>
+
+<p>exec(string command,string [array],int [return_var])
+exec(&ldquo;mkdir test&rdquo;,$out,$return);</p>
+
+<p>```</p>
+
+<ul>
+<li>command-需要执行的命令,如shell等</li>
+<li>Array 输出值</li>
+<li>return_var 返回值，0表示成功其他为失败</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PHP设计模式(九)-代理模式]]></title>
@@ -911,104 +1000,6 @@ class IteratorTest extends \PHPUnit_Framework_TestCase
 <li>当我们处理的对象比较简单，并且对象之间的区别很小，可能只是很固定的几个属性不同的时候，使用原型模式更合适。</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[PHP设计模式(四)-数据库对象映射模式]]></title>
-    <link href="http://ewanreton.github.io/blog/2016/06/06/php-design-4/"/>
-    <updated>2016-06-06T11:24:26+08:00</updated>
-    <id>http://ewanreton.github.io/blog/2016/06/06/php-design-4</id>
-    <content type="html"><![CDATA[<h1>1、模式定义</h1>
-
-<p>在了解数据映射模式之前，先了解下数据映射，它是在持久化数据存储层（通常是关系型数据库）和驻于内存的数据表现层之间进行双向数据传输的数据访问层。</p>
-
-<!--more-->
-
-
-<p>数据映射模式的目的是让持久化数据存储层、驻于内存的数据表现层、以及数据映射本身三者相互独立、互不依赖。这个数据访问层由一个或多个映射器（或者数据访问对象）组成，用于实现数据传输。通用的数据访问层可以处理不同的实体类型，而专用的则处理一个或几个。</p>
-
-<p>数据映射模式的核心在于它的数据模型遵循单一职责原则（Single Responsibility Principle）, 这也是和 Active Record 模式的不同之处。最典型的数据映射模式例子就是数据库 ORM 模型 （Object Relational Mapper）。</p>
-
-<p><strong>ha_cl表</strong>
-<img src="http://www.poluoluo.com/jzxy/UploadFiles_333/201603/2016030519294690.png?20162310358" alt="" /></p>
-
-<pre><code class="php Hacl.php">    &lt;?php
-    namespace Baobab;
-    class Hacl{
-    public $id;
-    public $haclname;
-    public $haclcode;
-    public $hacls;
-    protected $db;
-    function __construct($id){
-    $this-&gt;db = new \Baobab\Database\Mysqli();
-    $this-&gt;db-&gt;connect('127.0.0.1', 'root', '', 'test');
-    $res = $this-&gt;db-&gt;query("select * from ha_cl where id = {$id}");
-    $data = $res-&gt;fetch_assoc();
-    $this-&gt;id = $data['ID'];
-    $this-&gt;haclname = $data['ha_cl_name'];
-    $this-&gt;haclcode = $data['ha_cl_code'];
-    $this-&gt;hacls = $data['hacls'];
-    }
-    function __destruct(){
-    $this-&gt;db-&gt;query("update ha_cl set
-    ha_cl_code = '{$this-&gt;haclcode}',
-    ha_cl_name = '{$this-&gt;haclname}',
-    hacls = '{$this-&gt;hacls}'
-    where ID = {$this-&gt;id}
-    limit 1");
-    }
-    }
-</code></pre>
-
-<pre><code class="php Factory.php">    //工厂模式
-    &lt;?php
-    namespace Baobab;
-    class Factory{
-    static function getHacl($id){
-    $key = 'user_'.$id;
-    $user = \Baobab\Register::get($key);//表中id不同表示的是不同的对象
-    if(!$user){
-    $user = new \Baobab\Hacl($id);
-    \Baobab\Register::set($key, $user);
-    }
-    return $user;
-    }
-    }
-</code></pre>
-
-<pre><code class="php Register.php">    &lt;?php
-    namespace Baobab;
-    class Register{
-    protected static $objects;
-    static function set($alias, $object){
-    self::$objects[$alias] = $object;
-    }
-    static function _unset($alias) {
-    unset(self::$objects[$alias]);
-    }
-    static function get($name) {
-    return self::$objects[$name];
-    }
-    }
-</code></pre>
-
-<pre><code class="php index.php">    class Page{
-    function index(){
-    $hacl = Baobab\Factory::getHacl(13);
-    $hacl-&gt;haclname = '测试名称';
-    $this-&gt;test();
-    echo 'ok';
-    }
-    function test(){
-    $hacl = Baobab\Factory::getHacl(13);
-    $hacl-&gt;hacls = '测试内容';
-    }
-    }
-    $page = new Page();
-    $page-&gt;index(); 
-</code></pre>
 ]]></content>
   </entry>
   

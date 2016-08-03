@@ -1,0 +1,293 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>PHP异步调用 - Ewan Reton</title>
+	<meta name="author" content="Ewan Reton">
+
+	
+	<meta name="description" content="PHP异步调用 popen+curl 实现PHP异步调用 从上次开始复习到起已经好久没有写过博客了，最近实习期间遇到了很多问题，想写点东西来做个记录。 场景：用户在上传视频，根据所设定的帧间隔将视频切分成一帧一帧的图片。随着视频的增大，切分时间越来越长，导致出现超时的情况。 解决办法： &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Ewan Reton" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://ewanreton.github.io/blog/2016/08/04/popen-plus-curl/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>	<link type="text/css" rel="stylesheet" href='/prettify/prettify.css' >
+	<script src="//libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<!--<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>-->
+	<script>
+  function addBlankTargetForLinks () {
+    $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+    });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+    addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+
+<body onload="prettyPrint()">
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<script src="/javascripts/md5.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://www.gravatar.com/avatar/" + MD5("liukedi001@gmail.com") + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+			
+		});
+	</script>
+	
+</div>
+
+<div>
+	<h1><a href="/">Ewan Reton</a></h1>
+	
+		<h2 style="color:#666">Never be touched by yourself</h2>
+	
+</div>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="main-nav"><section>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/git/'>git (3)</a></li>
+<li class='category'><a href='/blog/categories/java/'>java (2)</a></li>
+<li class='category'><a href='/blog/categories/javascript/'>javascript (2)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>linux (6)</a></li>
+<li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
+<li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (23)</a></li>
+<li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
+
+  </ul>
+</section></nav> 
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:liukedi001@gmail.com" title="Email">Email</a>
+		
+		
+		
+			<a class="google" href="https://plus.google.com/116687730759120454062" rel="author" title="Google+">Google+</a>
+		
+		
+		
+			<a class="github" href="https://github.com/EwanReton" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">PHP异步调用</h1>
+	<div class="entry-content" itemprop="articleBody"><h1>popen+curl 实现PHP异步调用</h1>
+
+<blockquote><p>从上次开始复习到起已经好久没有写过博客了，最近实习期间遇到了很多问题，想写点东西来做个记录。</p></blockquote>
+
+<p>场景：用户在上传视频，根据所设定的帧间隔将视频切分成一帧一帧的图片。随着视频的增大，切分时间越来越长，导致出现超时的情况。</p>
+
+<p>解决办法：将切分视频另外开一个线程。</p>
+
+<p>百度过后发现PHP的异步执行主要有以下几种形式：</p>
+
+<ul>
+<li>Ajax 这也是我们用的最多的一种。</li>
+<li>popen
+
+<ul>
+<li>打开一个指向进程的管道，该进程由派生给定的command命令而产生。所以，可以通过调用他，但忽略它的输出。</li>
+</ul>
+</li>
+<li>curl扩展</li>
+<li>fscokeopen函数，支持socket编程。</li>
+</ul>
+
+
+<p>经过选择过后popen最符合此次场景。</p>
+
+<p>在这个场景中，我们需要将切分的函数独立出来，通过popen来调用PHP脚本，然后再脚本执行完成过后通过curl产生一个回调，来触发回调函数。</p>
+
+<p>首先是 popen函数的使用，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nv">$cmd</span><span class="o">=</span><span class="s2">&quot;php /path/to/test.php </span><span class="si">$parameter1</span><span class="s2"> </span><span class="si">$parameter2</span><span class="s2"> &amp;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nb">pclose</span><span class="p">(</span><span class="nb">popen</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">));</span> <span class="c1">//只有r和w两种形式，具体没有深入了解。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>很简单就实现了，首先如果你的PHP没有加入到环境变量，你需要将上面的PHP写到你的PHP安装目录，如<code>/usr/share/php/bin/php</code> 需要注意的是popen() 这样来使用并不能忽略它的输出，需要这样嵌套pclose(popen()),才能做到异步调用。</p>
+
+<p>并且你也可以通过fread函数来读取popen的返回值。</p>
+
+<p>通过上面我们已经实现了异步调用，下面我们就要通过一个curl来触发我们的回调函数，在这里就是把已经切好的图片信息存储到数据库中。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'>  <span class="nv">$url</span> <span class="o">=</span> <span class="nv">$UPDATE_FIN_URL</span><span class="p">;</span>
+</span><span class='line'>  <span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span> <span class="s1">&#39;table_name&#39;</span><span class="o">=&gt;</span><span class="nv">$table_name</span><span class="p">,</span><span class="s1">&#39;txt_path&#39;</span><span class="o">=&gt;</span><span class="nv">$txtpath</span><span class="p">);</span>
+</span><span class='line'>  <span class="nv">$ch</span><span class="o">=</span><span class="nb">curl_init</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POST</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>  <span class="c1">// 设置为post传递形式</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>  <span class="c1">// 设置post传递的数据</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span>
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>  <span class="c1">// 设置数据以文件流的形式返回</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>  <span class="c1">// 设置不显示头信息</span>
+</span><span class='line'>  <span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>  <span class="c1">//获取返回的结果</span>
+</span><span class='line'>  <span class="nv">$info</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>   <span class="c1">// 获取本次访问资源的相关信息</span>
+</span><span class='line'>  <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面是以post方式想url地址发起请求，在这里我们就是在PHP脚本的最后，通过这个curl向我们项目的一个控制器发起请求，来执行回调函数实现数据入库。</p>
+
+<p>最后，还想记录下cmd命令中调用PHP的一些方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">php</span> <span class="o">/</span><span class="nx">path</span><span class="o">/</span><span class="nx">to</span><span class="o">/</span><span class="nx">test</span><span class="o">.</span><span class="nx">php</span> <span class="nv">$parameter1</span> <span class="nv">$parameter2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中两个参数在PHP脚本中被放到了$argv以数组的形式保存，$argc记录了参数的个数。</p>
+
+<h1>exec</h1>
+
+<p>最近也接触到了PHP 通过exec()函数调用外部命令。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nb">exec</span><span class="p">(</span><span class="nx">string</span> <span class="nx">command</span><span class="p">,</span><span class="nx">string</span> <span class="p">[</span><span class="k">array</span><span class="p">],</span><span class="nx">int</span> <span class="p">[</span><span class="nx">return_var</span><span class="p">])</span>
+</span><span class='line'><span class="nb">exec</span><span class="p">(</span><span class="s2">&quot;mkdir test&quot;</span><span class="p">,</span><span class="nv">$out</span><span class="p">,</span><span class="nv">$return</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>command-需要执行的命令,如shell等</li>
+<li>Array 输出值</li>
+<li>return_var 返回值，0表示成功其他为失败</li>
+</ul>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	 
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+  
+</div>
+
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="/blog/2016/08/04/popen-plus-curl" data-title="PHP异步调用" data-url="http://ewanreton.github.io/blog/2016/08/04/popen-plus-curl/"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"ewanreton"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end --></div>
+  </section>
+</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2016
+
+    Ewan Reton
+
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+		</div>
+	</div>
+	
+
+
+
+
+
+
+<!--
+-->
+
+
+</body>
+</html>
