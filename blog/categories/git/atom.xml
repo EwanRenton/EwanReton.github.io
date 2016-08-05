@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Ewan Reton]]></title>
   <link href="http://ewanreton.github.io/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://ewanreton.github.io/"/>
-  <updated>2016-08-05T23:19:21+08:00</updated>
+  <updated>2016-08-05T23:22:04+08:00</updated>
   <id>http://ewanreton.github.io/</id>
   <author>
     <name><![CDATA[Ewan Reton]]></name>
@@ -12,6 +12,31 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[git取消对某个文件的跟踪]]></title>
+    <link href="http://ewanreton.github.io/blog/2016/08/05/git-unfllow-file/"/>
+    <updated>2016-08-05T23:05:25+08:00</updated>
+    <id>http://ewanreton.github.io/blog/2016/08/05/git-unfllow-file</id>
+    <content type="html"><![CDATA[<h1>git取消对某个文件的跟踪</h1>
+
+<blockquote><p>最近使用git协同开发，和以前自己一个人用不同，老是出现各种各样的问题。感觉想把Git用好还是很难。</p></blockquote>
+
+<p>我们在解决问题的过程中，发现很多时候的冲突其实是因为我们没有对git的机制理解透彻。</p>
+
+<p>最近遇到的一个问题是，我们建立了.gitignore但是发现这个文件忽略过的文件还是会被push。后来发现这个文件只对没有被git commit 过的文件有效，也就是说如果你的文件被commit过后你再建立gitignore，这个时候gitignore对这个文件是无效的。</p>
+
+<p>这个时候就需要取消对某个文件的跟踪。</p>
+
+<pre><code>git rm --cached somefile
+git commit -m "remove somefile added by mistake"
+</code></pre>
+
+<p>如果是目录在rm 后面加上 -r</p>
+
+<p>这个命令并不会删除这个文件。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GIT分支]]></title>
