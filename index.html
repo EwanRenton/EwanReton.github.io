@@ -9,7 +9,28 @@
 	<meta name="author" content="Ewan Reton">
 
 	
-	<meta name="description" content="php PHP异步调用 popen+curl 实现PHP异步调用 从上次开始复习到起已经好久没有写过博客了，最近实习期间遇到了很多问题，想写点东西来做个记录。 场景：用户在上传视频，根据所设定的帧间隔将视频切分成一帧一帧的图片。随着视频的增大，切分时间越来越长，导致出现超时的情况。 解决办法： &hellip;">
+	<meta name="description" content="php 兼容低于PHP5.5的array_column函数 array_column 用于获取二维数组中的元素(PHP 5.5新增函数)，但我们有时候需要在低版本的PHP环境中使用… 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,7 +101,7 @@
 <li class='category'><a href='/blog/categories/mysql/'>mysql (4)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (5)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (3)</a></li>
-<li class='category'><a href='/blog/categories/php/'>php (23)</a></li>
+<li class='category'><a href='/blog/categories/php/'>php (24)</a></li>
 <li class='category'><a href='/blog/categories/weixin/'>weixin (1)</a></li>
 
   </ul>
@@ -123,6 +144,124 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-08-05T23:13:46+08:00" data-updated="true" itemprop="datePublished"></time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/php/'>php</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/08/05/array-column-with-php-before-5-dot-5/" itemprop="url">兼容低于PHP5.5的array_column函数</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<blockquote><p>array_column 用于获取二维数组中的元素(PHP 5.5新增函数)，但我们有时候需要在低版本的PHP环境中使用…</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'>  <span class="k">if</span><span class="p">(</span> <span class="o">!</span> <span class="nb">function_exists</span><span class="p">(</span><span class="s1">&#39;array_column&#39;</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">array_column</span><span class="p">(</span><span class="nv">$input</span><span class="p">,</span> <span class="nv">$columnKey</span><span class="p">,</span> <span class="nv">$indexKey</span> <span class="o">=</span> <span class="k">NULL</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="nv">$columnKeyIsNumber</span> <span class="o">=</span> <span class="p">(</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$columnKey</span><span class="p">))</span> <span class="o">?</span> <span class="k">TRUE</span> <span class="o">:</span> <span class="k">FALSE</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$indexKeyIsNull</span> <span class="o">=</span> <span class="p">(</span><span class="nb">is_null</span><span class="p">(</span><span class="nv">$indexKey</span><span class="p">))</span> <span class="o">?</span> <span class="k">TRUE</span> <span class="o">:</span> <span class="k">FALSE</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$indexKeyIsNumber</span> <span class="o">=</span> <span class="p">(</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$indexKey</span><span class="p">))</span> <span class="o">?</span> <span class="k">TRUE</span> <span class="o">:</span> <span class="k">FALSE</span><span class="p">;</span>
+</span><span class='line'>      <span class="nv">$result</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="k">foreach</span> <span class="p">((</span><span class="k">array</span><span class="p">)</span><span class="nv">$input</span> <span class="k">AS</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$row</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nv">$columnKeyIsNumber</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>          <span class="nv">$tmp</span> <span class="o">=</span> <span class="nb">array_slice</span><span class="p">(</span><span class="nv">$row</span><span class="p">,</span> <span class="nv">$columnKey</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>          <span class="nv">$tmp</span> <span class="o">=</span> <span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$tmp</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$tmp</span><span class="p">))</span> <span class="o">?</span> <span class="nb">current</span><span class="p">(</span><span class="nv">$tmp</span><span class="p">)</span> <span class="o">:</span> <span class="k">NULL</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>          <span class="nv">$tmp</span> <span class="o">=</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$row</span><span class="p">[</span><span class="nv">$columnKey</span><span class="p">])</span> <span class="o">?</span> <span class="nv">$row</span><span class="p">[</span><span class="nv">$columnKey</span><span class="p">]</span> <span class="o">:</span> <span class="k">NULL</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nv">$indexKeyIsNull</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nv">$indexKeyIsNumber</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$key</span> <span class="o">=</span> <span class="nb">array_slice</span><span class="p">(</span><span class="nv">$row</span><span class="p">,</span> <span class="nv">$indexKey</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>            <span class="nv">$key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$key</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span> <span class="k">empty</span><span class="p">(</span><span class="nv">$key</span><span class="p">))</span> <span class="o">?</span> <span class="nb">current</span><span class="p">(</span><span class="nv">$key</span><span class="p">)</span> <span class="o">:</span> <span class="k">NULL</span><span class="p">;</span>
+</span><span class='line'>            <span class="nv">$key</span> <span class="o">=</span> <span class="nb">is_null</span><span class="p">(</span><span class="nv">$key</span><span class="p">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="nv">$key</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>          <span class="p">{</span>
+</span><span class='line'>            <span class="nv">$key</span> <span class="o">=</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$row</span><span class="p">[</span><span class="nv">$indexKey</span><span class="p">])</span> <span class="o">?</span> <span class="nv">$row</span><span class="p">[</span><span class="nv">$indexKey</span><span class="p">]</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>        <span class="nv">$result</span><span class="p">[</span><span class="nv">$key</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$tmp</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -3530,42 +3669,6 @@
 
 		
 		<a href="/blog/2016/06/06/php-design-4/" class="more-link">阅读全文&rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-06-06T10:32:22+08:00" data-updated="true" itemprop="datePublished"></time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/php/'>php</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/06/06/php-design-3/" itemprop="url">PHP设计模式(三)-策略模式</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<blockquote><p>在之前学习了PHP设计模式中的工厂模式，单例模式，注册树模式，适配器模式。今天来学习一下策略模式。</p></blockquote>
-
-
-		
-		<a href="/blog/2016/06/06/php-design-3/" class="more-link">阅读全文&rarr;</a>
 	</div>
 
 </article>
